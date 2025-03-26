@@ -16,6 +16,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
 
+<?import javafx.scene.layout.ColumnConstraints?>
 <SplitPane dividerPositions="0.5" prefHeight="600.0" prefWidth="1000.0"
            stylesheets="/de/sommerfeld/topspin/fx/css/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="de.sommerfeld.topspin.fx.controller.TrainingPlanEditorController">
@@ -25,6 +26,10 @@
 
             <Label text="Training Plan Details" styleClass="section-title"/>
             <GridPane hgap="10.0" vgap="5.0" styleClass="form-grid">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
                 <Label text="Plan Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
                 <TextField fx:id="planNameTextField" promptText="Enter training plan name" GridPane.rowIndex="0"
                            GridPane.columnIndex="1" HBox.hgrow="ALWAYS" styleClass="text-input"/>
@@ -51,6 +56,10 @@
                         styleClass="details-pane">
                 <VBox spacing="10" styleClass="details-content">
                     <GridPane hgap="10" vgap="5" styleClass="form-grid">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                            <ColumnConstraints hgrow="ALWAYS" />
+                        </columnConstraints>
                         <Label text="Unit Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                                styleClass="form-label"/>
                         <TextField fx:id="unitNameTextField" promptText="Selected unit name" GridPane.rowIndex="0"
@@ -83,6 +92,10 @@
                     <TitledPane fx:id="selectedExercisePane" text="Selected Exercise Details" collapsible="false"
                                 disable="true" styleClass="details-pane">
                         <GridPane hgap="10" vgap="5" styleClass="form-grid">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                                <ColumnConstraints hgrow="ALWAYS" />
+                            </columnConstraints>
                             <Label text="Exercise Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"
                                    styleClass="form-label"/>
                             <TextField fx:id="exerciseNameTextField" promptText="Selected exercise name"
