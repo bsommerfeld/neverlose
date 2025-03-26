@@ -1,424 +1,266 @@
-/* style.css - Modern & Simple Theme */
-
 /* --- 1. Root Variables & Base --- */
 .root {
-    /* Base Font & Colors */
-    -fx-font-size: 10pt;
-    -fx-font-family: "System", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    -fx-text-base-color: #333333; /* Dark grey for main text */
-
-    /* Backgrounds */
-    -fx-base: #F9F9F9; /* Very light grey main background */
-    -fx-background: -fx-base;
-    -fx-control-inner-background: #FFFFFF; /* White for inputs, lists */
-    -fx-control-inner-background-alt: derive(-fx-base, -2%); /* Slightly darker alt bg */
-
-    /* Accent Color (Modern Teal) */
-    -fx-accent: #00A99D; /* Teal/Cyan */
-    -fx-focus-color: -fx-accent;
-    -fx-highlight-fill: derive(-fx-accent, 75%); /* Lighter accent for text highlight */
-    -fx-highlight-text-fill: -fx-text-base-color;
-
-    /* Borders & Radius */
-    -fx-border-color-light: #EAEAEA;
-    -fx-border-color-medium: #CCCCCC;
-    -fx-radius-small: 4px; /* Consistent small radius */
-
-    /* Action Colors (Subtle) */
-    -color-add-bg: #E6FFFA; /* Very light teal/green */
-    -color-add-text: #007A70; /* Darker teal */
-    -color-add-border: #A6F2EA;
-
-    -color-remove-bg: #FFF5F5; /* Very light red/pink */
-    -color-remove-text: #CC3333; /* Soft red */
-    -color-remove-border: #FFD9D9;
 }
 
 /* --- 2. Layout Panes --- */
 .editor-pane,
 .preview-pane {
-    -fx-padding: 20px;
-    -fx-background-color: transparent; /* Inherit from parent ScrollPane/root */
 }
 
-/* ScrollPane should blend in */
-.scroll-pane {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+.editor-pane-scroll,
+.preview-pane-scroll {
 }
-.scroll-pane .viewport {
-    -fx-background-color: transparent;
+
+.editor-pane-scroll .viewport,
+.preview-pane-scroll .viewport {
 }
+
 .scroll-pane:focused {
-     -fx-background-insets: 0; /* No focus ring on scrollpane */
-}
-/* Ensure preview pane uses the inner background color */
-.preview-pane-scroll .viewport{
-    -fx-background-color: -fx-control-inner-background;
-}
-/* Subtle separator line for SplitPane */
-.split-pane *.split-pane-divider {
-    -fx-padding: 0 1px 0 1px;
-    -fx-background-color: -fx-border-color-light;
 }
 
-/* --- 3. Typography --- */
-.label { /* Default label style */
-    -fx-text-fill: -fx-text-base-color;
+.split-pane *.split-pane-divider {
+}
+
+.form-grid {
+}
+
+.label {
 }
 
 .section-title {
-    -fx-font-size: 1.4em;
-    -fx-font-weight: 600; /* Semi-bold */
-    -fx-text-fill: -fx-text-base-color;
-    -fx-padding: 8px 0 12px 0;
-    -fx-border-color: transparent transparent -fx-border-color-light transparent;
-    -fx-border-width: 1px;
-    -fx-margin: 0 0 10px 0;
 }
 
 .sub-section-title {
-    -fx-font-size: 1.1em;
-    -fx-font-weight: 600;
-    -fx-text-fill: derive(-fx-text-base-color, 15%); /* Slightly lighter */
-    -fx-padding: 5px 0;
 }
 
 .form-label {
-    -fx-font-size: 0.95em;
-    -fx-padding: 8px 0 0 0; /* Align with input */
-    -fx-text-fill: derive(-fx-text-base-color, 35%); /* Lighter grey */
 }
 
 /* --- 4. Input Controls --- */
-.text-input { /* TextField and TextArea */
-    -fx-background-color: -fx-control-inner-background;
-    -fx-background-insets: 0;
-    -fx-background-radius: -fx-radius-small;
-    -fx-border-color: -fx-border-color-medium; /* Use medium grey border */
-    -fx-border-width: 1px;
-    -fx-border-radius: -fx-radius-small;
-    -fx-font-size: 1em;
-    -fx-padding: 7px 10px;
-    -fx-text-fill: -fx-text-base-color;
-    -fx-prompt-text-fill: derive(-fx-text-base-color, 60%);
+.text-input {
 }
 
 .text-input:focused {
-    -fx-border-color: -fx-accent;
-    -fx-border-width: 1.5px; /* Slightly thicker focus border */
-    -fx-padding: 6.75px 9.75px; /* Adjust padding to keep size consistent */
-    -fx-background-color: -fx-control-inner-background; /* Ensure background stays white */
 }
 
-/* Specific TextArea adjustments */
 .text-area {
-     -fx-padding: 0;
 }
+
 .text-area .content {
-     -fx-background-color: -fx-control-inner-background;
-     -fx-padding: 7px 10px;
 }
-.text-area .scroll-pane { -fx-padding: 0; -fx-background-insets: 0; }
-.text-area .scroll-pane .content { -fx-padding: 7px 10px; -fx-background-insets: 0; }
+
+.text-area .scroll-pane {
+}
+
+.text-area .scroll-pane .content {
+ }
+
 
 /* --- 5. Buttons --- */
-/* Default Button: Flat, subtle */
 .button {
-    -fx-background-color: #EFEFEF; /* Light grey background */
-    -fx-text-fill: -fx-text-base-color;
-    -fx-background-radius: -fx-radius-small;
-    -fx-padding: 7px 15px;
-    -fx-font-size: 0.95em;
-    -fx-font-weight: 500; /* Medium */
-    -fx-border-width: 1px;
-    -fx-border-color: transparent; /* No border by default */
-    -fx-border-radius: -fx-radius-small;
-    -fx-cursor: hand;
+
 }
+
 .button:hover {
-    -fx-background-color: #E5E5E5; /* Slightly darker hover */
+
 }
+
 .button:pressed {
-    -fx-background-color: #DDDDDD;
-}
-.button:focused { /* Subtle focus indicator */
-    -fx-border-color: -fx-accent;
-    -fx-border-width: 1.5px;
-    -fx-padding: calc(7px - 0.5px) calc(15px - 0.5px);
+
 }
 
-/* Primary Action Button (Export) */
+.button:focused {
+
+}
+
 .export-button {
-    -fx-background-color: -fx-accent;
-    -fx-text-fill: white;
-    -fx-font-weight: 600;
-    -fx-border-color: transparent;
 }
-.export-button:hover { -fx-background-color: derive(-fx-accent, -10%); }
-.export-button:pressed { -fx-background-color: derive(-fx-accent, -20%); }
+
+.export-button:hover {
+}
+
+.export-button:pressed {
+}
+
 .export-button:focused {
-    -fx-border-color: derive(-fx-accent, -25%);
-    -fx-border-width: 1.5px;
-    -fx-padding: calc(7px - 0.5px) calc(15px - 0.5px);
 }
 
+.add-button, .remove-button {
+}
 
-/* Add/Remove Buttons - Subtle background tints */
 .add-button {
-    -fx-background-color: -color-add-bg;
-    -fx-text-fill: -color-add-text;
-    -fx-font-weight: 600;
-    -fx-border-color: transparent;
-}
-.add-button:hover { -fx-background-color: derive(-color-add-bg, -5%); }
-.add-button:pressed { -fx-background-color: derive(-color-add-bg, -10%); }
-.add-button:focused {
-    -fx-border-color: -color-add-text;
-    -fx-border-width: 1.5px;
-    -fx-padding: calc(7px - 0.5px) calc(15px - 0.5px);
 }
 
 .remove-button {
-    -fx-background-color: -color-remove-bg;
-    -fx-text-fill: -color-remove-text;
-    -fx-font-weight: 600;
-    -fx-border-color: transparent;
-}
-.remove-button:hover { -fx-background-color: derive(-color-remove-bg, -5%); }
-.remove-button:pressed { -fx-background-color: derive(-color-remove-bg, -10%); }
-.remove-button:focused {
-    -fx-border-color: -color-remove-text;
-    -fx-border-width: 1.5px;
-    -fx-padding: calc(7px - 0.5px) calc(15px - 0.5px);
 }
 
+.add-button:hover, .remove-button:hover {
+}
 
-/* --- 6. Selection Controls --- */
+.add-button:pressed, .remove-button:pressed {
+}
+
+.add-button:focused, .remove-button:focused {
+
+}
+
 .list-view {
-    -fx-border-color: -fx-border-color-medium;
-    -fx-border-width: 1px;
-    -fx-border-radius: -fx-radius-small;
-    -fx-background-color: -fx-control-inner-background;
-    -fx-padding: 2px; /* Small padding around cells */
+
 }
 
 .list-cell {
-    -fx-padding: 7px 10px;
-    -fx-background-color: transparent;
-    -fx-text-fill: -fx-text-base-color;
-    -fx-border-width: 0;
-    -fx-background-radius: calc(-fx-radius-small - 2px); /* Slightly rounded cells */
-    -fx-cell-size: 34px;
+
 }
 
 .list-cell:filled:hover {
-    -fx-background-color: #F0F0F0; /* Light grey hover */
+
 }
 
 .list-cell:filled:selected:focused, .list-cell:filled:selected {
-    -fx-background-color: -fx-accent;
-    -fx-text-fill: white;
-}
-/* Selection color when list doesn't have focus */
-.list-cell:filled:selected {
-     -fx-background-color: derive(-fx-accent, 70%); /* Lighter accent */
-     -fx-text-fill: -fx-text-base-color;
-}
-.list-view:focused .list-cell:filled:selected { /* Style selected cell only when list is focused */
-     -fx-background-color: -fx-accent;
-     -fx-text-fill: white;
+
 }
 
+.list-cell:filled:selected {
+
+}
+
+.list-view:focused .list-cell:filled:selected {
+
+}
 
 .choice-box {
-    -fx-background-color: -fx-control-inner-background;
-    -fx-mark-color: #666666; /* Arrow color */
-    -fx-background-radius: -fx-radius-small;
-    -fx-border-color: -fx-border-color-medium;
-    -fx-border-width: 1px;
-    -fx-border-radius: -fx-radius-small;
-    -fx-padding: 6px 8px 6px 10px;
-}
-.choice-box:hover {
-    -fx-border-color: #AAAAAA;
-}
-.choice-box:focused {
-    -fx-border-color: -fx-accent;
-    -fx-border-width: 1.5px;
-    -fx-padding: calc(6px - 0.5px) calc(8px - 0.5px) calc(6px - 0.5px) calc(10px - 0.5px);
-}
-.choice-box .label {
-    -fx-text-fill: -fx-text-base-color;
-    -fx-padding: 1px 0;
-}
-/* ChoiceBox Popup Menu */
-.context-menu {
-    -fx-background-color: -fx-control-inner-background;
-    -fx-background-radius: -fx-radius-small;
-    -fx-border-color: -fx-border-color-light;
-    -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3); /* Softer shadow */
-}
-.menu-item { -fx-padding: 7px 12px; }
-.menu-item .label { -fx-text-fill: -fx-text-base-color; }
-.menu-item:focused { -fx-background-color: #F0F0F0; } /* Use same hover as list-cell */
-.menu-item:focused .label{ -fx-text-fill: -fx-text-base-color; }
 
+}
+
+.choice-box:hover {
+}
+
+.choice-box:focused {
+}
+
+.choice-box .label {
+}
+
+.context-menu {
+}
+
+.menu-item {
+}
+
+.menu-item .label {
+}
+
+.menu-item:focused {
+}
+
+.menu-item:focused .label {
+}
 
 .check-box {
-    -fx-text-fill: -fx-text-base-color;
-    -fx-padding: 5px 0;
+
 }
+
 .check-box .box {
-    -fx-background-color: -fx-control-inner-background;
-    -fx-border-color: -fx-border-color-medium;
-    -fx-border-radius: -fx-radius-small;
-    -fx-padding: 3px; /* Box size */
+
 }
-.check-box:hover .box { -fx-border-color: #AAAAAA; }
-.check-box:selected .mark { -fx-background-color: -fx-accent; } /* Check mark is accent color */
-.check-box:focused .box { -fx-border-color: -fx-accent; }
+
+.check-box:hover .box {
+}
+
+.check-box:selected .mark {
+}
+
+.check-box:focused .box {
+}
 
 /* --- 7. Containers --- */
-.titled-pane {
-    -fx-text-fill: -fx-text-base-color;
-    -fx-border-color: -fx-border-color-light;
-    -fx-border-width: 1px;
-    -fx-border-radius: -fx-radius-small;
+.details-pane {
+
 }
-.titled-pane > .title {
-    -fx-background-color: -fx-control-inner-background-alt; /* Slightly darker title */
-    -fx-border-color: transparent; /* Border is on the main pane */
-    -fx-border-width: 0;
-    -fx-padding: 8px 12px;
-    -fx-background-radius: -fx-radius-small -fx-radius-small 0 0;
-    -fx-border-radius: -fx-radius-small -fx-radius-small 0 0;
+
+.details-pane > .title {
+
 }
-.titled-pane:focused {
-     -fx-border-color: -fx-accent; /* Focus on the whole pane */
+
+.details-pane:focused {
 }
-.titled-pane > .title > .text {
-     -fx-font-weight: 600;
-     -fx-font-size: 1.0em;
-     -fx-fill: -fx-text-base-color;
+
+.details-pane > .title > .text {
+
 }
-.titled-pane > *.content {
-     -fx-border-color: transparent;
-     -fx-border-width: 0;
-     -fx-padding: 15px;
-     -fx-background-color: -fx-control-inner-background; /* White content area */
-     -fx-background-radius: 0 0 -fx-radius-small -fx-radius-small;
+
+.details-pane > *.content {
 }
-.titled-pane > .title > .arrow-button .arrow {
-    -fx-background-color: #666666;
+
+.details-pane > .title > .arrow-button .arrow {
 }
+
 
 /* --- 8. Separators --- */
 .separator .line {
-    -fx-border-color: -fx-border-color-light; /* Lightest border color */
-    -fx-border-width: 1px;
+
 }
 
 /* --- 9. ScrollBars --- */
-/* Minimal scrollbars */
+
 .scroll-bar:vertical, .scroll-bar:horizontal {
-    -fx-background-color: transparent;
-    -fx-padding: 3px;
+
 }
 .scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
-    -fx-background-color: derive(-fx-border-color-medium, -15%); /* Slightly darker than medium border */
-    -fx-background-insets: 3;
-    -fx-background-radius: 6px; /* Rounded thumb */
+
 }
 .scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
-    -fx-background-color: derive(-fx-border-color-medium, -30%);
-}
-.scroll-bar .increment-button, .scroll-bar .decrement-button {
-    -fx-padding: 0; -fx-background-radius: 0; -fx-background-color: transparent;
-}
-.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
-    -fx-padding: 0; -fx-shape: " ";
-}
-.scroll-bar .track {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-background-radius: 0;
+
 }
 
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
+}
+
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
+}
+
+.scroll-bar .track {
+}
 
 /* --- 10. Preview Pane Specific Styles --- */
-/* Using white background from .preview-pane-scroll .viewport */
 .preview-title {
-    -fx-font-size: 1.6em;
-    -fx-font-weight: 600;
-    -fx-fill: -fx-text-base-color;
-    -fx-text-fill: -fx-text-base-color;
-    -fx-padding: 0 0 8px 0;
 }
 
 .preview-text {
-     -fx-font-size: 1em;
-     -fx-fill: derive(-fx-text-base-color, 25%); /* Slightly lighter grey for desc */
-     -fx-line-spacing: 4px;
 }
 
 .preview-unit-box {
-    -fx-padding: 12px 0;
-    -fx-border-color: transparent transparent -fx-border-color-light transparent;
-    -fx-border-width: 1px;
-}
-.preview-unit-box:last-child { /* Remove border from last unit */
-    -fx-border-width: 0;
 }
 
+.preview-unit-box:last-child {
+}
 
 .preview-unit-header {
-     -fx-font-size: 1.2em;
-     -fx-font-weight: 600;
-     -fx-fill: -fx-text-base-color;
-     -fx-text-fill: -fx-text-base-color;
-     -fx-padding: 0 0 5px 0;
+    -fx-font-size: 1.3em;
+    -fx-font-weight: bold;
 }
 
 .preview-unit-desc {
-     -fx-font-size: 0.95em;
-     -fx-fill: derive(-fx-text-base-color, 30%);
-     -fx-line-spacing: 3px;
 }
 
 .preview-exercises-container {
-    -fx-padding: 10px 0 0 15px; /* Indent exercises */
 }
 
 .preview-exercises-title {
-     -fx-font-weight: 600;
-     -fx-font-size: 1em;
-     -fx-fill: derive(-fx-text-base-color, 15%);
-     -fx-text-fill: derive(-fx-text-base-color, 15%);
-     -fx-padding: 0 0 6px 0;
+    -fx-font-weight: bold;
 }
 
 .preview-exercise-box {
-    -fx-padding: 5px 0;
 }
 
 .preview-exercise-name {
-    -fx-font-weight: 600;
-    -fx-font-size: 1em;
-    -fx-fill: -fx-text-base-color;
-    -fx-text-fill: -fx-text-base-color;
+    -fx-font-weight: bold;
 }
 
 .preview-exercise-desc {
-     -fx-font-size: 0.95em;
-     -fx-fill: derive(-fx-text-base-color, 35%);
-     -fx-padding: 2px 0 0 0;
 }
 
 .preview-exercise-details {
-     -fx-font-size: 0.9em;
-     -fx-fill: derive(-fx-text-base-color, 50%); /* Lightest grey for meta details */
-     -fx-padding: 3px 0 0 0;
+    -fx-font-style: italic;
+    -fx-text-fill: grey;
 }

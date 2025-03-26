@@ -84,7 +84,8 @@ public class TrainingPlanEditorController {
     private CheckBox exerciseBallBucketCheckBox;
 
     // Management Area
-    @FXML private Button exportPdfButton;
+    @FXML
+    private Button exportPdfButton;
 
     // Preview Pane
     @FXML
@@ -385,17 +386,25 @@ public class TrainingPlanEditorController {
 
     private VBox createUnitPreviewNode(TrainingUnitViewModel unitVm) {
         VBox unitBox = new VBox(5.0);
+        unitBox.getStyleClass().add("preview-unit-box");
+
         Label unitHeader = new Label(unitVm.nameProperty().get() + " - " + unitVm.weekdayProperty().get());
+        unitHeader.getStyleClass().add("preview-unit-header");
+
         Text unitDesc = new Text(unitVm.descriptionProperty().get());
-        unitDesc.getStyleClass().add(("preview-unit-desc"));
+        unitDesc.getStyleClass().add("preview-unit-desc");
         unitDesc.setWrappingWidth(380);
 
         unitBox.getChildren().addAll(unitHeader, unitDesc);
 
-        if (!unitVm.exercisesProperty().isEmpty()) {
+        if (unitVm.exercisesProperty() != null && !unitVm.exercisesProperty().isEmpty()) {
             VBox exercisesContainer = new VBox(8.0);
             exercisesContainer.setPadding(new Insets(10, 0, 0, 15));
+            exercisesContainer.getStyleClass().add("preview-exercises-container");
+
             Label exercisesTitle = new Label("Exercises:");
+            exercisesTitle.getStyleClass().add("preview-exercises-title");
+
             exercisesContainer.getChildren().add(exercisesTitle);
 
             for (ExerciseViewModel exVm : unitVm.exercisesProperty()) {
@@ -408,19 +417,27 @@ public class TrainingPlanEditorController {
 
     private VBox createExercisePreviewNode(ExerciseViewModel exVm) {
         VBox exerciseBox = new VBox(2.0);
+        exerciseBox.getStyleClass().add("preview-exercise-box");
+
         Label exName = new Label(exVm.nameProperty().get());
+        exName.getStyleClass().add("preview-exercise-name");
+
         Text exDesc = new Text(exVm.descriptionProperty().get());
-        exDesc.getStyleClass().add(("preview-exercise-desc"));
+        exDesc.getStyleClass().add("preview-exercise-desc");
+
         Label exDetails = new Label(String.format("Duration: %s | Sets: %d | Ball Bucket: %s",
-                exVm.durationProperty().get(), exVm.setsProperty().get(), exVm.ballBucketProperty().get() ? "Yes" : "No"));
+                exVm.durationProperty().get(),
+                exVm.setsProperty().get(),
+                exVm.ballBucketProperty().get() ? "Yes" : "No"));
+        exDetails.getStyleClass().add("preview-exercise-details");
 
         exerciseBox.getChildren().addAll(exName, exDesc, exDetails);
         return exerciseBox;
     }
 
     /**
-     * Call this method when the view associated with this controller is being closed
-     * or disposed of to prevent memory leaks by removing all listeners.
+     * Call this method when the view associated with this controller is being closed or disposed of to prevent memory
+     * leaks by removing all listeners.
      */
     public void cleanupListeners() {
         System.out.println("Controller: Cleaning up preview listeners...");
@@ -482,8 +499,8 @@ public class TrainingPlanEditorController {
     // --- Helper methods for Managing Deep Preview Listeners ---
 
     /**
-     * Adds a standard ChangeListener to an ObservableValue that triggers updatePreview.
-     * Stores the listener in a map for later removal. Avoids adding duplicate listeners.
+     * Adds a standard ChangeListener to an ObservableValue that triggers updatePreview. Stores the listener in a map
+     * for later removal. Avoids adding duplicate listeners.
      */
     private <T> void addPreviewChangeListener(ObservableValue<T> property) {
         if (property != null && !previewChangeListeners.containsKey(property)) {
@@ -508,9 +525,8 @@ public class TrainingPlanEditorController {
     }
 
     /**
-     * Adds a ListChangeListener to an ObservableList that triggers updatePreview
-     * and recursively manages listeners for added/removed items.
-     * Stores the listener in a map for later removal. Avoids adding duplicate listeners.
+     * Adds a ListChangeListener to an ObservableList that triggers updatePreview and recursively manages listeners for
+     * added/removed items. Stores the listener in a map for later removal. Avoids adding duplicate listeners.
      */
     private <T> void addPreviewListChangeListener(ObservableList<T> list) {
         if (list != null && !previewListChangeListeners.containsKey(list)) {
@@ -552,8 +568,8 @@ public class TrainingPlanEditorController {
     }
 
     /**
-     * Removes the preview ListChangeListener previously added to an ObservableList.
-     * Also recursively removes listeners from items *currently* in the list.
+     * Removes the preview ListChangeListener previously added to an ObservableList. Also recursively removes listeners
+     * from items *currently* in the list.
      */
     private <T> void removePreviewListChangeListener(ObservableList<T> list) {
         if (list != null && previewListChangeListeners.containsKey(list)) {
