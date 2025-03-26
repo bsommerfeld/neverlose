@@ -162,8 +162,11 @@ public class TrainingPlanEditorController {
 
         selectedExercisePane.setDisable(true); // Initial state
 
+        previewVBox.getStyleClass().add("preview-container");
         previewPlanNameLabel.textProperty().bind(viewModel.planNameProperty());
+        previewPlanNameLabel.getStyleClass().add("preview-title");
         previewPlanDescriptionText.textProperty().bind(viewModel.planDescriptionProperty());
+        previewPlanDescriptionText.getStyleClass().add("preview-desc");
 
         addPreviewChangeListener(viewModel.planNameProperty());
         addPreviewChangeListener(viewModel.planDescriptionProperty());

@@ -223,10 +223,17 @@
 }
 
 /* --- 10. Preview Pane Specific Styles --- */
-.preview-title {
+.preview-container {
 }
 
-.preview-text {
+.preview-title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+}
+
+.preview-desc {
+    -fx-font-size: 1.1em;
+    -fx-text-fill: grey;
 }
 
 .preview-unit-box {
