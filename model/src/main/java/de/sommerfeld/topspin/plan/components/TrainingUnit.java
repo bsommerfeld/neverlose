@@ -1,16 +1,6 @@
 package de.sommerfeld.topspin.plan.components;
 
-public class TrainingUnit {
+import de.sommerfeld.topspin.plan.components.collection.TrainingExercises;
 
-    private final String name;
-    private final String description;
-    private final Weekday weekday;
-    private final TrainingExercises trainingExercises;
-
-    public TrainingUnit(String name, String description, Weekday weekday, TrainingExercises trainingExercises) {
-        this.name = name;
-        this.description = description;
-        this.weekday = weekday;
-        this.trainingExercises = trainingExercises;
-    }
+public record TrainingUnit(String name, String description, Weekday weekday, TrainingExercises trainingExercises) {
 }
