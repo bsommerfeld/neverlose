@@ -385,11 +385,9 @@ public class TrainingPlanEditorController {
 
     private VBox createUnitPreviewNode(TrainingUnitViewModel unitVm) {
         VBox unitBox = new VBox(5.0);
-        unitBox.setStyle("-fx-border-color: lightgrey; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;");
-
         Label unitHeader = new Label(unitVm.nameProperty().get() + " - " + unitVm.weekdayProperty().get());
-        unitHeader.setStyle("-fx-font-size: 1.3em; -fx-font-weight: bold;");
         Text unitDesc = new Text(unitVm.descriptionProperty().get());
+        unitDesc.getStyleClass().add(("preview-unit-desc"));
         unitDesc.setWrappingWidth(380);
 
         unitBox.getChildren().addAll(unitHeader, unitDesc);
@@ -398,7 +396,6 @@ public class TrainingPlanEditorController {
             VBox exercisesContainer = new VBox(8.0);
             exercisesContainer.setPadding(new Insets(10, 0, 0, 15));
             Label exercisesTitle = new Label("Exercises:");
-            exercisesTitle.setStyle("-fx-font-weight: bold;");
             exercisesContainer.getChildren().add(exercisesTitle);
 
             for (ExerciseViewModel exVm : unitVm.exercisesProperty()) {
@@ -412,11 +409,10 @@ public class TrainingPlanEditorController {
     private VBox createExercisePreviewNode(ExerciseViewModel exVm) {
         VBox exerciseBox = new VBox(2.0);
         Label exName = new Label(exVm.nameProperty().get());
-        exName.setStyle("-fx-font-weight: bold;");
         Text exDesc = new Text(exVm.descriptionProperty().get());
+        exDesc.getStyleClass().add(("preview-exercise-desc"));
         Label exDetails = new Label(String.format("Duration: %s | Sets: %d | Ball Bucket: %s",
                 exVm.durationProperty().get(), exVm.setsProperty().get(), exVm.ballBucketProperty().get() ? "Yes" : "No"));
-        exDetails.setStyle("-fx-font-style: italic; -fx-text-fill: grey;");
 
         exerciseBox.getChildren().addAll(exName, exDesc, exDetails);
         return exerciseBox;

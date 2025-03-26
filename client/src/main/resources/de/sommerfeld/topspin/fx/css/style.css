@@ -1,0 +1,395 @@
+/* style.css - Slick & Cozy Theme for Topspin Training Planner */
+
+/* --- Base Styles --- */
+.root {
+    -fx-font-size: 10pt;
+    -fx-font-family: "System", Helvetica, Arial, sans-serif;
+
+    /* Cozy Palette: Off-white base, muted terracotta accent, dark grey text */
+    -fx-base: #F5F5F0; /* Slightly warm off-white/light beige */
+    -fx-background: -fx-base;
+    -fx-control-inner-background: #FFFFFF; /* Clean white for inputs/lists */
+
+    -fx-accent: #D87C4D; /* Muted terracotta/burnt orange - warm, mature accent */
+    -fx-default-button: -fx-accent; /* Make default/primary buttons use accent */
+
+    -fx-focus-color: -fx-accent;
+    -fx-faint-focus-color: derive(-fx-accent, 80%); /* Very light focus ring */
+
+    -fx-text-base-color: #383838; /* Dark charcoal grey text for readability */
+
+    /* Define colors for reuse */
+    -color-border-light: #DCDCDC; /* Light border color */
+    -color-border-medium: #C8C8C8;
+    -color-background-hover: #EAEAEA; /* Subtle hover background */
+    -color-add: #4CAF50; /* Standard green for add */
+    -color-add-light: #E8F5E9;
+    -color-remove: #E57373; /* Softer red for remove */
+    -color-remove-light: #FFEBEE;
+}
+
+/* --- Layout Panes --- */
+.editor-pane {
+    -fx-padding: 20px;
+    -fx-background-color: -fx-base; /* Ensure consistent background */
+}
+
+.preview-pane {
+    -fx-padding: 20px;
+    /* Slightly darker background for subtle separation */
+    -fx-background-color: derive(-fx-base, -2%);
+}
+
+.form-grid {
+    /* Align labels better with input centers */
+    -fx-padding: 5px 0;
+}
+
+/* --- Typography --- */
+.section-title {
+    -fx-font-size: 1.4em;
+    -fx-font-weight: 600; /* Slightly bolder */
+    -fx-text-fill: derive(-fx-text-base-color, -10%); /* Darker headings */
+    -fx-padding: 10px 0 8px 0;
+    -fx-border-color: transparent transparent -color-border-light transparent; /* Subtle underline */
+    -fx-border-width: 1px;
+    -fx-margin: 0 0 5px 0; /* Space below border */
+}
+
+.sub-section-title {
+    -fx-font-size: 1.1em;
+    -fx-font-weight: 600;
+    -fx-text-fill: derive(-fx-text-base-color, 10%);
+    -fx-padding: 5px 0 5px 0;
+}
+
+.form-label {
+    -fx-font-size: 0.95em; /* Slightly smaller labels */
+    -fx-padding: 8px 0 0 0; /* Adjust vertical alignment */
+    -fx-text-fill: derive(-fx-text-base-color, 30%); /* Lighter label text */
+}
+
+/* --- Controls --- */
+.text-input { /* TextField and TextArea */
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+    -fx-border-color: -color-border-light;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-font-size: 1em;
+    -fx-padding: 7px 10px; /* Slightly more padding */
+    -fx-prompt-text-fill: derive(-fx-text-base-color, 60%); /* Lighter prompt text */
+    -fx-highlight-fill: derive(-fx-accent, 60%); /* Use accent for text selection */
+}
+
+.text-input:focused {
+    -fx-border-color: -fx-accent; /* Accent border on focus */
+    -fx-background-color: -fx-control-inner-background;
+    /* Subtle inner shadow on focus */
+    -fx-effect: innershadow(gaussian, derive(-fx-accent, 70%), 5, 0.1, 0, 0);
+}
+
+.text-area .content {
+     -fx-background-color: -fx-control-inner-background;
+     -fx-padding: 7px 10px;
+}
+.text-area { /* Prevent border doubling with scrollpane */
+     -fx-background-insets: 0;
+     -fx-padding: 0;
+}
+.text-area .scroll-pane { /* Ensure border matches input */
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.text-area .scroll-pane .content{
+    -fx-background-color: -fx-control-inner-background;
+    -fx-padding: 7px 10px;
+    -fx-background-insets: 0;
+}
+
+
+/* General Button Style - Flat & Clean */
+.button {
+    -fx-background-color: #EFEFEF; /* Light neutral grey */
+    -fx-text-fill: derive(-fx-text-base-color, 10%);
+    -fx-background-radius: 4px;
+    -fx-padding: 7px 16px;
+    -fx-font-size: 0.95em;
+    -fx-font-weight: 500; /* Medium weight */
+    -fx-border-width: 1px;
+    -fx-border-color: -color-border-medium; /* Subtle border */
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #E0E0E0; /* Slightly darker hover */
+    -fx-border-color: derive(-color-border-medium, -10%);
+}
+
+.button:pressed {
+    -fx-background-color: #D8D8D8;
+    -fx-border-color: derive(-color-border-medium, -20%);
+}
+
+/* Specific Button Styles */
+.add-button {
+    -fx-background-color: -color-add-light;
+    -fx-text-fill: derive(-color-add, -10%);
+    -fx-border-color: derive(-color-add, 50%);
+    -fx-font-weight: 600;
+}
+.add-button:hover { -fx-background-color: derive(-color-add-light, -5%); }
+.add-button:pressed { -fx-background-color: derive(-color-add-light, -10%); }
+
+.remove-button {
+    -fx-background-color: -color-remove-light;
+    -fx-text-fill: derive(-color-remove, -10%);
+    -fx-border-color: derive(-color-remove, 50%);
+    -fx-font-weight: 600;
+}
+.remove-button:hover { -fx-background-color: derive(-color-remove-light, -5%); }
+.remove-button:pressed { -fx-background-color: derive(-color-remove-light, -10%); }
+
+/* Primary action button */
+.export-button {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: white;
+    -fx-border-color: transparent; /* No border for primary */
+    -fx-font-weight: 600;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1); /* Subtle shadow */
+}
+.export-button:hover { -fx-background-color: derive(-fx-accent, -8%); }
+.export-button:pressed {
+    -fx-background-color: derive(-fx-accent, -15%);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 3, 0, 0, 1);
+}
+
+
+.list-view {
+    -fx-border-color: -color-border-light;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-color: -fx-control-inner-background;
+    -fx-padding: 1px; /* Prevent cells touching border */
+}
+
+.list-cell {
+    -fx-padding: 8px 12px; /* Comfortable cell padding */
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-background-radius: 3px; /* Round cells slightly */
+    -fx-border-width: 0; /* No border between cells */
+     -fx-cell-size: 36px; /* Define cell height */
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: -color-background-hover;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: -fx-accent;
+    -fx-text-fill: white;
+}
+/* Blend selection color when list doesn't have focus */
+.list-view:focused .list-cell:filled:selected {
+     -fx-background-color: -fx-accent;
+}
+.list-cell:filled:selected {
+     -fx-background-color: derive(-fx-accent, 40%); /* Lighter selection if not focused */
+     -fx-text-fill: derive(-fx-text-base-color,-10%);
+}
+
+
+.titled-pane {
+    -fx-text-fill: -fx-text-base-color; /* Text color for title */
+}
+.titled-pane > .title {
+    -fx-background-color: derive(-fx-base, -5%); /* Slightly darker title bar */
+    -fx-border-color: -color-border-light;
+    -fx-border-width: 1px 0 1px 0; /* Top and bottom border */
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 0; /* Sharp edges for title bar */
+}
+.titled-pane:focused > .title{
+     -fx-border-color: -fx-focus-color; /* Indicate focus on pane */
+}
+.titled-pane > .title > .text {
+     -fx-font-weight: 600;
+     -fx-font-size: 1.05em;
+     -fx-fill: derive(-fx-text-base-color, -5%); /* Use fill for text in title */
+}
+.titled-pane > *.content {
+     -fx-border-color: -color-border-light;
+     -fx-border-width: 0 1px 1px 1px; /* Border around content matching title */
+     -fx-padding: 18px;
+     -fx-background-color: -fx-base; /* Match base background */
+}
+.titled-pane > .title > .arrow-button .arrow {
+    -fx-background-color: -fx-text-base-color;
+}
+
+
+.choice-box {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-mark-color: #555555; /* Arrow color */
+    -fx-background-radius: 4px;
+    -fx-border-color: -color-border-light;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 6px 8px 6px 12px; /* Adjusted padding */
+}
+.choice-box:hover {
+    -fx-border-color: -color-border-medium;
+}
+.choice-box:focused {
+    -fx-border-color: -fx-accent;
+}
+.choice-box .label {
+    -fx-text-fill: -fx-text-base-color;
+    -fx-padding: 0; /* Remove extra padding */
+}
+.context-menu { /* Style dropdown */
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-radius: 4px;
+    -fx-border-color: -color-border-medium;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);
+}
+.menu-item .label {
+    -fx-text-fill: -fx-text-base-color;
+}
+.menu-item:focused {
+     -fx-background-color: -color-background-hover;
+}
+.menu-item:focused .label{
+     -fx-text-fill: -fx-text-base-color;
+}
+
+
+.check-box {
+    -fx-text-fill: -fx-text-base-color;
+}
+.check-box .box {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-border-color: -color-border-light;
+    -fx-border-radius: 3px;
+    -fx-padding: 3px; /* Size of the box */
+}
+.check-box:hover .box {
+    -fx-border-color: -color-border-medium;
+}
+.check-box:selected .mark {
+    -fx-background-color: -fx-accent; /* Check mark color */
+}
+.check-box:focused .box {
+     -fx-border-color: -fx-accent;
+}
+
+.separator .line {
+    -fx-border-color: -color-border-light; /* Match light border color */
+    -fx-border-width: 1px;
+}
+
+/* --- Preview Pane Specific Styles --- */
+.preview-title {
+    -fx-font-size: 1.8em;
+    -fx-font-weight: 600;
+    -fx-fill: derive(-fx-text-base-color, -20%); /* Use fill/text-fill */
+    -fx-text-fill: derive(-fx-text-base-color, -20%);
+    -fx-padding: 0 0 5px 0;
+}
+
+.preview-text {
+     -fx-font-size: 1em;
+     -fx-fill: derive(-fx-text-base-color, 20%);
+     -fx-line-spacing: 4px;
+}
+
+.preview-unit-box {
+    -fx-padding: 15px 0; /* More space between units */
+    -fx-border-color: transparent transparent -color-border-light transparent;
+    -fx-border-width: 1px;
+}
+
+.preview-unit-header {
+     -fx-font-size: 1.3em;
+     -fx-font-weight: 600;
+     -fx-fill: derive(-fx-text-base-color, -10%);
+     -fx-text-fill: derive(-fx-text-base-color, -10%);
+     -fx-padding: 0 0 5px 0;
+}
+
+.preview-unit-desc { /* Style for the unit description Text node */
+     -fx-font-size: 0.95em;
+     -fx-fill: derive(-fx-text-base-color, 30%);
+     -fx-line-spacing: 3px;
+}
+
+
+.preview-exercises-container {
+    -fx-padding: 12px 0 0 20px; /* Indent exercises more */
+}
+
+.preview-exercises-title {
+     -fx-font-weight: 600;
+     -fx-font-size: 1em;
+     -fx-fill: derive(-fx-text-base-color, 10%);
+     -fx-text-fill: derive(-fx-text-base-color, 10%);
+     -fx-padding: 0 0 8px 0;
+}
+
+.preview-exercise-box {
+    -fx-padding: 6px 0;
+}
+
+.preview-exercise-name {
+    -fx-font-weight: 600;
+    -fx-font-size: 1em;
+    -fx-fill: derive(-fx-text-base-color, 5%);
+    -fx-text-fill: derive(-fx-text-base-color, 5%);
+}
+
+.preview-exercise-desc {
+     -fx-font-size: 0.95em;
+     -fx-fill: derive(-fx-text-base-color, 40%);
+     -fx-padding: 2px 0 0 0;
+}
+
+.preview-exercise-details {
+     -fx-font-size: 0.9em;
+     -fx-fill: derive(-fx-text-base-color, 50%); /* Lighter details text */
+     -fx-padding: 3px 0 0 0;
+}
+
+/* Improve ScrollPane styles */
+.scroll-pane {
+    -fx-background-color: transparent; /* Let container VBox set background */
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: derive(-color-border-medium, -20%);
+    -fx-background-insets: 2;
+    -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: derive(-color-border-medium, -40%);
+}
+.scroll-bar .increment-button ,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0em;
+    -fx-padding: 0 0 10 0;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
