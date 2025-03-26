@@ -1,7 +1,11 @@
 package de.sommerfeld.topspin;
 
+import de.sommerfeld.topspin.bootstrap.Bootstrap;
+import de.sommerfeld.topspin.bootstrap.TopspinBootstrap;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        Bootstrap topspinBootstrap = new TopspinBootstrap();
+        topspinBootstrap.start();
     }
 }
