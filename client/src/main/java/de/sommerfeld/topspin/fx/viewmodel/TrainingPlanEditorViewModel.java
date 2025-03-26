@@ -1,9 +1,9 @@
 package de.sommerfeld.topspin.fx.viewmodel;
 
+import de.sommerfeld.topspin.export.PdfExportService;
 import de.sommerfeld.topspin.plan.*;
 import de.sommerfeld.topspin.plan.components.TrainingUnit;
 import de.sommerfeld.topspin.plan.components.Weekday;
-import de.sommerfeld.topspin.plan.pdf.PdfExportService;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -113,7 +113,7 @@ public class TrainingPlanEditorViewModel {
         System.out.println("ViewModel: Requesting PDF export via PdfExportService for plan '"
                 + currentPlan.getName() + "' to " + targetFile.getName());
 
-        pdfExportService.exportPlan(currentPlan, targetFile);
+        pdfExportService.export(currentPlan, targetFile);
 
         System.out.println("ViewModel: PDF export request completed by service.");
     }
