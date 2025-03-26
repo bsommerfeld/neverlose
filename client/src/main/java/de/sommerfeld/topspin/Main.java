@@ -1,4 +1,4 @@
-package de.sommerfeld;
+package de.sommerfeld.topspin;
 
 public class Main {
     public static void main(String[] args) {
