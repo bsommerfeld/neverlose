@@ -1,273 +1,344 @@
 /* --- 1. Root Variables & Base --- */
 .root {
+    /* No base styling defined here */
+    -fx-font-size: 13px; /* Define base font size for em scaling */
 }
 
 /* --- 2. Layout Panes --- */
 .editor-pane,
 .preview-pane {
+    -fx-padding: 15px;
 }
 
 .editor-pane-scroll,
 .preview-pane-scroll {
+    -fx-padding: 0;
 }
 
 .editor-pane-scroll .viewport,
 .preview-pane-scroll .viewport {
+    -fx-padding: 0;
 }
 
 .scroll-pane:focused {
+    /* No spacing/text changes on focus */
 }
 
 .split-pane *.split-pane-divider {
+    -fx-padding: 1px 1px;
 }
 
+/* --- 3. Text & Labels --- */
 .form-grid {
+    -fx-hgap: 10px;
+    -fx-vgap: 8px;
+    -fx-padding: 10px 0;
 }
 
 .label {
+    -fx-padding: 0;
+    -fx-text-fill: #333333; /* Default dark text color */
+    -fx-font-size: 1em; /* Base size */
 }
 
 .section-title {
+    -fx-padding: 15px 0 5px 0;
+    -fx-font-weight: bold;
+    -fx-font-size: 1.4em; /* Larger size for section titles */
+    -fx-text-fill: #111111; /* Slightly darker/more prominent */
 }
 
 .sub-section-title {
+    -fx-padding: 10px 0 3px 0;
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em; /* Slightly larger */
+    -fx-text-fill: #222222;
 }
 
 .form-label {
+    -fx-padding: 3px 5px 3px 0;
+    /* Inherits base label text color and size */
 }
 
 /* --- 4. Input Controls --- */
-.text-input {
-}
-
-.text-input:focused {
-}
-
+.text-input,
 .text-area {
+    -fx-padding: 6px 8px;
+    -fx-text-fill: #333333; /* Text color inside inputs */
+    -fx-font-size: 1em;
+    -fx-prompt-text-fill: grey; /* Color for prompt text */
+}
+
+.text-input:focused,
+.text-area:focused {
+    /* No text/spacing changes on focus */
 }
 
 .text-area .content {
+    -fx-padding: 5px;
+     /* Inherits -fx-text-fill from .text-area */
 }
 
 .text-area .scroll-pane {
+    -fx-padding: 0;
 }
 
 .text-area .scroll-pane .content {
+    /* Styles handled by .text-area and .text-area .content */
  }
 
 
 /* --- 5. Buttons --- */
 .button {
-
+    -fx-padding: 6px 12px;
+    -fx-text-fill: #333333; /* Default button text color */
+    -fx-font-size: 1em;
 }
 
-.button:hover {
-
-}
-
-.button:pressed {
-
-}
-
+.button:hover,
+.button:pressed,
 .button:focused {
-
+    /* No text/spacing changes */
 }
 
 .export-button {
+    -fx-padding: 7px 15px;
+    -fx-text-fill: white; /* Assume dark background later, make text white */
+    -fx-font-weight: bold;
 }
 
-.export-button:hover {
-}
-
-.export-button:pressed {
-}
-
+.export-button:hover,
+.export-button:pressed,
 .export-button:focused {
+    /* No text/spacing changes */
 }
 
 .add-button, .remove-button {
+    /* Inherit padding and text fill from .button */
 }
 
-.add-button {
-}
-
+.add-button,
 .remove-button {
+    /* No specific text/spacing */
 }
 
-.add-button:hover, .remove-button:hover {
-}
-
-.add-button:pressed, .remove-button:pressed {
-}
-
+.add-button:hover, .remove-button:hover,
+.add-button:pressed, .remove-button:pressed,
 .add-button:focused, .remove-button:focused {
-
+    /* No text/spacing changes */
 }
 
+/* --- 6. ListViews, ChoiceBoxes, Menus, CheckBoxes --- */
 .list-view {
-
+    -fx-padding: 1px;
 }
 
 .list-cell {
-
+    -fx-padding: 5px 8px;
+    -fx-text-fill: #333333; /* Default text color in cells */
 }
 
 .list-cell:filled:hover {
-
+     /* No text color change on hover by default */
 }
 
-.list-cell:filled:selected:focused, .list-cell:filled:selected {
-
-}
-
+.list-cell:filled:selected:focused,
 .list-cell:filled:selected {
-
+    -fx-text-fill: white; /* Text color when cell is selected */
 }
 
 .list-view:focused .list-cell:filled:selected {
-
+    /* Inherits selected text color */
 }
 
 .choice-box {
-
+    -fx-padding: 5px 8px 5px 8px;
+    -fx-font-size: 1em;
 }
 
-.choice-box:hover {
-}
-
+.choice-box:hover,
 .choice-box:focused {
+    /* No text/spacing changes */
 }
 
 .choice-box .label {
+    -fx-padding: 0;
+    -fx-text-fill: #333333; /* Text color inside choice box */
 }
 
 .context-menu {
+    -fx-padding: 4px;
 }
 
 .menu-item {
+    -fx-padding: 6px 12px;
 }
 
 .menu-item .label {
+    -fx-padding: 0;
+    -fx-text-fill: #333333; /* Default menu item text */
 }
 
 .menu-item:focused {
+    -fx-text-fill: white; /* Text color on focused menu item (assuming dark background later) */
 }
 
-.menu-item:focused .label {
-}
+/* .menu-item:focused .label {} Redundant if -fx-text-fill is set on .menu-item:focused */
+
 
 .check-box {
-
+    -fx-padding: 5px 0;
+    -fx-label-padding: 0 0 0 6px;
+    -fx-text-fill: #333333; /* Label text color */
 }
 
 .check-box .box {
-
+    -fx-padding: 1px;
+    -fx-pref-width: 16px;
+    -fx-pref-height: 16px;
 }
 
 .check-box:hover .box {
+    /* No text changes */
 }
 
 .check-box:selected .mark {
+    -fx-mark-color: #333333; /* Color of the check mark */
 }
 
 .check-box:focused .box {
+    /* No text changes */
 }
 
-/* --- 7. Containers --- */
-.details-pane {
-
+/* --- 7. Containers (TitledPane) --- */
+.details-pane { /* TitledPane */
+    -fx-padding: 0;
 }
 
 .details-pane > .title {
-
+    -fx-padding: 8px 12px;
 }
 
 .details-pane:focused {
+    /* No text changes */
 }
 
 .details-pane > .title > .text {
-
+    -fx-padding: 0;
+    -fx-font-weight: bold; /* Make title text bold */
+    -fx-font-size: 1.05em; /* Slightly larger title text */
+    -fx-text-fill: #333333; /* Title text color */
 }
 
 .details-pane > *.content {
+    -fx-padding: 15px;
+}
+
+.details-pane > .title > .arrow-button {
+    -fx-padding: 0 4px 0 0;
 }
 
 .details-pane > .title > .arrow-button .arrow {
+    -fx-padding: 4px;
+    /* Arrow color would be set via -fx-background-color, omitting here */
 }
 
 
 /* --- 8. Separators --- */
-.separator .line {
+.separator {
+    -fx-padding: 8px 0;
+}
 
+.separator .line {
+    /* No text */
 }
 
 /* --- 9. ScrollBars --- */
 
 .scroll-bar:vertical, .scroll-bar:horizontal {
-
+    -fx-padding: 2px;
 }
-.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
-
-}
-.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover {
-
-}
+.scroll-bar:vertical { -fx-pref-width: 10; }
+.scroll-bar:horizontal { -fx-pref-height: 10; }
 
 .scroll-bar .increment-button, .scroll-bar .decrement-button {
+    -fx-padding: 0; -fx-pref-width: 0; -fx-pref-height: 0; -fx-min-width: 0; -fx-min-height: 0;
 }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-padding: 0; }
+/* Thumb, Track have no text */
 
-.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow {
-}
-
-.scroll-bar .track {
-}
 
 /* --- 10. Preview Pane Specific Styles --- */
 .preview-container {
+     -fx-padding: 10px;
+     -fx-spacing: 10px;
 }
 
 .preview-title {
-    -fx-font-size: 1.5em;
-    -fx-font-weight: bold;
+    -fx-padding: 0 0 10px 0;
+    -fx-font-size: 1.5em; /* Larger font size */
+    -fx-font-weight: bold; /* Bold */
+    -fx-text-fill: #111111; /* Dark text */
 }
 
-.preview-desc {
-    -fx-font-size: 1.1em;
-    -fx-text-fill: grey;
+.preview-desc, /* Style based on CSS list */
+.preview-text { /* Style based on FXML */
+    -fx-padding: 0 0 15px 0;
+    -fx-font-size: 1.0em; /* Normal size */
+    -fx-text-fill: #666666; /* Gray color for description text */
+    -fx-line-spacing: 3px; /* Add some line spacing for readability */
 }
 
 .preview-unit-box {
+    -fx-padding: 15px;
+    -fx-spacing: 8px;
 }
 
 .preview-unit-box:last-child {
+    /* No specific text/spacing changes */
 }
 
 .preview-unit-header {
-    -fx-font-size: 1.3em;
-    -fx-font-weight: bold;
+    -fx-padding: 0 0 5px 0;
+    -fx-font-size: 1.3em; /* Larger */
+    -fx-font-weight: bold; /* Bold */
+    -fx-text-fill: #222222; /* Dark text */
 }
 
 .preview-unit-desc {
+    -fx-padding: 0 0 10px 0;
+    -fx-text-fill: #666666; /* Gray color */
 }
 
 .preview-exercises-container {
+    -fx-padding: 10px 0 0 15px;
+    -fx-spacing: 10px;
 }
 
 .preview-exercises-title {
-    -fx-font-weight: bold;
+    -fx-padding: 0 0 8px 0;
+    -fx-font-weight: bold; /* Bold */
+    -fx-text-fill: #333333; /* Dark text */
 }
 
 .preview-exercise-box {
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
 }
 
 .preview-exercise-name {
-    -fx-font-weight: bold;
+    -fx-padding: 0 0 2px 0;
+    -fx-font-weight: bold; /* Bold */
+    -fx-text-fill: #333333; /* Dark text */
 }
 
 .preview-exercise-desc {
+    -fx-padding: 0 0 4px 0;
+    -fx-text-fill: #666666; /* Gray color */
 }
 
 .preview-exercise-details {
-    -fx-font-style: italic;
-    -fx-text-fill: grey;
+    -fx-padding: 4px 0 0 0;
+    -fx-font-style: italic; /* Italic for tertiary details */
+    -fx-text-fill: #888888; /* Lighter gray color */
 }
