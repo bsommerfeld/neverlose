@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.CheckBox?>
+<SplitPane dividerPositions="0.5" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="de.sommerfeld.topspin.fx.controller.TrainingPlanEditorController">
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox spacing="10.0" style="-fx-padding: 15;">
+
+            <Label text="Training Plan Details" style="-fx-font-weight: bold; -fx-font-size: 1.2em;"/>
+            <GridPane hgap="10.0" vgap="5.0">
+                <Label text="Plan Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="planNameTextField" promptText="Enter training plan name" GridPane.rowIndex="0"
+                           GridPane.columnIndex="1" HBox.hgrow="ALWAYS"/>
+
+                <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextArea fx:id="planDescriptionTextArea" promptText="Enter plan description" prefRowCount="3"
+                          wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1" HBox.hgrow="ALWAYS"/>
+            </GridPane>
+
+            <Separator/>
+
+            <Label text="Training Units" style="-fx-font-weight: bold; -fx-font-size: 1.2em;"/>
+            <HBox spacing="10">
+                <ListView fx:id="trainingUnitsListView" prefHeight="150.0" HBox.hgrow="ALWAYS"/>
+                <VBox spacing="5">
+                    <Button fx:id="addUnitButton" text="+ Add Unit" maxWidth="Infinity"/>
+                    <Button fx:id="removeUnitButton" text="- Remove Unit" maxWidth="Infinity" disable="true"/>
+                </VBox>
+            </HBox>
+
+            <TitledPane fx:id="selectedUnitPane" text="Selected Unit Details" collapsible="false" disable="true">
+                <VBox spacing="10" style="-fx-padding: 10;">
+                    <GridPane hgap="10" vgap="5">
+                        <Label text="Unit Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="unitNameTextField" promptText="Selected unit name" GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1" HBox.hgrow="ALWAYS"/>
+
+                        <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextArea fx:id="unitDescriptionTextArea" promptText="Selected unit description"
+                                  prefRowCount="2" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                  HBox.hgrow="ALWAYS"/>
+
+                        <Label text="Weekday:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <ChoiceBox fx:id="unitWeekdayChoiceBox" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    </GridPane>
+
+                    <Separator/>
+                    <Label text="Exercises in this Unit"/>
+                    <HBox spacing="10">
+                        <ListView fx:id="trainingExercisesListView" prefHeight="150.0" HBox.hgrow="ALWAYS"/>
+                        <VBox spacing="5">
+                            <Button fx:id="addExerciseButton" text="+ Add Exercise" maxWidth="Infinity"/>
+                            <Button fx:id="removeExerciseButton" text="- Remove Exercise" maxWidth="Infinity"
+                                    disable="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <TitledPane fx:id="selectedExercisePane" text="Selected Exercise Details" collapsible="false"
+                                disable="true">
+                        <GridPane hgap="10" vgap="5" style="-fx-padding: 10;">
+                            <Label text="Exercise Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                            <TextField fx:id="exerciseNameTextField" promptText="Selected exercise name"
+                                       GridPane.rowIndex="0" GridPane.columnIndex="1" HBox.hgrow="ALWAYS"/>
+
+                            <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                            <TextArea fx:id="exerciseDescriptionTextArea" promptText="Selected exercise description"
+                                      prefRowCount="2" wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                      HBox.hgrow="ALWAYS"/>
+
+                            <Label text="Duration:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                            <TextField fx:id="exerciseDurationTextField" promptText="e.g., 10 min" GridPane.rowIndex="2"
+                                       GridPane.columnIndex="1"/>
+
+                            <Label text="Sets:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                            <TextField fx:id="exerciseSetsTextField" promptText="e.g., 3" GridPane.rowIndex="3"
+                                       GridPane.columnIndex="1"/>
+                            <Label text="Ball Bucket?" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                            <CheckBox fx:id="exerciseBallBucketCheckBox" GridPane.rowIndex="4"
+                                      GridPane.columnIndex="1"/>
+
+                        </GridPane>
+                    </TitledPane>
+                </VBox>
+            </TitledPane>
+
+            <Separator/>
+
+            <HBox alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                <Button fx:id="exportPdfButton" text="Export as PDF..." mnemonicParsing="false"/>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+
+    <ScrollPane fitToWidth="true">
+        <VBox fx:id="previewVBox" spacing="15.0"
+              style="-fx-padding: 20; -fx-background-color: -fx-control-inner-background;">
+            <Label fx:id="previewPlanNameLabel" text="[Plan Name Preview]"
+                   style="-fx-font-size: 1.8em; -fx-font-weight: bold;"/>
+            <Text fx:id="previewPlanDescriptionText"
+                  text="[Plan description preview text will appear here]"
+                  wrappingWidth="400"/>
+
+            <Separator/>
+
+            <VBox fx:id="previewUnitsContainer" spacing="20">
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</SplitPane>
