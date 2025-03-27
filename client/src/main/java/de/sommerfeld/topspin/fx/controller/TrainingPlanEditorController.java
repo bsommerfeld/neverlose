@@ -476,7 +476,7 @@ public class TrainingPlanEditorController {
         addPreviewChangeListener(exVm.ballBucketProperty());
     }
 
-ref    /**
+    /**
      * Adds a standard ChangeListener to an ObservableValue that triggers updatePreview. Stores the listener in a map
      * for later removal. Avoids adding duplicate listeners.
      */
