@@ -343,6 +343,20 @@
     -fx-text-fill: #888888; /* Lighter gray color */
 }
 
+/* --- Top and Bottom bar --- */
+
+.search-field {
+    -fx-background-radius: 15px;
+    /* -fx-background-color: white; */
+    /* -fx-border-color: #CCCCCC; */
+    /* -fx-border-radius: 15px; */
+    -fx-font-size: 1em;
+}
+
+.top-search-bar {
+    -fx-background-color: #E0E0E0;
+}
+
 .footer-bar {
     -fx-background-color: #E0E0E0;
     -fx-border-style: solid hidden hidden hidden;
