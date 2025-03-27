@@ -103,7 +103,7 @@
     -fx-border-color: #007AFF; /* Accent blue focus border */
     -fx-border-width: 1.5px;
     -fx-padding: 7.25px 9.25px; /* Adjust padding for border */
-    -fx-effect: dropshadow( MBOX, rgba(0,122,255,0.5), 3, 0, 0, 0 );
+    -fx-effect: dropshadow( gaussian, rgba(0,122,255,0.5), 3, 0, 0, 0 );
 }
 
 .text-area {
@@ -320,7 +320,7 @@
 
 .check-box:focused .box {
     -fx-border-color: #007AFF;
-    -fx-effect: dropshadow( MBOX, rgba(0,122,255,0.5), 2, 0, 0, 0 );
+    -fx-effect: dropshadow( gaussian, rgba(0,122,255,0.5), 2, 0, 0, 0 );
 }
 
 /* --- 7. Containers (TitledPane) --- */
