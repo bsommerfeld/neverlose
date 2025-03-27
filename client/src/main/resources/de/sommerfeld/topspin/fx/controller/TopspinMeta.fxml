@@ -9,6 +9,10 @@
         <HBox fx:id="topBarPlaceholder" prefHeight="40.0" HBox.hgrow="ALWAYS"/>
     </top>
 
+    <center>
+        <AnchorPane fx:id="centerContentPlaceholder" BorderPane.alignment="CENTER"/>
+    </center>
+
     <bottom>
         <HBox fx:id="bottomBarPlaceholder" HBox.hgrow="ALWAYS"/>
     </bottom>
