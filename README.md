@@ -50,6 +50,9 @@ The initial focus is on creating a solid **Training Plan Maker** with the follow
         * `Ball Bucket` required? (`true`/`false`)
 * **PDF Export:**
     * Generate a clean, printable PDF of your complete training plan to take to the table or share easily.
+    * 
+### Current State:
+<img src="https://github.com/user-attachments/assets/86f74fc6-5632-454c-9544-ed28e4adb22a" alt="Current state of the Topspin UI" width="500">
 
 ---
 
