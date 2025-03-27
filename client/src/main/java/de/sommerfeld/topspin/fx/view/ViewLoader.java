@@ -1,17 +1,27 @@
 package de.sommerfeld.topspin.fx.view;
 
-import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
+import java.io.IOException;
+import java.net.URL;
+import java.text.MessageFormat;
+
 public class ViewLoader {
+
+    private final Injector injector;
+
+    @Inject
+    public ViewLoader(Injector injector) {
+        this.injector = injector;
+    }
 
     /**
      * Loads a view and its controller from an FXML file associated with the specified class.
      *
-     * @param <T> the type of the controller
+     * @param <T>   the type of the controller
      * @param clazz the class of the controller for the corresponding FXML file
      * @return a {@link ViewWrapper} containing the loaded view and its controller
      * @throws IllegalStateException if the FXML file could not be found or loaded
@@ -27,7 +37,7 @@ public class ViewLoader {
         }
 
         fxmlLoader.setLocation(fxmlLocation);
-        // fxmlLoader.setControllerFactory(param -> Main.getInjector().getInstance(param));
+        fxmlLoader.setControllerFactory(param -> injector.getInstance(param));
 
         try {
             Parent parent = fxmlLoader.load();

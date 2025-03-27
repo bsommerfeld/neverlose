@@ -1,5 +1,7 @@
 package de.sommerfeld.topspin.fx.view;
 
+import com.google.inject.Inject;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -8,7 +10,13 @@ public class ViewProvider {
 
     private final Map<Class<?>, ViewWrapper<?>> viewMap = new ConcurrentHashMap<>();
     private final Map<Class<?>, Consumer<?>> listenerMap = new ConcurrentHashMap<>();
-    private final ViewLoader viewLoader = new ViewLoader();
+
+    private final ViewLoader viewLoader;
+
+    @Inject
+    public ViewProvider(ViewLoader viewLoader) {
+        this.viewLoader = viewLoader;
+    }
 
     /**
      * Registers a listener that responds to changes in the specified view class.
@@ -25,9 +33,7 @@ public class ViewProvider {
      * Requests a view of the specified class, loading it if necessary.
      *
      * @param viewClass the class of the view to request
-     *
      * @return a {@link ViewWrapper} containing the requested view and its controller
-     *
      * @throws IllegalStateException if the view could not be instantiated
      */
     @SuppressWarnings("unchecked")

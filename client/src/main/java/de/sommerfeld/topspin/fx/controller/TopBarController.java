@@ -1,7 +1,9 @@
 package de.sommerfeld.topspin.fx.controller;
 
+import com.google.inject.Inject;
 import de.sommerfeld.topspin.fx.components.SearchComponent;
 import de.sommerfeld.topspin.fx.view.View;
+import de.sommerfeld.topspin.fx.view.ViewProvider;
 import de.sommerfeld.topspin.plan.TrainingPlan;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,9 +14,16 @@ import javafx.scene.layout.HBox;
 @View
 public class TopBarController {
 
+    private final ViewProvider viewProvider;
+
     @FXML
     private HBox searchComponentPlaceholder;
     private SearchComponent<TrainingPlan> searchComponent;
+
+    @Inject
+    public TopBarController(ViewProvider viewProvider) {
+        this.viewProvider = viewProvider;
+    }
 
     @FXML
     private void initialize() {
@@ -51,7 +60,7 @@ public class TopBarController {
 
     private void loadPlanIntoView(TrainingPlan plan) {
         System.out.println("Loading plan:" + plan.getName() + " into view...");
-        // TODO: mainBorderPane.setCenter(...);
+        viewProvider.triggerViewChange(TrainingPlanEditorController.class, planEditor -> planEditor.setPlan(plan));
     }
 
     private ObservableList<TrainingPlan> loadTrainingPlans() {

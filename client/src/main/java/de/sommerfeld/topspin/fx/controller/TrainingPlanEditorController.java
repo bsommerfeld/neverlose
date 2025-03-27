@@ -4,6 +4,7 @@ import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.viewmodel.ExerciseViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingPlanEditorViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingUnitViewModel;
+import de.sommerfeld.topspin.plan.TrainingPlan;
 import de.sommerfeld.topspin.plan.components.Weekday;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @View
 public class TrainingPlanEditorController {
@@ -94,74 +96,193 @@ public class TrainingPlanEditorController {
 
     @FXML
     public void initialize() {
-        this.viewModel = new TrainingPlanEditorViewModel();
+        this.viewModel = new TrainingPlanEditorViewModel(); // Create initial ViewModel
+        bindUI(); // Setup initial bindings and listeners
+    }
 
+    /**
+     * Loads a new TrainingPlan into the editor.
+     * It achieves this by unbinding the UI from the current ViewModel state,
+     * telling the ViewModel to load the new plan's data, and then re-binding
+     * the UI to the updated ViewModel state.
+     *
+     * @param plan The new TrainingPlan to load.
+     */
+    public void setPlan(TrainingPlan plan) {
+        System.out.println("Controller: Starting setPlan...");
+        unbindUI(); // Detach UI from current ViewModel state
+
+        Objects.requireNonNull(viewModel, "ViewModel must not be null when setting a plan.");
+        viewModel.setTrainingPlan(plan); // Load new data into the existing ViewModel instance
+
+        bindUI(); // Re-attach UI to the updated ViewModel state
+        System.out.println("Controller: setPlan complete.");
+    }
+
+    /**
+     * Removes all bindings and listeners connecting UI elements to the ViewModel.
+     * Resets UI elements to a default state.
+     */
+    private void unbindUI() {
+        System.out.println("Controller: Unbinding UI...");
+
+        // 1. Plan Details
+        planNameTextField.textProperty().unbindBidirectional(viewModel.planNameProperty());
+        planDescriptionTextArea.textProperty().unbindBidirectional(viewModel.planDescriptionProperty());
+
+        // 2. Units List
+        // Important: Unbind the ViewModel's selected property *before* clearing items/selection listener
+        viewModel.selectedTrainingUnitProperty().unbind(); // Unbind from ListView selection
+        trainingUnitsListView.setItems(null); // Remove items from ListView
+
+        // 3. Unit Buttons/Pane Disable States
+        removeUnitButton.disableProperty().unbind();
+        selectedUnitPane.disableProperty().unbind();
+
+        // 4. Selection Listener (Main units list)
+        viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
+
+        // 5. Detail Panes (Unit & Exercise) - Manually trigger cleanup logic
+        cleanupDetailPanes();
+
+        // 6. Preview - Use existing cleanup method
+        cleanupListeners(); // Clears preview bindings/listeners
+
+        // 7. Action Handlers (Optional but good practice if actions depend heavily on VM state)
+        // setOnAction(null) or keep them if they correctly reference the 'viewModel' field
+
+        // 8. Reset UI Element States (Optional but recommended for clean slate)
+        planNameTextField.clear();
+        planDescriptionTextArea.clear();
+        removeUnitButton.setDisable(true);
+        selectedUnitPane.setDisable(true);
+        selectedExercisePane.setDisable(true);
+        previewPlanNameLabel.textProperty().unbind();
+        previewPlanDescriptionText.textProperty().unbind();
+        previewPlanNameLabel.setText("Plan Name"); // Default text
+        previewPlanDescriptionText.setText("");
+        previewUnitsContainer.getChildren().clear();
+
+        System.out.println("Controller: UI Unbound.");
+    }
+
+    /**
+     * Establishes all bindings and listeners connecting UI elements to the current ViewModel state.
+     * Should mirror the setup logic from the original initialize method.
+     */
+    private void bindUI() {
+        System.out.println("Controller: Binding UI...");
+        Objects.requireNonNull(viewModel, "ViewModel cannot be null during bindUI");
+
+        // 1. Plan Details
         planNameTextField.textProperty().bindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().bindBidirectional(viewModel.planDescriptionProperty());
 
+        // 2. Units List
         trainingUnitsListView.setItems(viewModel.trainingUnitsProperty());
+        // Bind ViewModel property TO ListView selection (View drives selection)
         viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty());
 
-        addUnitButton.setOnAction(event -> viewModel.addTrainingUnit());
-        removeUnitButton.setOnAction(event -> viewModel.removeSelectedTrainingUnit());
+        // 3. Unit Buttons/Pane Disable States
         removeUnitButton.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
-
         selectedUnitPane.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
 
-        unitWeekdayChoiceBox.setItems(FXCollections.observableArrayList(Weekday.values()));
-
+        // 4. Selection Listener (Main units list)
         viewModel.selectedTrainingUnitProperty().addListener(selectedUnitListener);
-        // Trigger manually once for initial state
+
+        // 5. Detail Panes (Unit & Exercise) - Trigger update based on current selection
+        // This call will handle binding the detail controls if something is selected.
         onSelectedUnitChanged(null, viewModel.selectedTrainingUnitProperty().get());
 
-        viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty());
+        // 6. Static Items
+        unitWeekdayChoiceBox.setItems(FXCollections.observableArrayList(Weekday.values()));
 
+        // 7. Action Handlers
         addUnitButton.setOnAction(event -> {
             viewModel.addTrainingUnit();
-
-            int lastIndex = viewModel.trainingUnitsProperty().size() - 1;
-            if (lastIndex >= 0) {
-                trainingUnitsListView.getSelectionModel().select(lastIndex);
-                trainingUnitsListView.scrollTo(lastIndex);
-            }
+            selectAndScrollToLast(trainingUnitsListView, viewModel.trainingUnitsProperty());
         });
         removeUnitButton.setOnAction(event -> viewModel.removeSelectedTrainingUnit());
-        removeUnitButton.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
-
-        addExerciseButton.setOnAction(event -> viewModel.addExerciseToSelectedUnit());
-        removeExerciseButton.setOnAction(event -> viewModel.removeSelectedExerciseFromSelectedUnit());
-        removeExerciseButton.setDisable(true); // Initial state
-
         addExerciseButton.setOnAction(event -> {
             viewModel.addExerciseToSelectedUnit();
-
             TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
             if (currentUnit != null) {
-                int lastIndex = currentUnit.exercisesProperty().size() - 1;
-                if (lastIndex >= 0) {
-                    trainingExercisesListView.getSelectionModel().select(lastIndex);
-                    trainingExercisesListView.scrollTo(lastIndex);
-                }
+                selectAndScrollToLast(trainingExercisesListView, currentUnit.exercisesProperty());
             }
         });
         removeExerciseButton.setOnAction(event -> viewModel.removeSelectedExerciseFromSelectedUnit());
+        exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
-        selectedExercisePane.setDisable(true); // Initial state
-
+        // 8. Preview Setup
         previewVBox.getStyleClass().add("preview-container");
         previewPlanNameLabel.textProperty().bind(viewModel.planNameProperty());
         previewPlanNameLabel.getStyleClass().add("preview-title");
         previewPlanDescriptionText.textProperty().bind(viewModel.planDescriptionProperty());
         previewPlanDescriptionText.getStyleClass().add("preview-desc");
+        setupPreviewListeners(); // Add listeners for preview updates
 
+        // 9. Initial Preview Render
+        updatePreview();
+
+        System.out.println("Controller: UI Bound.");
+    }
+
+    /**
+     * Helper method to select and scroll to the last item in a ListView
+     */
+    private <T> void selectAndScrollToLast(ListView<T> listView, ObservableList<T> items) {
+        if (listView != null && items != null) {
+            int lastIndex = items.size() - 1;
+            if (lastIndex >= 0) {
+                listView.getSelectionModel().select(lastIndex);
+                listView.scrollTo(lastIndex);
+            }
+        }
+    }
+
+    /**
+     * Manually cleans up bindings and state related to the Unit and Exercise detail panes.
+     * Called during unbindUI.
+     */
+    private void cleanupDetailPanes() {
+        // Get current selections *before* detaching listeners
+        TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
+        ExerciseViewModel currentExercise = null;
+        if (currentUnit != null) {
+            // Temporarily unbind the exercise selection from list view to read it
+            currentUnit.selectedExerciseProperty().unbind();
+            currentExercise = currentUnit.selectedExerciseProperty().get();
+            // Remove exercise listener if it was attached
+            currentUnit.selectedExerciseProperty().removeListener(selectedExerciseListener);
+        }
+
+        // Simulate unbinding exercise details
+        onSelectedExerciseChanged(currentExercise, null);
+
+        // Simulate unbinding unit details
+        onSelectedUnitChanged(currentUnit, null);
+
+        // Ensure detail list views are cleared
+        trainingExercisesListView.setItems(null);
+
+        // Explicitly disable exercise remove button (its binding is complex)
+        removeExerciseButton.disableProperty().unbind(); // Make sure it's unbound
+        removeExerciseButton.setDisable(true);
+        selectedExercisePane.setDisable(true);
+    }
+
+    /**
+     * Sets up the listeners needed for the preview pane to update dynamically.
+     * Called during bindUI.
+     */
+    private void setupPreviewListeners() {
+        // Add top-level listeners
         addPreviewChangeListener(viewModel.planNameProperty());
         addPreviewChangeListener(viewModel.planDescriptionProperty());
+        addPreviewListChangeListener(viewModel.trainingUnitsProperty()); // This recursively adds listeners for items
 
-        addPreviewListChangeListener(viewModel.trainingUnitsProperty());
-
-        exportPdfButton.setOnAction(event -> handleExportPdfAction());
-
-        updatePreview(); // Initial preview generation
+        // Note: Listeners for items *within* the lists (units, exercises) are handled
+        // recursively by addPreviewListChangeListener / removePreviewListChangeListener
     }
 
     private void handleExportPdfAction() {

@@ -1,5 +1,6 @@
 package de.sommerfeld.topspin.fx.controller;
 
+import com.google.inject.Inject;
 import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import javafx.fxml.FXML;
@@ -24,8 +25,9 @@ public class TopspinMetaController {
     @FXML
     private HBox bottomBarPlaceholder;
 
-    public TopspinMetaController() {
-        this.viewProvider = new ViewProvider(); // TODO: Injection
+    @Inject
+    public TopspinMetaController(ViewProvider viewProvider) {
+        this.viewProvider = viewProvider;
     }
 
     private static void setAnchor(Parent center) {
@@ -37,9 +39,13 @@ public class TopspinMetaController {
 
     @FXML
     private void initialize() {
+        registerViewListener();
         loadTopBar();
-        loadCenter();
         loadBottomBar();
+    }
+
+    private void registerViewListener() {
+        viewProvider.registerViewChangeListener(TrainingPlanEditorController.class, p -> loadCenter());
     }
 
     private void loadTopBar() {
