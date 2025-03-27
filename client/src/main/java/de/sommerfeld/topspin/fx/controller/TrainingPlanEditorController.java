@@ -1,5 +1,7 @@
 package de.sommerfeld.topspin.fx.controller;
 
+import de.sommerfeld.topspin.fx.components.SearchComponent;
+import de.sommerfeld.topspin.plan.TrainingPlan;
 import de.sommerfeld.topspin.plan.components.Weekday;
 import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.viewmodel.ExerciseViewModel;
@@ -13,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.beans.value.ChangeListener;
@@ -36,6 +39,11 @@ public class TrainingPlanEditorController {
     private TrainingPlanEditorViewModel viewModel;
 
     // --- FXML Injected Fields ---
+
+    // Top Bar -- TODO: move this to a separate controller
+    @FXML
+    private HBox searchComponentPlaceholder;
+    private SearchComponent<TrainingPlan> searchComponent;
 
     // Plan Details
     @FXML
@@ -109,6 +117,7 @@ public class TrainingPlanEditorController {
     @FXML
     public void initialize() {
         this.viewModel = new TrainingPlanEditorViewModel();
+        initializeSearchComponent();
 
         planNameTextField.textProperty().bindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().bindBidirectional(viewModel.planDescriptionProperty());
@@ -176,6 +185,47 @@ public class TrainingPlanEditorController {
         exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
         updatePreview(); // Initial preview generation
+    }
+
+    private void initializeSearchComponent() {
+        ObservableList<TrainingPlan> trainingPlans = loadTrainingPlans();
+
+        searchComponent = new SearchComponent<>(trainingPlans, TrainingPlan::getName);
+        searchComponent.setPromptText("Search for training plans...");
+
+        setTextFieldWidths(searchComponent, 450.0, 400.0);
+
+        searchComponent.getTextField().setMaxWidth(450.0);
+        searchComponent.getTextField().setPrefWidth(400.0);
+
+        searchComponentPlaceholder.getChildren().add(searchComponent);
+
+        searchComponent.selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                System.out.println("Choosing over component: " + newVal.getName());
+                loadPlanIntoView(newVal);
+            }
+        });
+    }
+
+    private ObservableList<TrainingPlan> loadTrainingPlans() {
+        return FXCollections.observableArrayList(
+                new TrainingPlan("Plan A", "..."),
+                new TrainingPlan("Plan B", "..."),
+                new TrainingPlan("Sehr langer Plan C", "...")
+        );
+    }
+
+    private void setTextFieldWidths(SearchComponent<?> component, double maxWidth, double prefWidth) {
+        if (!component.getChildren().isEmpty() && component.getChildren().get(0) instanceof TextField) {
+            ((TextField) component.getChildren().get(0)).setMaxWidth(maxWidth);
+            ((TextField) component.getChildren().get(0)).setPrefWidth(prefWidth);
+        }
+    }
+
+    private void loadPlanIntoView(TrainingPlan plan) {
+        System.out.println("Loading plan:" + plan.getName() + " into view...");
+        // TODO: mainBorderPane.setCenter(...);
     }
 
     // --- Action Handler for Export Button ---

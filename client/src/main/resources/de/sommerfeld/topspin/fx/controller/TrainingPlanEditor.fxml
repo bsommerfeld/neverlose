@@ -33,9 +33,7 @@
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <TextField fx:id="searchTextField"
-                       promptText="Search training plans..."
-                       maxWidth="450.0"  prefWidth="400.0" styleClass="search-field"/>
+            <HBox fx:id="searchComponentPlaceholder" alignment="CENTER"/>
             <Region HBox.hgrow="ALWAYS"/>
         </HBox>
     </top>
