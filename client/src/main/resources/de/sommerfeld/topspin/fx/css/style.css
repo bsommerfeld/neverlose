@@ -153,8 +153,6 @@
 
 .button:focused {
     -fx-border-color: #007AFF; /* Accent blue focus border */
-    -fx-border-width: 1.5px;
-    -fx-padding: 6.25px 14.25px; /* Adjust padding for border */
 }
 
 .button:disabled {
@@ -183,8 +181,6 @@
 .export-button:focused,
 .footer-button-green:focused {
     -fx-border-color: #003A75; /* Dark blue focus border */
-    -fx-border-width: 1.5px;
-    -fx-padding: 5.25px 13.25px;
 }
 
 /* Add/Remove Button */
