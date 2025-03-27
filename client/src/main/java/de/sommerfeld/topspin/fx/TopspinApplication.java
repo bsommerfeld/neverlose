@@ -1,5 +1,6 @@
 package de.sommerfeld.topspin.fx;
 
+import de.sommerfeld.topspin.fx.controller.TopspinMetaController;
 import de.sommerfeld.topspin.fx.controller.TrainingPlanEditorController;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import javafx.application.Application;
@@ -12,7 +13,7 @@ public class TopspinApplication extends Application {
     @Override
     public void start(Stage stage) {
         ViewProvider viewProvider = new ViewProvider();
-        Parent root = viewProvider.requestView(TrainingPlanEditorController.class).parent();
+        Parent root = viewProvider.requestView(TopspinMetaController.class).parent();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Topspin");

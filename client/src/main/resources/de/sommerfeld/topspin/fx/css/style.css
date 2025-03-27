@@ -562,6 +562,7 @@
     -fx-border-width: 1px;
     -fx-border-color: #DCDCDC; /* Lighter border */
     -fx-padding: 8px 15px; /* More padding */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0, 0, -1);
 }
 
 .footer-label {
