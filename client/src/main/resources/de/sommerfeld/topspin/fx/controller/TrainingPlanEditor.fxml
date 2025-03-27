@@ -186,7 +186,6 @@
 
             <Button fx:id="createNewPlanButton" text="+ New Plan" styleClass="footer-button-green" mnemonicParsing="false"/>
             <Button fx:id="showAllPlansButton" text="Show all Plans" styleClass="footer-button-gray" mnemonicParsing="false"/>
-
         </HBox>
     </bottom>
 
