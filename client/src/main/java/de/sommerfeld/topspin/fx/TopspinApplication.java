@@ -15,6 +15,7 @@ public class TopspinApplication extends Application {
         Parent root = viewProvider.requestView(TrainingPlanEditorController.class).parent();
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setTitle("Topspin");
         stage.setOnCloseRequest(closeRequest -> {
             TrainingPlanEditorController controller = viewProvider.requestView(TrainingPlanEditorController.class).controller();
             controller.cleanupListeners();
