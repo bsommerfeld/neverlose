@@ -6,14 +6,16 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Bounds;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PopupControl;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -22,12 +24,16 @@ import java.util.function.Predicate;
  * dynamic and interactive searching.
  * <p>
  * The component enables text-based queries over a predefined list of items and displays relevant suggestions in a
- * special popup menu. Suggestions update dynamically as the user types and can be selected for further interaction.
+ * special popup menu. Suggestions update dynamically as the user types, starting with a full sorted list when the
+ * field gains focus, and can be selected for further interaction. The suggestion popup remains visible even if no items
+ * match the search term.
  * <p>
  * Features include: - Filtering suggestions using a debounce mechanism to minimize unnecessary updates on rapid input
- * changes. - Dynamically displaying a filtered list of suggestions in a popup. - Selection handling for user-chosen
- * items from the suggestion list. - Configurable through the provided string converter for representing items as
- * string.
+ * changes. - Dynamically displaying a filtered list of suggestions in a popup. - Showing all available items, sorted
+ * alphabetically, when the search field gains focus and is empty. - Keeping the suggestion popup open even when no
+ * results are found (showing a placeholder message). - Selection handling for user-chosen items from the suggestion
+ * list. - Keyboard navigation support (Down, Enter, Escape). - Configurable through the provided string converter for
+ * representing items as string.
  * <p>
  * Generic Type {@code <T>} corresponds to the type of objects in the source list and suggestion list.
  *
@@ -42,20 +48,21 @@ public class SearchComponent<T> extends VBox {
     private final ListView<T> suggestionsListView;
     private final PopupControl suggestionsPopup;
     private final FilteredList<T> filteredList;
+    private final SortedList<T> sortedList;
 
     private final PauseTransition debounceTimer;
     private final long debounceDelayMillis = 300;
 
     private final ReadOnlyObjectWrapper<T> selectedItem = new ReadOnlyObjectWrapper<>();
 
+    private final Predicate<T> showAllPredicate = p -> true;
+
     /**
      * Constructs a SearchComponent that provides a searchable text field with dynamic suggestions. This component
      * allows for filtering a list of items based on user input and displaying matching results.
      *
      * @param initialItems    the initial list of items to be displayed and filtered by the search component
-     * @param stringConverter a function that converts each item in the list to a string for comparison with the search
-     *                        term
-     *
+     * @param stringConverter a function that converts each item in the list to a string for display and comparison
      * @throws IllegalArgumentException if either initialItems or stringConverter is null
      */
     public SearchComponent(ObservableList<T> initialItems, Function<T, String> stringConverter) {
@@ -71,18 +78,23 @@ public class SearchComponent<T> extends VBox {
 
         suggestionsListView = new ListView<>();
         suggestionsListView.getStyleClass().add("search-results-list");
-        suggestionsListView.setPrefHeight(150);
+        suggestionsListView.setPrefHeight(150); // Consider making this flexible
+
+        Label placeholderLabel = new Label("Keine Ergebnisse gefunden");
+        placeholderLabel.setStyle("-fx-padding: 10px; -fx-text-fill: grey;");
+        suggestionsListView.setPlaceholder(placeholderLabel);
 
         suggestionsPopup = new PopupControl();
         suggestionsPopup.setAutoHide(true);
-        suggestionsPopup.setSkin(new javafx.scene.control.Skin<PopupControl>() {
+        suggestionsPopup.setConsumeAutoHidingEvents(false);
+        suggestionsPopup.setSkin(new Skin<PopupControl>() {
             @Override
             public PopupControl getSkinnable() {
                 return suggestionsPopup;
             }
 
             @Override
-            public javafx.scene.Node getNode() {
+            public Node getNode() {
                 return suggestionsListView;
             }
 
@@ -92,13 +104,15 @@ public class SearchComponent<T> extends VBox {
         });
         suggestionsPopup.getStyleClass().add("search-results-popup");
 
-        filteredList = new FilteredList<>(allItems, p -> false); // Initial empty
+        sortedList = new SortedList<>(allItems, Comparator.comparing(stringConverter, String.CASE_INSENSITIVE_ORDER));
+        filteredList = new FilteredList<>(sortedList, p -> false);
         suggestionsListView.setItems(filteredList);
 
         debounceTimer = new PauseTransition(Duration.millis(debounceDelayMillis));
         debounceTimer.setOnFinished(event -> performSearch());
 
         suggestionsListView.prefWidthProperty().bind(textField.widthProperty());
+
         this.getChildren().add(textField);
         this.getStyleClass().add("search-component");
 
@@ -106,53 +120,70 @@ public class SearchComponent<T> extends VBox {
     }
 
     private void setupEventHandlers() {
-        // 1. Textänderung im TextField -> Debounce starten
         textField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null || newVal.isEmpty()) {
-                hideSuggestions();
                 debounceTimer.stop();
+                filteredList.setPredicate(showAllPredicate);
+                showSuggestions();
             } else {
-                // Timer (neu) starten bei jeder Eingabe
                 debounceTimer.playFromStart();
             }
         });
 
-        // 2. Fokusverlust des TextFields -> Popup schließen (wenn Fokus nicht ins Popup geht)
-        textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal && !suggestionsPopup.isFocused()) {
-                hideSuggestions();
+        textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (isNowFocused) {
+                String currentText = textField.getText();
+                if (currentText == null || currentText.isEmpty()) {
+                    filteredList.setPredicate(showAllPredicate);
+                    showSuggestions();
+                } else {
+                    performSearch();
+                }
+            } else {
+                if (!suggestionsPopup.isFocused()) {
+                    hideSuggestions();
+                }
             }
         });
 
-        // 3. Auswahl in der ListView -> Element setzen, Popup schließen
+        suggestionsPopup.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) {
+                if (!textField.isFocused()) {
+                    hideSuggestions();
+                }
+            }
+        });
+
+
         suggestionsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 selectedItem.set(newVal);
-                // Optional: Text im TextField aktualisieren
-                // Platform.runLater verhindert Probleme beim direkten Setzen während des Listener-Aufrufs
                 Platform.runLater(() -> {
                     textField.setText(stringConverter.apply(newVal));
-                    textField.positionCaret(textField.getText().length()); // Cursor ans Ende
+                    textField.positionCaret(textField.getText().length());
+                    hideSuggestions();
                 });
-                hideSuggestions(); // Wichtig: Popup nach Auswahl schließen
-                textField.requestFocus(); // Fokus zurück zum Textfeld
             }
         });
 
-        // Optional: Enter im TextField könnte ersten Eintrag auswählen
         textField.setOnAction(event -> {
-            if (!suggestionsListView.getItems().isEmpty()) {
-                suggestionsListView.getSelectionModel().selectFirst();
-                // Der Listener oben kümmert sich um den Rest
+            if (suggestionsPopup.isShowing() && !suggestionsListView.getItems().isEmpty()) {
+                T firstItem = suggestionsListView.getItems().get(0);
+                selectedItem.set(firstItem);
+                Platform.runLater(() -> {
+                    textField.setText(stringConverter.apply(firstItem));
+                    textField.positionCaret(textField.getText().length());
+                    hideSuggestions();
+                });
+                event.consume();
             }
         });
 
-        // Optional: Pfeiltasten zur Navigation in die Liste (vereinfacht)
         textField.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case DOWN:
                     if (suggestionsPopup.isShowing() && !suggestionsListView.getItems().isEmpty()) {
-                        Platform.runLater(() -> { // Fokus muss im Popup landen können
+                        Platform.runLater(() -> {
                             suggestionsListView.requestFocus();
                             suggestionsListView.getSelectionModel().selectFirst();
                         });
@@ -160,17 +191,44 @@ public class SearchComponent<T> extends VBox {
                     }
                     break;
                 case UP:
-                    // Ähnlich für Pfeil nach oben, wenn nötig
+                    if (suggestionsPopup.isShowing()) {
+                        event.consume();
+                    }
+                    break;
+                case ESCAPE:
+                    if (suggestionsPopup.isShowing()) {
+                        hideSuggestions();
+                        event.consume();
+                    }
                     break;
                 default:
                     break;
             }
         });
 
-        // Fokusverlust des Popups selbst
-        suggestionsPopup.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-            if (!isNowFocused && !textField.isFocused()) {
-                hideSuggestions();
+        suggestionsListView.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    T selected = suggestionsListView.getSelectionModel().getSelectedItem();
+                    if (selected != null) {
+                        // Selection model listener handles the update and hide
+                    }
+                    event.consume();
+                    break;
+                case ESCAPE:
+                    hideSuggestions();
+                    textField.requestFocus();
+                    event.consume();
+                    break;
+                case UP:
+                    if (suggestionsListView.getSelectionModel().getSelectedIndex() == 0) {
+                        // Optionally move focus back to text field
+                        // Platform.runLater(textField::requestFocus);
+                        // event.consume();
+                    }
+                    break;
+                default:
+                    break;
             }
         });
     }
@@ -178,54 +236,56 @@ public class SearchComponent<T> extends VBox {
     private void performSearch() {
         String searchTerm = textField.getText();
         if (searchTerm == null || searchTerm.isEmpty()) {
-            filteredList.setPredicate(p -> false); // Nichts anzeigen
-            hideSuggestions();
+            if (textField.isFocused()) {
+                filteredList.setPredicate(showAllPredicate);
+                showSuggestions();
+            }
             return;
         }
 
         String lowerCaseSearchTerm = searchTerm.toLowerCase();
 
-        // Prädikat für die FilteredList aktualisieren
         Predicate<T> predicate = item -> {
             String itemText = stringConverter.apply(item);
             return itemText != null && itemText.toLowerCase().contains(lowerCaseSearchTerm);
         };
         filteredList.setPredicate(predicate);
 
-        // Popup anzeigen oder verstecken
-        if (filteredList.isEmpty()) {
-            hideSuggestions();
-        } else {
-            // Max Höhe für ListView setzen, falls gewünscht (besser via CSS)
-            // suggestionsListView.setPrefHeight(Math.min(filteredList.size() * 28, 150)); // Beispiel: Dynamische Höhe
-            showSuggestions();
-        }
+        showSuggestions();
     }
+
 
     private void showSuggestions() {
         if (suggestionsPopup.isShowing()) {
             return;
         }
+        Window owner = getScene() != null ? getScene().getWindow() : null;
+        if (owner == null || owner.getScene() == null) {
+            return;
+        }
 
         Bounds tbScreenBounds = textField.localToScreen(textField.getBoundsInLocal());
         if (tbScreenBounds == null) {
-            System.err.println("Couldn't show Popup: Screen Bounds not available for TextField.");
+            System.err.println("Couldn't get TextField screen bounds.");
             return;
         }
 
         double popupX = tbScreenBounds.getMinX();
         double popupY = tbScreenBounds.getMaxY();
 
+        // Basic check to prevent popup going off screen bottom
+        double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+        double estimatedPopupHeight = suggestionsListView.getPrefHeight();
+        if (popupY + estimatedPopupHeight > screenHeight - 10) {
+            popupY = tbScreenBounds.getMinY() - estimatedPopupHeight;
+            // Consider more accurate height calculation if necessary
+        }
+
         suggestionsPopup.setX(popupX);
         suggestionsPopup.setY(popupY);
 
-        Window owner = textField.getScene().getWindow();
-        if (owner != null) {
-            suggestionsPopup.show(owner);
-        } else {
-            System.err.println("Couldn't show Popup: No Owner-Window found.");
-            // suggestionsPopup.show(textField.getScene().getRoot().getScene().getWindow()); // last try
-        }
+        suggestionsPopup.show(owner);
+        suggestionsListView.scrollTo(0);
     }
 
     private void hideSuggestions() {
