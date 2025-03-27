@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.*?>
+<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" spacing="10" styleClass="top-search-bar"
+      prefHeight="40.0" xmlns="http://javafx.com/javafx/17.0.12"
+      stylesheets="/de/sommerfeld/topspin/fx/css/style.css"
+      HBox.hgrow="ALWAYS"
+      fx:controller="de.sommerfeld.topspin.fx.controller.TopBarController">
+    <padding>
+        <Insets top="5" right="10" bottom="5" left="10"/>
+    </padding>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <HBox fx:id="searchComponentPlaceholder" alignment="CENTER"/>
+    <Region HBox.hgrow="ALWAYS"/>
+</HBox>
