@@ -1,401 +1,548 @@
-/* --- 1. Root Variables & Base --- */
+/* --- 1. Base --- */
 .root {
-    /* No base styling defined here */
-    -fx-font-size: 13px; /* Define base font size for em scaling */
+    -fx-font-size: 13px;
+    -fx-font-family: "System";
+    -fx-background-color: #F8F8F8; /* Slightly lighter gray background */
+    -fx-text-base-color: #222222; /* Slightly darker default text */
 }
 
 /* --- 2. Layout Panes --- */
 .editor-pane,
 .preview-pane {
-    -fx-padding: 15px;
+    -fx-padding: 20px; /* More padding */
+    -fx-background-color: white;
 }
 
 .editor-pane-scroll,
 .preview-pane-scroll {
     -fx-padding: 0;
+    -fx-background-color: transparent;
 }
 
 .editor-pane-scroll .viewport,
 .preview-pane-scroll .viewport {
     -fx-padding: 0;
+    -fx-background-color: transparent;
 }
 
 .scroll-pane:focused {
-    /* No spacing/text changes on focus */
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
 }
 
 .split-pane *.split-pane-divider {
-    -fx-padding: 1px 1px;
+    -fx-padding: 0 3px; /* Slightly wider grab area */
+    -fx-background-color: #EAEAEA; /* Lighter divider */
+    -fx-border-color: #D8D8D8;
+    -fx-border-width: 0 1px;
 }
 
 /* --- 3. Text & Labels --- */
 .form-grid {
-    -fx-hgap: 10px;
-    -fx-vgap: 8px;
-    -fx-padding: 10px 0;
+    -fx-hgap: 12px;
+    -fx-vgap: 10px;
+    -fx-padding: 15px 0;
 }
 
 .label {
     -fx-padding: 0;
-    -fx-text-fill: #333333; /* Default dark text color */
-    -fx-font-size: 1em; /* Base size */
+    -fx-text-fill: #222222;
+    -fx-font-size: 1em;
+    -fx-font-weight: normal;
 }
 
 .section-title {
-    -fx-padding: 15px 0 5px 0;
-    -fx-font-weight: bold;
-    -fx-font-size: 1.4em; /* Larger size for section titles */
-    -fx-text-fill: #111111; /* Slightly darker/more prominent */
+    -fx-padding: 20px 0 8px 0;
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-font-size: 1.5em;
+    -fx-text-fill: #111111;
+    -fx-border-color: #DDDDDD; /* Lighter underline */
+    -fx-border-width: 0 0 1px 0;
 }
 
 .sub-section-title {
-    -fx-padding: 10px 0 3px 0;
-    -fx-font-weight: bold;
-    -fx-font-size: 1.1em; /* Slightly larger */
-    -fx-text-fill: #222222;
+    -fx-padding: 15px 0 5px 0;
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-font-size: 1.2em;
+    -fx-text-fill: #1A1A1A;
 }
 
 .form-label {
-    -fx-padding: 3px 5px 3px 0;
-    /* Inherits base label text color and size */
+    -fx-padding: 5px 5px 5px 0; /* Align better with inputs */
+    -fx-text-fill: #555555;
+    -fx-font-weight: 500; /* Medium weight */
+    -fx-alignment: baseline-left;
 }
 
 /* --- 4. Input Controls --- */
-.text-input,
-.text-area {
-    -fx-padding: 6px 8px;
-    -fx-text-fill: #333333; /* Text color inside inputs */
+.text-input, /* TextField, PasswordField */
+.text-area,
+.choice-box {
+    -fx-padding: 8px 10px; /* More comfortable padding */
+    -fx-text-fill: #222222;
     -fx-font-size: 1em;
-    -fx-prompt-text-fill: grey; /* Color for prompt text */
+    -fx-prompt-text-fill: #AAAAAA; /* Lighter prompt text */
+    -fx-background-color: white;
+    -fx-border-color: #DCDCDC; /* Lighter border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-highlight-fill: #AECBFA; /* Adjusted selection color */
+    -fx-highlight-text-fill: #111111;
+}
+
+.text-input:hover,
+.text-area:hover,
+.choice-box:hover {
+    -fx-border-color: #C0C0C0; /* Slightly darker border on hover */
 }
 
 .text-input:focused,
-.text-area:focused {
-    /* No text/spacing changes on focus */
+.text-area:focused,
+.choice-box:focused {
+    -fx-border-color: #007AFF; /* Accent blue focus border */
+    -fx-border-width: 1.5px;
+    -fx-padding: 7.25px 9.25px; /* Adjust padding for border */
+    -fx-effect: dropshadow( MBOX, rgba(0,122,255,0.5), 3, 0, 0, 0 );
+}
+
+.text-area {
+    -fx-wrap-text: true;
 }
 
 .text-area .content {
     -fx-padding: 5px;
-     /* Inherits -fx-text-fill from .text-area */
+    -fx-background-color: transparent;
 }
 
-.text-area .scroll-pane {
-    -fx-padding: 0;
+.text-area .scroll-pane { -fx-background-color: transparent; }
+.text-area .scroll-pane .viewport { -fx-background-color: transparent; }
+.text-area .scroll-pane .content { -fx-background-color: transparent; }
+
+/* Disabled state for inputs */
+.text-input:disabled,
+.text-area:disabled,
+.choice-box:disabled {
+    -fx-opacity: 0.65;
+    -fx-background-color: #F5F5F5; /* Slightly gray background when disabled */
 }
-
-.text-area .scroll-pane .content {
-    /* Styles handled by .text-area and .text-area .content */
- }
-
 
 /* --- 5. Buttons --- */
 .button {
-    -fx-padding: 6px 12px;
-    -fx-text-fill: #333333; /* Default button text color */
+    -fx-padding: 7px 15px; /* Adjusted padding */
     -fx-font-size: 1em;
+    -fx-font-weight: 500; /* Medium weight */
+    -fx-text-fill: #222222;
+    -fx-background-color: #F0F0F0; /* Standard button background */
+    -fx-border-color: #D0D0D0; /* Standard border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
 }
 
-.button:hover,
-.button:pressed,
+.button:hover {
+    -fx-background-color: #E5E5E5; /* Slightly darker on hover */
+    -fx-border-color: #C0C0C0;
+}
+
+.button:pressed {
+    -fx-background-color: #DDDDDD; /* Darker when pressed */
+    -fx-border-color: #B8B8B8;
+}
+
 .button:focused {
-    /* No text/spacing changes */
+    -fx-border-color: #007AFF; /* Accent blue focus border */
+    -fx-border-width: 1.5px;
+    -fx-padding: 6.25px 14.25px; /* Adjust padding for border */
 }
 
-.export-button {
-    -fx-padding: 7px 15px;
-    -fx-text-fill: white; /* Assume dark background later, make text white */
+.button:disabled {
+    -fx-opacity: 0.65;
+}
+
+/* Primary Button Style */
+.export-button,
+.footer-button-green {
+    -fx-background-color: #007AFF; /* Accent blue background */
+    -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-border-color: transparent;
 }
 
 .export-button:hover,
+.footer-button-green:hover {
+    -fx-background-color: #005FCC; /* Darker blue */
+}
+
 .export-button:pressed,
-.export-button:focused {
-    /* No text/spacing changes */
+.footer-button-green:pressed {
+    -fx-background-color: #004FAA; /* Even darker blue */
 }
 
+.export-button:focused,
+.footer-button-green:focused {
+    -fx-border-color: #003A75; /* Dark blue focus border */
+    -fx-border-width: 1.5px;
+    -fx-padding: 5.25px 13.25px;
+}
+
+/* Add/Remove Button */
 .add-button, .remove-button {
-    /* Inherit padding and text fill from .button */
-}
-
-.add-button,
-.remove-button {
-    /* No specific text/spacing */
-}
-
-.add-button:hover, .remove-button:hover,
-.add-button:pressed, .remove-button:pressed,
-.add-button:focused, .remove-button:focused {
-    /* No text/spacing changes */
+    -fx-padding: 5px 10px; /* Slightly smaller */
 }
 
 /* --- 6. ListViews, ChoiceBoxes, Menus, CheckBoxes --- */
+
+/* ListView */
 .list-view {
-    -fx-padding: 1px;
+    -fx-padding: 0;
+    -fx-background-color: white;
+    -fx-border-color: #DCDCDC; /* Lighter border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+.list-view:focused {
+   -fx-focus-color: transparent;
+   -fx-faint-focus-color: transparent;
+   -fx-border-color: #007AFF; /* Keep focus border */
 }
 
 .list-cell {
-    -fx-padding: 5px 8px;
-    -fx-text-fill: #333333; /* Default text color in cells */
+    -fx-padding: 8px 12px; /* More padding */
+    -fx-text-fill: #222222;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-font-size: 1em;
+    -fx-background-radius: 3px; /* Rounded corners inside the list view */
 }
 
 .list-cell:filled:hover {
-     /* No text color change on hover by default */
+     -fx-background-color: #F5F5F5; /* Very light gray hover */
 }
 
-.list-cell:filled:selected:focused,
 .list-cell:filled:selected {
-    -fx-text-fill: white; /* Text color when cell is selected */
+    -fx-background-color: #007AFF; /* Accent blue selection */
+    -fx-text-fill: white;
+    -fx-font-weight: 500; /* Slightly bolder selected text */
 }
 
 .list-view:focused .list-cell:filled:selected {
-    /* Inherits selected text color */
+    -fx-background-color: #007AFF;
+    -fx-text-fill: white;
 }
 
-.choice-box {
-    -fx-padding: 5px 8px 5px 8px;
-    -fx-font-size: 1em;
-}
-
-.choice-box:hover,
-.choice-box:focused {
-    /* No text/spacing changes */
-}
-
+/* ChoiceBox (most styling inherited from .text-input) */
 .choice-box .label {
     -fx-padding: 0;
-    -fx-text-fill: #333333; /* Text color inside choice box */
+    -fx-text-fill: #222222;
+}
+.choice-box .open-button {
+    -fx-padding: 0 8px 0 0; /* More space for arrow */
+    -fx-background-color: transparent;
+}
+.choice-box .open-button .arrow {
+    -fx-background-color: #666666;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+    -fx-padding: 5px; /* Slightly larger arrow */
+    -fx-scale-shape: false;
+}
+.choice-box:hover .open-button .arrow {
+     -fx-background-color: #333333;
 }
 
+/* Context Menu */
 .context-menu {
-    -fx-padding: 4px;
+    -fx-padding: 5px; /* Padding around items */
+    -fx-background-color: white;
+    -fx-border-color: #C8C8C8; /* Slightly lighter border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2 );
 }
 
 .menu-item {
-    -fx-padding: 6px 12px;
+    -fx-padding: 8px 15px; /* More padding */
+    -fx-background-radius: 3px;
 }
 
 .menu-item .label {
     -fx-padding: 0;
-    -fx-text-fill: #333333; /* Default menu item text */
+    -fx-text-fill: #222222;
 }
 
 .menu-item:focused {
-    -fx-text-fill: white; /* Text color on focused menu item (assuming dark background later) */
+    -fx-background-color: #007AFF; /* Accent blue focus */
 }
 
-/* .menu-item:focused .label {} Redundant if -fx-text-fill is set on .menu-item:focused */
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}
 
-
+/* CheckBox */
 .check-box {
     -fx-padding: 5px 0;
-    -fx-label-padding: 0 0 0 6px;
-    -fx-text-fill: #333333; /* Label text color */
+    -fx-label-padding: 0 0 0 8px; /* More space */
+    -fx-text-fill: #222222;
+    -fx-cursor: hand;
 }
 
 .check-box .box {
     -fx-padding: 1px;
-    -fx-pref-width: 16px;
-    -fx-pref-height: 16px;
+    -fx-background-color: white;
+    -fx-border-color: #BDBDBD; /* Consistent border */
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-pref-width: 18px; /* Slightly larger */
+    -fx-pref-height: 18px;
 }
 
 .check-box:hover .box {
-    /* No text changes */
+    -fx-border-color: #999999;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #007AFF; /* Accent blue background */
+    -fx-border-color: #007AFF;
 }
 
 .check-box:selected .mark {
-    -fx-mark-color: #333333; /* Color of the check mark */
+    -fx-background-color: white;
+    /* Cleaner checkmark shape */
+    -fx-shape: "M 1.73,8.17 L 5.58,12 L 12.27,2.83 L 10.86,1.41 L 5.58,9.17 L 3.14,6.76 Z";
+    -fx-padding: 5px; /* Adjust size of mark within box */
+    -fx-scale-shape: false;
 }
 
 .check-box:focused .box {
-    /* No text changes */
+    -fx-border-color: #007AFF;
+    -fx-effect: dropshadow( MBOX, rgba(0,122,255,0.5), 2, 0, 0, 0 );
 }
 
 /* --- 7. Containers (TitledPane) --- */
 .details-pane { /* TitledPane */
     -fx-padding: 0;
+    -fx-text-fill: #222222;
+    -fx-border-color: #DCDCDC; /* Lighter border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .details-pane > .title {
-    -fx-padding: 8px 12px;
+    -fx-padding: 10px 15px; /* More padding */
+    -fx-background-color: #F5F5F5; /* Very light gray title */
+    -fx-border-color: transparent transparent #DCDCDC transparent; /* Bottom border only */
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px 4px 0 0;
+    -fx-border-radius: 4px 4px 0 0;
+}
+.details-pane:expanded > .title {
+     -fx-border-width: 0 0 1px 0;
+}
+/* Ensure collapsed title has full radius if pane has radius */
+.details-pane:collapsed > .title {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 0; /* No border when collapsed if pane has border */
 }
 
-.details-pane:focused {
-    /* No text changes */
-}
 
 .details-pane > .title > .text {
     -fx-padding: 0;
-    -fx-font-weight: bold; /* Make title text bold */
-    -fx-font-size: 1.05em; /* Slightly larger title text */
-    -fx-text-fill: #333333; /* Title text color */
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-font-size: 1.1em; /* Slightly larger */
+    -fx-text-fill: #222222;
 }
 
 .details-pane > *.content {
     -fx-padding: 15px;
+    -fx-background-color: white;
+    -fx-border-width: 0;
+    -fx-background-radius: 0 0 4px 4px;
+    -fx-border-radius: 0 0 4px 4px;
 }
 
 .details-pane > .title > .arrow-button {
-    -fx-padding: 0 4px 0 0;
+    -fx-padding: 0 8px 0 0;
 }
 
 .details-pane > .title > .arrow-button .arrow {
-    -fx-padding: 4px;
-    /* Arrow color would be set via -fx-background-color, omitting here */
+    -fx-padding: 5px;
+    -fx-background-color: #666666;
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z";
+     -fx-scale-shape: false;
 }
-
+.details-pane:collapsed > .title > .arrow-button .arrow {
+    -fx-shape: "M 0 4 L 4 0 L 8 4 Z";
+}
+.details-pane > .title:hover > .arrow-button .arrow {
+     -fx-background-color: #333333;
+}
 
 /* --- 8. Separators --- */
 .separator {
-    -fx-padding: 8px 0;
+    -fx-padding: 15px 0; /* More space */
 }
 
 .separator .line {
-    /* No text */
+    -fx-border-color: #E0E0E0; /* Lighter line */
+    -fx-border-width: 1px 0 0 0;
 }
 
 /* --- 9. ScrollBars --- */
-
 .scroll-bar:vertical, .scroll-bar:horizontal {
-    -fx-padding: 2px;
+   -fx-background-color: transparent;
+   -fx-padding: 2px;
 }
-.scroll-bar:vertical { -fx-pref-width: 10; }
-.scroll-bar:horizontal { -fx-pref-height: 10; }
-
-.scroll-bar .increment-button, .scroll-bar .decrement-button {
-    -fx-padding: 0; -fx-pref-width: 0; -fx-pref-height: 0; -fx-min-width: 0; -fx-min-height: 0;
+.scroll-bar:vertical { -fx-pref-width: 8; }
+.scroll-bar:horizontal { -fx-pref-height: 8; }
+.scroll-bar .thumb {
+    -fx-background-color: #C0C0C0;
+    -fx-background-radius: 4px;
+    -fx-background-insets: 0;
 }
-.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-padding: 0; }
-/* Thumb, Track have no text */
-
+.scroll-bar .thumb:hover { -fx-background-color: #A0A0A0; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-padding: 0; }
+.scroll-bar .increment-arrow, .scroll-bar .decrement-arrow { -fx-padding: 0; -fx-shape: ""; }
 
 /* --- 10. Preview Pane Specific Styles --- */
-.preview-container {
-     -fx-padding: 10px;
-     -fx-spacing: 10px;
-}
-
 .preview-title {
     -fx-padding: 0 0 10px 0;
-    -fx-font-size: 1.5em; /* Larger font size */
-    -fx-font-weight: bold; /* Bold */
-    -fx-text-fill: #111111; /* Dark text */
+    -fx-font-size: 1.7em; /* Slightly larger */
+    -fx-font-weight: 700; /* Bold */
+    -fx-text-fill: #111111;
 }
 
-.preview-desc, /* Style based on CSS list */
-.preview-text { /* Style based on FXML */
-    -fx-padding: 0 0 15px 0;
-    -fx-font-size: 1.0em; /* Normal size */
-    -fx-text-fill: #666666; /* Gray color for description text */
-    -fx-line-spacing: 3px; /* Add some line spacing for readability */
+.preview-desc,
+.preview-text {
+    -fx-padding: 0 0 20px 0; /* More space */
+    -fx-font-size: 1.0em;
+    -fx-text-fill: #555555;
+    -fx-line-spacing: 4px; /* More line spacing */
 }
 
 .preview-unit-box {
-    -fx-padding: 15px;
-    -fx-spacing: 8px;
-}
-
-.preview-unit-box:last-child {
-    /* No specific text/spacing changes */
+    -fx-padding: 20px; /* More padding */
+    -fx-spacing: 10px;
+    -fx-background-color: white;
+    -fx-border-color: #E0E0E0; /* Lighter border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.05), 5, 0, 0, 1 );
 }
 
 .preview-unit-header {
-    -fx-padding: 0 0 5px 0;
-    -fx-font-size: 1.3em; /* Larger */
-    -fx-font-weight: bold; /* Bold */
-    -fx-text-fill: #222222; /* Dark text */
+    -fx-padding: 0 0 8px 0;
+    -fx-font-size: 1.4em;
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-text-fill: #1A1A1A;
 }
 
 .preview-unit-desc {
-    -fx-padding: 0 0 10px 0;
-    -fx-text-fill: #666666; /* Gray color */
+    -fx-padding: 0 0 15px 0;
+    -fx-text-fill: #666666;
+    -fx-font-size: 1em;
 }
 
 .preview-exercises-container {
-    -fx-padding: 10px 0 0 15px;
-    -fx-spacing: 10px;
+    -fx-padding: 10px 0 0 20px; /* Indent */
+    -fx-spacing: 12px; /* More space */
 }
 
 .preview-exercises-title {
     -fx-padding: 0 0 8px 0;
-    -fx-font-weight: bold; /* Bold */
-    -fx-text-fill: #333333; /* Dark text */
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-text-fill: #222222;
+    -fx-font-size: 1.1em;
 }
 
 .preview-exercise-box {
-    -fx-padding: 10px;
-    -fx-spacing: 5px;
+    -fx-padding: 12px 15px; /* More padding */
+    -fx-spacing: 6px;
+    -fx-background-color: #F9F9F9; /* Consistent light bg */
+    -fx-border-color: #EDEDED; /* Very light border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .preview-exercise-name {
-    -fx-padding: 0 0 2px 0;
-    -fx-font-weight: bold; /* Bold */
-    -fx-text-fill: #333333; /* Dark text */
+    -fx-padding: 0 0 3px 0;
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-text-fill: #222222;
+    -fx-font-size: 1.05em;
 }
 
 .preview-exercise-desc {
-    -fx-padding: 0 0 4px 0;
-    -fx-text-fill: #666666; /* Gray color */
+    -fx-padding: 0 0 6px 0;
+    -fx-text-fill: #666666;
+    -fx-font-size: 0.95em;
 }
 
 .preview-exercise-details {
-    -fx-padding: 4px 0 0 0;
-    -fx-font-style: italic; /* Italic for tertiary details */
-    -fx-text-fill: #888888; /* Lighter gray color */
+    -fx-padding: 6px 0 0 0;
+    -fx-font-style: normal; /* Less italic maybe */
+    -fx-text-fill: #777777;
+    -fx-font-size: 0.9em;
 }
 
 /* --- Top and Bottom bar --- */
 
-/* Search Component */
-
 .top-search-bar {
-    -fx-background-color: #F0F0F0;
-    -fx-border-color: #D0D0D0 transparent transparent transparent;
-    -fx-border-width: 1px;
-}
-
-.search-component {
-    /* -fx-padding: 0; */
+    -fx-background-color: white; /* White top bar */
+    -fx-border-color: #DCDCDC; /* Lighter border */
+    -fx-border-width: 0 0 1px 0;
+    -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.08), 5, 0, 0, 1 ); /* Cool effect, but needs to be adjusted */
 }
 
 .search-textfield {
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-background-color: white;
-    -fx-border-color: #CCCCCC;
-    -fx-border-width: 1px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 6px 12px 6px 12px; /* Adjust padding for pill shape */
+    -fx-text-fill: #222222;
     -fx-font-size: 1em;
-    -fx-prompt-text-fill: #A0A0A0;
-    -fx-padding: 4px 10px;
+    -fx-prompt-text-fill: #AAAAAA;
+    -fx-background-color: #F5F5F5; /* Slightly gray field */
+    -fx-border-color: transparent; /* No border for flat pill look */
+    -fx-border-width: 0;
 }
 
 .search-textfield:focused {
-    -fx-border-color: #007AFF;
+    -fx-background-color: white; /* White background on focus */
+    -fx-border-color: #007AFF; /* Show border only on focus */
+    -fx-border-width: 1.5px;
+    -fx-padding: 4.75px 10.75px 4.75px 10.75px; /* Adjust padding */
 }
 
 .search-results-popup {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 8, 0, 0, 4);
+     /* Use shadow from Context Menu */
+    -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2 );
     -fx-background-color: transparent;
 }
 
 .search-results-list {
     -fx-background-color: white;
-    -fx-border-color: #CCCCCC;
-
-    -fx-border-width: 0 1px 1px 1px;
-
-    -fx-padding: 0;
-    -fx-background-insets: 0;
-
-    -fx-border-radius: 0 0 6px 6px;
-    -fx-background-radius: 0 0 6px 6px;
+    -fx-border-color: #D0D0D0; /* Slightly darker border for popup */
+    -fx-border-width: 1px;
+    -fx-padding: 4px; /* Padding around cells */
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
 .search-results-list .list-cell {
     -fx-padding: 8px 12px;
     -fx-background-color: transparent;
-    -fx-text-fill: #333333;
+    -fx-text-fill: #222222;
     -fx-border-width: 0;
     -fx-font-size: 0.95em;
+    -fx-background-radius: 3px;
 }
 
 .search-results-list .list-cell:filled:hover {
@@ -408,17 +555,13 @@
     -fx-text-fill: white;
 }
 
-.search-results-list:focused {
-   -fx-focus-color: transparent;
-   -fx-faint-focus-color: transparent;
-}
-
+/* Footer Bar */
 .footer-bar {
-    -fx-background-color: #E0E0E0;
+    -fx-background-color: #F0F0F0; /* Consistent light gray */
     -fx-border-style: solid hidden hidden hidden;
     -fx-border-width: 1px;
-    -fx-border-color: #BDBDBD;
-    -fx-padding: 5px 10px;
+    -fx-border-color: #DCDCDC; /* Lighter border */
+    -fx-padding: 8px 15px; /* More padding */
 }
 
 .footer-label {
@@ -431,24 +574,29 @@
 
 .footer-button-green,
 .footer-button-gray {
-    -fx-padding: 2px 8px;
-    -fx-font-size: 0.9em;
+    -fx-padding: 5px 12px;
+    -fx-font-size: 0.95em;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
 }
 
-.footer-button-green {
-    -fx-base: #4CAF50;
-    -fx-text-fill: white;
-}
-.footer-button-green:hover {
-     -fx-base: #388E3C;
-}
 .footer-button-gray {
-    -fx-base: #E0E0E0;
-    -fx-text-fill: #424242;
-    -fx-border-color: #BDBDBD;
+    /* Style as secondary button */
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+    -fx-border-color: #D0D0D0; /* Match default button border */
     -fx-border-width: 1px;
-    -fx-border-radius: 3px;
 }
 .footer-button-gray:hover {
-     -fx-base: #CCCCCC;
+     -fx-background-color: #F5F5F5; /* Very light hover */
+     -fx-border-color: #C0C0C0;
+}
+.footer-button-gray:pressed {
+     -fx-background-color: #EAEAEA;
+     -fx-border-color: #B8B8B8;
+}
+.footer-button-gray:focused {
+    -fx-border-color: #007AFF; /* Accent focus */
+     -fx-border-width: 1.5px;
+     -fx-padding: 4.25px 11.25px; /* Adjust padding */
 }

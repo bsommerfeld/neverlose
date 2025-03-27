@@ -163,7 +163,7 @@
                     <Separator styleClass="separator"/>
 
                     <HBox alignment="CENTER_RIGHT">
-                        <Button fx:id="exportPdfButton" text="Export as PDF..." mnemonicParsing="false"
+                        <Button fx:id="exportPdfButton" text="Export as PDF" mnemonicParsing="false"
                                 styleClass="export-button"/>
                     </HBox>
                 </VBox>
