@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.Region?>
 <BorderPane prefHeight="700.0" prefWidth="1000.0"
             stylesheets="/de/sommerfeld/topspin/fx/css/style.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -178,7 +179,14 @@
             <padding>
                 <Insets top="5" right="10" bottom="5" left="10"/>
             </padding>
+
             <Label text="Sommerfeld" styleClass="footer-label"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="createNewPlanButton" text="+ New Plan" styleClass="footer-button-green" mnemonicParsing="false"/>
+            <Button fx:id="showAllPlansButton" text="Show all Plans" styleClass="footer-button-gray" mnemonicParsing="false"/>
+
         </HBox>
     </bottom>
 

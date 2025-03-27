@@ -348,11 +348,37 @@
     -fx-border-style: solid hidden hidden hidden;
     -fx-border-width: 1px;
     -fx-border-color: #BDBDBD;
+    -fx-padding: 5px 10px;
 }
 
 .footer-label {
     -fx-font-size: 11pt;
     -fx-font-weight: bold;
-    -fx-text-fill: #A0A0A0;
-    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.4), 2, 0.5, 0, 1);
+    -fx-text-fill: #757575;
+    -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0.0, 0, 1);
+    -fx-alignment: center-left;
+}
+
+.footer-button-green,
+.footer-button-gray {
+    -fx-padding: 2px 8px;
+    -fx-font-size: 0.9em;
+}
+
+.footer-button-green {
+    -fx-base: #4CAF50;
+    -fx-text-fill: white;
+}
+.footer-button-green:hover {
+     -fx-base: #388E3C;
+}
+.footer-button-gray {
+    -fx-base: #E0E0E0;
+    -fx-text-fill: #424242;
+    -fx-border-color: #BDBDBD;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+}
+.footer-button-gray:hover {
+     -fx-base: #CCCCCC;
 }
