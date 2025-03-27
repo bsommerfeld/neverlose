@@ -80,7 +80,7 @@ public class SearchComponent<T> extends VBox {
         suggestionsListView.getStyleClass().add("search-results-list");
         suggestionsListView.setPrefHeight(150); // Consider making this flexible
 
-        Label placeholderLabel = new Label("Keine Ergebnisse gefunden");
+        Label placeholderLabel = new Label("No Results Found");
         placeholderLabel.setStyle("-fx-padding: 10px; -fx-text-fill: grey;");
         suggestionsListView.setPlaceholder(placeholderLabel);
 
