@@ -24,26 +24,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-// This class IS the controller for TrainingPlanEditor.fxml
 @View
 public class TrainingPlanEditorController {
 
-    // --- Listener Management for Preview Updates ---
     private final Map<ObservableValue<?>, ChangeListener<?>> previewChangeListeners = new HashMap<>();
     private final Map<ObservableList<?>, ListChangeListener<?>> previewListChangeListeners = new HashMap<>();
 
-    // --- ViewModel ---
     private TrainingPlanEditorViewModel viewModel;
 
-    // --- FXML Injected Fields ---
-
-    // Plan Details
     @FXML
     private TextField planNameTextField;
     @FXML
     private TextArea planDescriptionTextArea;
 
-    // Unit Management
     @FXML
     private ListView<TrainingUnitViewModel> trainingUnitsListView;
     @FXML
@@ -51,7 +44,6 @@ public class TrainingPlanEditorController {
     @FXML
     private Button removeUnitButton;
 
-    // Selected Unit Details
     @FXML
     private TitledPane selectedUnitPane;
     @FXML
@@ -61,7 +53,6 @@ public class TrainingPlanEditorController {
     @FXML
     private ChoiceBox<Weekday> unitWeekdayChoiceBox;
 
-    // Exercise Management (within selected unit)
     @FXML
     private ListView<ExerciseViewModel> trainingExercisesListView;
     @FXML
@@ -69,7 +60,6 @@ public class TrainingPlanEditorController {
     @FXML
     private Button removeExerciseButton;
 
-    // Selected Exercise Details
     @FXML
     private TitledPane selectedExercisePane;
     @FXML
@@ -83,11 +73,9 @@ public class TrainingPlanEditorController {
     @FXML
     private CheckBox exerciseBallBucketCheckBox;
 
-    // Management Area
     @FXML
     private Button exportPdfButton;
 
-    // Preview Pane
     @FXML
     private VBox previewVBox;
     @FXML
@@ -101,8 +89,6 @@ public class TrainingPlanEditorController {
     private IntegerProperty currentlyBoundSetsProperty = null;
     private final ChangeListener<ExerciseViewModel> selectedExerciseListener =
             (obs, oldExVm, newExVm) -> onSelectedExerciseChanged(oldExVm, newExVm);
-    // Listeners for selection changes to manage nested bindings cleanly
-    // Could use WeakChangeListener if necessary to prevent memory leaks in complex scenarios
     private final ChangeListener<TrainingUnitViewModel> selectedUnitListener =
             (obs, oldUnitVm, newUnitVm) -> onSelectedUnitChanged(oldUnitVm, newUnitVm);
 
@@ -178,7 +164,6 @@ public class TrainingPlanEditorController {
         updatePreview(); // Initial preview generation
     }
 
-    // --- Action Handler for Export Button ---
     private void handleExportPdfAction() {
         if (viewModel == null || viewModel.getTrainingPlanModel() == null) {
             showError("Cannot Export", "No training plan data available to export.");
@@ -228,7 +213,6 @@ public class TrainingPlanEditorController {
         }
     }
 
-    // --- Helper methods for Alerts ---
     private void showConfirmation(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -245,7 +229,6 @@ public class TrainingPlanEditorController {
         alert.showAndWait();
     }
 
-    // --- Listener Methods ---
     private void onSelectedUnitChanged(TrainingUnitViewModel oldSelectedUnit, TrainingUnitViewModel newSelectedUnit) {
         if (oldSelectedUnit != null) {
             unitNameTextField.textProperty().unbindBidirectional(oldSelectedUnit.nameProperty());
@@ -372,7 +355,6 @@ public class TrainingPlanEditorController {
         currentlyBoundSetsProperty.addListener(vmToTextSetsListener);
     }
 
-    // --- Preview Update Logic ---
     private void updatePreview() {
         previewUnitsContainer.getChildren().clear();
 
@@ -458,7 +440,6 @@ public class TrainingPlanEditorController {
         System.out.println("Controller: Listener cleanup complete.");
     }
 
-    // --- Preview Deep Listener Setup/Teardown ---
     private void removeDeepListenersForPreview(TrainingUnitViewModel unitVm) {
         if (unitVm == null) return;
         removePreviewChangeListener(unitVm.nameProperty());
@@ -495,18 +476,14 @@ public class TrainingPlanEditorController {
         addPreviewChangeListener(exVm.ballBucketProperty());
     }
 
-    // --- Helper methods for Managing Deep Preview Listeners ---
-
-    /**
+ref    /**
      * Adds a standard ChangeListener to an ObservableValue that triggers updatePreview. Stores the listener in a map
      * for later removal. Avoids adding duplicate listeners.
      */
     private <T> void addPreviewChangeListener(ObservableValue<T> property) {
         if (property != null && !previewChangeListeners.containsKey(property)) {
-            // Create a NEW listener instance for this specific property
             ChangeListener<T> listener = (obs, ov, nv) -> updatePreview();
             property.addListener(listener);
-            // Store the property and the SPECIFIC listener instance created for it
             previewChangeListeners.put(property, listener);
         }
     }
