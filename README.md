@@ -1,14 +1,13 @@
 <img src="https://github.com/user-attachments/assets/2f5335e3-b095-4e2f-a9de-e3ac46fbaf45" alt="Transparent" width="100" height="100" align="right" />
 <br><br><br>
 
-# 🏓 Topspin - Modern Training Planner for Table Tennis
+# Topspin - Modern Training Planner for Table Tennis 🏓
 
 [![Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-yellow.svg)](https://shields.io/)
-<br>**Ready to put the 'Topspin' on your table tennis game?** 🚀
 
 Topspin is a modern, intuitive training plan creator designed to help **players, coaches, and clubs** structure their practice sessions effectively and achieve peak performance. Inspired by the need for better planning tools and community discussions (shoutout to Reddit supporters!), this project aims to be the ultimate digital companion for your table tennis journey.
 
-The name is a double play: "Topspin" the technique, and reaching the "top" of your game by adding the best "spin" to your training! ✨
+The name is a double play: "Topspin" the technique, and reaching the "top" of your game by adding the best "spin" to your training.
 
 ---
 
@@ -18,7 +17,7 @@ Topspin is currently being built! The features described below represent the ini
 
 ---
 
-## 🤔 The Idea: Why Topspin?
+## The Idea: Why Topspin?
 
 Tired of scribbled notes, messy spreadsheets, or generic fitness apps that don't understand the specifics of table tennis? Topspin aims to provide a **dedicated, flexible, and powerful tool** specifically designed for planning, tracking, and eventually analyzing table tennis training.
 
@@ -31,7 +30,7 @@ Our goal is to help you:
 
 ---
 
-## ✨ Current Goal: The MVP (Minimum Viable Product)
+## Current Goal: The MVP (Minimum Viable Product)
 
 The initial focus is on creating a solid **Training Plan Maker** with the following core functionality:
 
@@ -54,7 +53,7 @@ The initial focus is on creating a solid **Training Plan Maker** with the follow
 
 ---
 
-## 🚀 The Future Vision: Roadmap Highlights
+## The Future Vision: Roadmap Highlights
 
 Beyond the MVP, Topspin has ambitious goals! We envision a comprehensive platform built progressively:
 
@@ -86,7 +85,7 @@ To ensure the long-term development and sustainability of Topspin, we are consid
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 The current development focus for the initial **desktop version (MVP)** is based on the Java ecosystem:
 
@@ -101,7 +100,7 @@ These are longer-term goals and the specific technologies will be evaluated when
 
 ---
 
-## 🚀 Getting Started / Trying It Out
+## Getting Started / Trying It Out
 
 Topspin is not yet ready for general use. Stay tuned!
 
@@ -110,23 +109,23 @@ Topspin is not yet ready for general use. Stay tuned!
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 **We are building Topspin with YOU!** Your feedback and contributions are invaluable, especially in these early stages.
 
 Here's how you can help:
 
-* 💡 **Ideas & Feedback:** Do you have suggestions or see missing features? Open an issue!
-* 🐛 **Bug Reports:** If you encounter problems (once testing starts), please report them via Issues.
-* 💻 **Code Contributions:** Feel free to fork the repo and submit pull requests! Please check our (upcoming) `CONTRIBUTING.md` for guidelines first.
-* 🎨 **Design Help:** UI/UX suggestions are always welcome.
-* 📖 **Documentation & Translation:** Help us make Topspin clear and accessible worldwide.
+* **Ideas & Feedback:** Do you have suggestions or see missing features? Open an issue!
+* **Bug Reports:** If you encounter problems (once testing starts), please report them via Issues.
+* **Code Contributions:** Feel free to fork the repo and submit pull requests! Please check our (upcoming) `CONTRIBUTING.md` for guidelines first.
+* **Design Help:** UI/UX suggestions are always welcome.
+* **Documentation & Translation:** Help us make Topspin clear and accessible worldwide.
 
 Let's build the best table tennis training tool together!
 
 ---
 
-## 📜 License
+## License
 
 The core of Topspin is planned to be released under the **[MIT License](LICENSE)**.
 
@@ -134,7 +133,7 @@ Please note that future premium features or services associated with Topspin mig
 
 ---
 
-## 📬 Contact
+## Contact
 
 * For questions, feature requests, and bug reports: Please use the **GitHub Issues** section.
 
