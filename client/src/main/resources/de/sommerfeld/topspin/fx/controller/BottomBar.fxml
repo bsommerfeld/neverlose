@@ -20,7 +20,7 @@
     <Region HBox.hgrow="ALWAYS"/>
 
     <Button fx:id="createNewPlanButton" text="+ New Plan" styleClass="footer-button-green"
-            mnemonicParsing="false"/>
+            mnemonicParsing="false" onAction="#onNewPlan"/>
     <Button fx:id="showAllPlansButton" text="Show all Plans" styleClass="footer-button-gray"
-            mnemonicParsing="false"/>
+            mnemonicParsing="false" onAction="#onShowAllPlans"/>
 </HBox>
