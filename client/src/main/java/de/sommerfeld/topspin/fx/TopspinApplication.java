@@ -7,6 +7,7 @@ import de.sommerfeld.topspin.fx.controller.TopspinMetaController;
 import de.sommerfeld.topspin.fx.controller.TrainingPlanEditorController;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import de.sommerfeld.topspin.logger.LogFacade;
+import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,11 +16,10 @@ import javafx.stage.Stage;
 public class TopspinApplication extends Application {
 
     private final Injector injector;
-    private final LogFacade log;
+    private final LogFacade log = LogFacadeFactory.getLogger();
 
     public TopspinApplication() {
         this.injector = Guice.createInjector(new TopspinModule());
-        this.log = injector.getInstance(LogFacade.class);
     }
 
     @Override
