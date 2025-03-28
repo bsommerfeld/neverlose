@@ -33,11 +33,11 @@ public class ViewLoader {
         URL fxmlLocation = clazz.getResource(name + ".fxml");
         if (fxmlLocation == null) {
             throw new IllegalStateException(
-                    MessageFormat.format("FXML Datei konnte nicht gefunden werden für Klasse: {0}", clazz));
+                    MessageFormat.format("FXML File not found for class: {0}", clazz));
         }
 
         fxmlLoader.setLocation(fxmlLocation);
-        fxmlLoader.setControllerFactory(param -> injector.getInstance(param));
+        fxmlLoader.setControllerFactory(injector::getInstance);
 
         try {
             Parent parent = fxmlLoader.load();
@@ -45,7 +45,7 @@ public class ViewLoader {
             return new ViewWrapper<>(parent, controller);
         } catch (IOException e) {
             throw new IllegalStateException(
-                    MessageFormat.format("FXML konnte nicht geladen werden für die Klasse: {0}", clazz), e);
+                    MessageFormat.format("FXML for class: {0} could not be loaded.", clazz), e);
         }
     }
 }
