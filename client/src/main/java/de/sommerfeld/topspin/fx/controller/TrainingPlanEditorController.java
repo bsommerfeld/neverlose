@@ -502,6 +502,7 @@ public class TrainingPlanEditorController {
         exName.getStyleClass().add("preview-exercise-name");
 
         Text exDesc = new Text(exVm.descriptionProperty().get());
+        exDesc.setWrappingWidth(380);
         exDesc.getStyleClass().add("preview-exercise-desc");
 
         Label exDetails = new Label(String.format("Duration: %s | Sets: %d | Ball Bucket: %s",
