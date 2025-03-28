@@ -551,6 +551,11 @@
     -fx-text-fill: white;
 }
 
+.search-results-placeholder {
+    -fx-padding:10px;
+    -fx-text-fill: grey;
+}
+
 /* Footer Bar */
 .footer-bar {
     -fx-background-color: #F0F0F0; /* Consistent light gray */
