@@ -1,135 +1,54 @@
 package de.sommerfeld.topspin.logger;
 
-import org.slf4j.Logger;
+public interface LogFacade {
 
-public class LogFacade {
+    void trace(String msg);
 
-    private final Logger slf4jLogger;
+    void trace(String format, Object arg);
 
-    LogFacade(Logger slf4jLogger) {
-        if (slf4jLogger == null) {
-            throw new IllegalArgumentException("Underlying SLF4J Logger must not be null.");
-        }
-        this.slf4jLogger = slf4jLogger;
-    }
+    void trace(String format, Object arg1, Object arg2);
 
-    public void trace(String msg) {
-        slf4jLogger.trace(msg);
-    }
+    void trace(String format, Object... arguments);
 
-    public void trace(String format, Object arg) {
-        slf4jLogger.trace(format, arg);
-    }
+    void trace(String msg, Throwable t);
 
-    public void trace(String format, Object arg1, Object arg2) {
-        slf4jLogger.trace(format, arg1, arg2);
-    }
+    void debug(String msg);
 
-    public void trace(String format, Object... arguments) {
-        slf4jLogger.trace(format, arguments);
-    }
+    void debug(String format, Object arg);
 
-    public void trace(String msg, Throwable t) {
-        slf4jLogger.trace(msg, t);
-    }
+    void debug(String format, Object arg1, Object arg2);
 
-    public void debug(String msg) {
-        slf4jLogger.debug(msg);
-    }
+    void debug(String format, Object... arguments);
 
-    public void debug(String format, Object arg) {
-        slf4jLogger.debug(format, arg);
-    }
+    void debug(String msg, Throwable t);
 
-    public void debug(String format, Object arg1, Object arg2) {
-        slf4jLogger.debug(format, arg1, arg2);
-    }
+    void info(String msg);
 
-    public void debug(String format, Object... arguments) {
-        slf4jLogger.debug(format, arguments);
-    }
+    void info(String format, Object arg);
 
-    public void debug(String msg, Throwable t) {
-        slf4jLogger.debug(msg, t);
-    }
+    void info(String format, Object arg1, Object arg2);
 
-    public void info(String msg) {
-        slf4jLogger.info(msg);
-    }
+    void info(String format, Object... arguments);
 
-    public void info(String format, Object arg) {
-        slf4jLogger.info(format, arg);
-    }
+    void info(String msg, Throwable t);
 
-    public void info(String format, Object arg1, Object arg2) {
-        slf4jLogger.info(format, arg1, arg2);
-    }
+    void warn(String msg);
 
-    public void info(String format, Object... arguments) {
-        slf4jLogger.info(format, arguments);
-    }
+    void warn(String format, Object arg);
 
-    public void info(String msg, Throwable t) {
-        slf4jLogger.info(msg, t);
-    }
+    void warn(String format, Object... arguments);
 
-    public void warn(String msg) {
-        slf4jLogger.warn(msg);
-    }
+    void warn(String format, Object arg1, Object arg2);
 
-    public void warn(String format, Object arg) {
-        slf4jLogger.warn(format, arg);
-    }
+    void warn(String msg, Throwable t);
 
-    public void warn(String format, Object... arguments) {
-        slf4jLogger.warn(format, arguments);
-    }
+    void error(String msg);
 
-    public void warn(String format, Object arg1, Object arg2) {
-        slf4jLogger.warn(format, arg1, arg2);
-    }
+    void error(String format, Object arg);
 
-    public void warn(String msg, Throwable t) {
-        slf4jLogger.warn(msg, t);
-    }
+    void error(String format, Object arg1, Object arg2);
 
-    public void error(String msg) {
-        slf4jLogger.error(msg);
-    }
+    void error(String format, Object... arguments);
 
-    public void error(String format, Object arg) {
-        slf4jLogger.error(format, arg);
-    }
-
-    public void error(String format, Object arg1, Object arg2) {
-        slf4jLogger.error(format, arg1, arg2);
-    }
-
-    public void error(String format, Object... arguments) {
-        slf4jLogger.error(format, arguments);
-    }
-
-    public void error(String msg, Throwable t) {
-        slf4jLogger.error(msg, t);
-    }
-
-    public boolean isTraceEnabled() {
-        return slf4jLogger.isTraceEnabled();
-    }
-
-    public boolean isDebugEnabled() {
-        return slf4jLogger.isDebugEnabled();
-    }
-
-    public boolean isInfoEnabled() {
-        return slf4jLogger.isInfoEnabled();
-    }
-
-    public boolean isWarnEnabled() {
-        return slf4jLogger.isWarnEnabled();
-    }
-
-    public boolean isErrorEnabled() {
-        return slf4jLogger.isErrorEnabled();
-    }
+    void error(String msg, Throwable t);
 }

@@ -24,7 +24,7 @@ public class TopspinApplication extends Application {
 
     @Override
     public void start(Stage stage) {
-        log.debug("Starting Topspin application");
+        log.info("Starting Topspin application");
         ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
         Parent root = viewProvider.requestView(TopspinMetaController.class).parent();
         Scene scene = new Scene(root);

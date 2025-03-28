@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
 
-    <property name="LOG_DIR" value="logs"/>
+    <property name="LOG_DIR" value="${de.sommerfeld.topspin.logdir:-logs}"/>
     <property name="LOG_FILE_PREFIX" value="topspin"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -20,13 +21,9 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/archiv/${LOG_FILE_PREFIX}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-
             <maxFileSize>10MB</maxFileSize>
-
             <maxHistory>30</maxHistory>
-
             <totalSizeCap>1GB</totalSizeCap>
-
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
         </rollingPolicy>
     </appender>
