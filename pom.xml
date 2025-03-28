@@ -13,6 +13,7 @@
         <module>model</module>
         <module>client</module>
         <module>export</module>
+        <module>logger</module>
     </modules>
 
     <properties>
