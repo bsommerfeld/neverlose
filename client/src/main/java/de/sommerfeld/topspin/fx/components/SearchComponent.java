@@ -209,10 +209,6 @@ public class SearchComponent<T> extends VBox {
         suggestionsListView.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case ENTER:
-                    T selected = suggestionsListView.getSelectionModel().getSelectedItem();
-                    if (selected != null) {
-                        // Selection model listener handles the update and hide
-                    }
                     event.consume();
                     break;
                 case ESCAPE:
@@ -222,9 +218,8 @@ public class SearchComponent<T> extends VBox {
                     break;
                 case UP:
                     if (suggestionsListView.getSelectionModel().getSelectedIndex() == 0) {
-                        // Optionally move focus back to text field
-                        // Platform.runLater(textField::requestFocus);
-                        // event.consume();
+                        Platform.runLater(textField::requestFocus);
+                        event.consume();
                     }
                     break;
                 default:
