@@ -3,6 +3,8 @@ package de.sommerfeld.topspin.fx.controller;
 import de.sommerfeld.topspin.fx.viewmodel.ExerciseViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingPlanEditorViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingUnitViewModel;
+import de.sommerfeld.topspin.logger.LogFacade;
+import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import de.sommerfeld.topspin.plan.components.Weekday;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.value.ChangeListener;
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class TrainingPlanEditorFormController {
+
+    private final LogFacade log = LogFacadeFactory.getLogger();
 
     private TrainingPlanEditorViewModel viewModel;
 
@@ -87,9 +91,8 @@ public class TrainingPlanEditorFormController {
     private final ChangeListener<TrainingUnitViewModel> selectedUnitListener =
             (obs, oldUnitVm, newUnitVm) -> onSelectedUnitChanged(oldUnitVm, newUnitVm);
 
-
     public void initialize() {
-        System.out.println("Form Controller initialized (pending ViewModel).");
+        log.info("Form Controller initialized (pending ViewModel).");
         unitWeekdayChoiceBox.setItems(FXCollections.observableArrayList(Weekday.values()));
     }
 
@@ -100,13 +103,13 @@ public class TrainingPlanEditorFormController {
             unbindUI();
         }
         this.viewModel = viewModel;
-        System.out.println("Form Controller: ViewModel received.");
+        log.info("Form Controller: ViewModel received.");
         bindUI();
     }
 
     private void unbindUI() {
         if (viewModel == null) return;
-        System.out.println("Form Controller: Unbinding UI...");
+        log.info("Form Controller: Unbinding UI...");
 
         planNameTextField.textProperty().unbindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().unbindBidirectional(viewModel.planDescriptionProperty());
@@ -141,11 +144,11 @@ public class TrainingPlanEditorFormController {
         removeExerciseButton.setOnAction(null);
         exportPdfButton.setOnAction(null);
 
-        System.out.println("Form Controller: UI Unbound.");
+        log.info("Form Controller: UI Unbound.");
     }
 
     private void bindUI() {
-        System.out.println("Form Controller: Binding UI...");
+        log.info("Form Controller: Binding UI...");
         Objects.requireNonNull(viewModel, "ViewModel cannot be null during bindUI in Form Controller");
 
         planNameTextField.textProperty().bindBidirectional(viewModel.planNameProperty());
@@ -194,7 +197,7 @@ public class TrainingPlanEditorFormController {
 
         exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
-        System.out.println("Form Controller: UI Bound.");
+        log.info("Form Controller: UI Bound.");
     }
 
     /**
@@ -302,7 +305,7 @@ public class TrainingPlanEditorFormController {
      */
     private void unbindUnitDetails(TrainingUnitViewModel unitVm) {
         if (unitVm == null) return;
-        System.out.println("Form Controller: Unbinding Unit Details for: " + unitVm.nameProperty().get());
+        log.info("Form Controller: Unbinding Unit Details for: " + unitVm.nameProperty().get());
         unitNameTextField.textProperty().unbindBidirectional(unitVm.nameProperty());
         unitDescriptionTextArea.textProperty().unbindBidirectional(unitVm.descriptionProperty());
         unitWeekdayChoiceBox.valueProperty().unbindBidirectional(unitVm.weekdayProperty());
@@ -327,7 +330,7 @@ public class TrainingPlanEditorFormController {
      */
     private void unbindExerciseDetails(ExerciseViewModel exerciseVm) {
         if (exerciseVm == null) return;
-        System.out.println("Form Controller: Unbinding Exercise Details for: " + exerciseVm.nameProperty().get());
+        log.info("Form Controller: Unbinding Exercise Details for: " + exerciseVm.nameProperty().get());
         exerciseNameTextField.textProperty().unbindBidirectional(exerciseVm.nameProperty());
         exerciseDescriptionTextArea.textProperty().unbindBidirectional(exerciseVm.descriptionProperty());
         exerciseDurationTextField.textProperty().unbindBidirectional(exerciseVm.durationProperty());
@@ -336,7 +339,7 @@ public class TrainingPlanEditorFormController {
     }
 
     private void onSelectedUnitChanged(TrainingUnitViewModel oldSelectedUnit, TrainingUnitViewModel newSelectedUnit) {
-        System.out.println("Form Controller: Selected Unit Changed - New: " + (newSelectedUnit != null ? newSelectedUnit.nameProperty().get() : "null"));
+        log.info("Form Controller: Selected Unit Changed - New: " + (newSelectedUnit != null ? newSelectedUnit.nameProperty().get() : "null"));
 
         if (oldSelectedUnit != null) {
             ExerciseViewModel oldExercise = oldSelectedUnit.selectedExerciseProperty().get();
@@ -382,7 +385,7 @@ public class TrainingPlanEditorFormController {
     }
 
     private void onSelectedExerciseChanged(ExerciseViewModel oldSelectedExercise, ExerciseViewModel newSelectedExercise) {
-        System.out.println("Form Controller: Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.nameProperty().get() : "null"));
+        log.info("Form Controller: Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.nameProperty().get() : "null"));
         TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
 
         if (oldSelectedExercise != null) {
@@ -519,7 +522,7 @@ public class TrainingPlanEditorFormController {
                 selectedFile = new File(selectedFile.getAbsolutePath() + ".pdf");
             }
 
-            System.out.println("Attempting to export PDF to: " + selectedFile.getAbsolutePath());
+            log.info("Attempting to export PDF to: " + selectedFile.getAbsolutePath());
             try {
                 viewModel.exportPlanToPdf(selectedFile);
                 showConfirmation("Export Successful", "Training plan exported successfully to:\n" + selectedFile.getName());
@@ -533,7 +536,7 @@ public class TrainingPlanEditorFormController {
                 showError("Export Failed", "An unexpected error occurred during PDF export.");
             }
         } else {
-            System.out.println("PDF Export cancelled by user.");
+            log.info("PDF Export cancelled by user.");
         }
     }
 
@@ -558,7 +561,7 @@ public class TrainingPlanEditorFormController {
      * Cleans up listeners when the view is potentially being destroyed.
      */
     public void cleanup() {
-        System.out.println("Form Controller: Cleaning up...");
+        log.info("Form Controller: Cleaning up...");
         unbindUI();
         if (viewModel != null) {
             viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
@@ -567,6 +570,6 @@ public class TrainingPlanEditorFormController {
                 currentUnit.selectedExerciseProperty().removeListener(selectedExerciseListener);
             }
         }
-        System.out.println("Form Controller: Cleanup complete.");
+        log.info("Form Controller: Cleanup complete.");
     }
 }

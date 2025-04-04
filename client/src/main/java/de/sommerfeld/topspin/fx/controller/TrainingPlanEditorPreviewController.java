@@ -4,6 +4,8 @@ import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.viewmodel.ExerciseViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingPlanEditorViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingUnitViewModel;
+import de.sommerfeld.topspin.logger.LogFacade;
+import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +24,8 @@ import java.util.Objects;
 @View
 public class TrainingPlanEditorPreviewController {
 
+    private final LogFacade log = LogFacadeFactory.getLogger();
+
     private final Map<ObservableValue<?>, ChangeListener<?>> previewChangeListeners = new HashMap<>();
     private final Map<ObservableList<?>, ListChangeListener<?>> previewListChangeListeners = new HashMap<>();
     private TrainingPlanEditorViewModel viewModel;
@@ -38,7 +42,7 @@ public class TrainingPlanEditorPreviewController {
     private VBox previewUnitsContainer;
 
     public void initialize() {
-        System.out.println("Preview Controller initialized (pending ViewModel).");
+        log.info("Preview Controller initialized (pending ViewModel).");
         previewVBox.getStyleClass().add("preview-container");
     }
 
@@ -55,7 +59,7 @@ public class TrainingPlanEditorPreviewController {
             cleanupListeners();
         }
         this.viewModel = viewModel;
-        System.out.println("Preview Controller: ViewModel received.");
+        log.info("Preview Controller: ViewModel received.");
         bindPreviewUI();
         setupPreviewListeners();
         updatePreview();
@@ -66,7 +70,7 @@ public class TrainingPlanEditorPreviewController {
      */
     private void bindPreviewUI() {
         Objects.requireNonNull(viewModel, "ViewModel is required for binding preview UI");
-        System.out.println("Preview Controller: Binding direct UI elements...");
+        log.info("Preview Controller: Binding direct UI elements...");
 
         previewPlanNameLabel.textProperty().bind(viewModel.planNameProperty());
         previewPlanNameLabel.getStyleClass().add("preview-title");
@@ -76,7 +80,7 @@ public class TrainingPlanEditorPreviewController {
 
         unitsPreviewLabel.visibleProperty().bind(Bindings.isEmpty(previewUnitsContainer.getChildren()).not());
 
-        System.out.println("Preview Controller: Direct UI elements bound.");
+        log.info("Preview Controller: Direct UI elements bound.");
     }
 
     /**
@@ -84,7 +88,7 @@ public class TrainingPlanEditorPreviewController {
      */
     private void unbindPreviewUI() {
         if (viewModel == null) return;
-        System.out.println("Preview Controller: Unbinding direct UI elements...");
+        log.info("Preview Controller: Unbinding direct UI elements...");
         if (previewPlanNameLabel.textProperty().isBound()) {
             previewPlanNameLabel.textProperty().unbind();
         }
@@ -93,7 +97,7 @@ public class TrainingPlanEditorPreviewController {
         }
         previewPlanNameLabel.setText("[Plan Name Preview]");
         previewPlanDescriptionText.setText("[Plan description preview text will appear here]");
-        System.out.println("Preview Controller: Direct UI elements unbound.");
+        log.info("Preview Controller: Direct UI elements unbound.");
     }
 
     /**
@@ -102,16 +106,16 @@ public class TrainingPlanEditorPreviewController {
      */
     private void setupPreviewListeners() {
         Objects.requireNonNull(viewModel, "ViewModel is required for setting up preview listeners");
-        System.out.println("Preview Controller: Setting up dynamic listeners...");
+        log.info("Preview Controller: Setting up dynamic listeners...");
         addPreviewListChangeListener(viewModel.trainingUnitsProperty());
-        System.out.println("Preview Controller: Dynamic listeners set up.");
+        log.info("Preview Controller: Dynamic listeners set up.");
     }
 
     /**
      * Main method to refresh the entire preview display based on the current ViewModel state.
      */
     private void updatePreview() {
-        System.out.println("Preview Controller: Updating Preview...");
+        log.info("Preview Controller: Updating Preview...");
         if (viewModel == null || previewUnitsContainer == null) {
             System.err.println("Preview Controller: Cannot update preview, ViewModel or container is null.");
             return;
@@ -126,7 +130,7 @@ public class TrainingPlanEditorPreviewController {
         } else {
             System.err.println("Preview Controller: Training units property list is null.");
         }
-        System.out.println("Preview Controller: Preview update complete.");
+        log.info("Preview Controller: Preview update complete.");
     }
 
 
@@ -194,7 +198,7 @@ public class TrainingPlanEditorPreviewController {
      * Should be called by the MetaController.
      */
     public void cleanupListeners() {
-        System.out.println("Preview Controller: Cleaning up preview listeners...");
+        log.info("Preview Controller: Cleaning up preview listeners...");
 
         unbindPreviewUI();
 
@@ -205,7 +209,7 @@ public class TrainingPlanEditorPreviewController {
         previewChangeListeners.clear();
         previewListChangeListeners.clear();
 
-        System.out.println("Preview Controller: Listener cleanup complete.");
+        log.info("Preview Controller: Listener cleanup complete.");
     }
 
     /**
@@ -236,7 +240,7 @@ public class TrainingPlanEditorPreviewController {
     private <T> void addPreviewListChangeListener(ObservableList<T> list) {
         if (list != null && !previewListChangeListeners.containsKey(list)) {
             ListChangeListener<T> listener = change -> {
-                System.out.println("Preview List Change Detected: " + change);
+                log.info("Preview List Change Detected: " + change);
                 boolean changed = false;
                 while (change.next()) {
                     changed = true;

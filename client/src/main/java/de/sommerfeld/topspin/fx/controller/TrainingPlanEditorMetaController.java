@@ -2,6 +2,8 @@ package de.sommerfeld.topspin.fx.controller;
 
 import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingPlanEditorViewModel;
+import de.sommerfeld.topspin.logger.LogFacade;
+import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import de.sommerfeld.topspin.plan.TrainingPlan;
 import javafx.fxml.FXML;
 
@@ -9,6 +11,8 @@ import java.util.Objects;
 
 @View
 public class TrainingPlanEditorMetaController {
+
+    private final LogFacade log = LogFacadeFactory.getLogger();
 
     private TrainingPlanEditorViewModel viewModel;
 
@@ -19,7 +23,7 @@ public class TrainingPlanEditorMetaController {
 
     @FXML
     public void initialize() {
-        System.out.println("Meta Controller: Initializing...");
+        log.info("Meta Controller: Initializing...");
         this.viewModel = new TrainingPlanEditorViewModel();
 
         Objects.requireNonNull(editorFormController, "Editor Form Controller not injected!");
@@ -28,7 +32,7 @@ public class TrainingPlanEditorMetaController {
         editorFormController.initViewModel(viewModel);
         editorPreviewController.initViewModel(viewModel);
 
-        System.out.println("Meta Controller: Initialization complete. ViewModel injected.");
+        log.info("Meta Controller: Initialization complete. ViewModel injected.");
     }
 
     /**
@@ -39,11 +43,11 @@ public class TrainingPlanEditorMetaController {
      * @param plan The new TrainingPlan to load.
      */
     public void setPlan(TrainingPlan plan) {
-        System.out.println("Meta Controller: Setting new plan...");
+        log.info("Meta Controller: Setting new plan...");
         Objects.requireNonNull(plan, "TrainingPlan cannot be null");
         Objects.requireNonNull(viewModel, "ViewModel must not be null when setting a plan.");
         viewModel.setTrainingPlan(plan);
-        System.out.println("Meta Controller: New plan set in ViewModel.");
+        log.info("Meta Controller: New plan set in ViewModel.");
     }
 
 
@@ -52,7 +56,7 @@ public class TrainingPlanEditorMetaController {
      * It delegates cleanup tasks to the sub-controllers.
      */
     public void cleanup() {
-        System.out.println("Meta Controller: Starting cleanup...");
+        log.info("Meta Controller: Starting cleanup...");
         if (editorFormController != null) {
             editorFormController.cleanup();
         }
@@ -62,7 +66,7 @@ public class TrainingPlanEditorMetaController {
         if (viewModel != null) {
             // viewModel.dispose(); // Once ViewModel holds resources
         }
-        System.out.println("Meta Controller: Cleanup complete.");
+        log.info("Meta Controller: Cleanup complete.");
     }
 
     public TrainingPlanEditorViewModel getViewModel() {
