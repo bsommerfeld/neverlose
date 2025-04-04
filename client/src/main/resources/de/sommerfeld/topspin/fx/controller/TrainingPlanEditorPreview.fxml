@@ -19,8 +19,9 @@
 
         <Label text="Units Preview" styleClass="section-title"/>
         <VBox fx:id="previewUnitsContainer" spacing="20">
-            <Label text="No units defined yet." managed="${!previewUnitsContainer.children.empty}"
-                   visible="${!previewUnitsContainer.children.empty}"/>
+            <Label fx:id="noUnitsLabel" text="No units defined yet."
+                   styleClass="search-results-placeholder">
+            </Label>
         </VBox>
     </VBox>
 </ScrollPane>

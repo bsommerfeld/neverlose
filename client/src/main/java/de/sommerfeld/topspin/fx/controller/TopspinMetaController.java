@@ -45,7 +45,7 @@ public class TopspinMetaController {
     }
 
     private void registerViewListener() {
-        viewProvider.registerViewChangeListener(TrainingPlanEditorController.class, p -> loadCenter());
+        viewProvider.registerViewChangeListener(TrainingPlanEditorMetaController.class, p -> loadCenter());
     }
 
     private void loadTopBar() {

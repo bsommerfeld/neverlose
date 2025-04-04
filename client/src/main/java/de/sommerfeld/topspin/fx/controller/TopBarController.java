@@ -60,7 +60,7 @@ public class TopBarController {
 
     private void loadPlanIntoView(TrainingPlan plan) {
         System.out.println("Loading plan:" + plan.getName() + " into view...");
-        viewProvider.triggerViewChange(TrainingPlanEditorController.class, planEditor -> planEditor.setPlan(plan));
+        viewProvider.triggerViewChange(TrainingPlanEditorMetaController.class, planEditor -> planEditor.setPlan(plan));
     }
 
     private ObservableList<TrainingPlan> loadTrainingPlans() {
