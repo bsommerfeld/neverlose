@@ -21,6 +21,6 @@
 
     <Button fx:id="createNewPlanButton" text="+ New Plan" styleClass="footer-button-green"
             mnemonicParsing="false" onAction="#onNewPlan"/>
-    <Button fx:id="showAllPlansButton" text="Show all Plans" styleClass="footer-button-gray"
-            mnemonicParsing="false" onAction="#onShowAllPlans"/>
+    <!--    <Button fx:id="showAllPlansButton" text="Show all Plans" styleClass="footer-button-gray"-->
+    <!--            mnemonicParsing="false" onAction="#onShowAllPlans" disable="true"/>-->
 </HBox>
