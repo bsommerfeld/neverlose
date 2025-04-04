@@ -7,11 +7,11 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,146 +19,173 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Service responsible for exporting a TrainingPlan object to a PDF file using Apache PDFBox. Implements the
- * ExportService interface.
+ * Generates a PDF representation of a TrainingPlan, aiming for a clean,
+ * modern, and readable layout suitable for screen and print.
  */
 public class PdfExportService implements ExportService {
 
-    // --- Layout Constants ---
-    private static final float MARGIN = 50;
-    private static final float LEADING_FACTOR = 1.4f;
-    private static final float PAGE_WIDTH = PDRectangle.A4.getWidth();
-    private static final float CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
-
-    // --- Font Sizes (approximating relative sizes from CSS preview) ---
-    private static final float FONT_SIZE_TITLE = 15;
-    private static final float FONT_SIZE_UNIT_HEADER = 13;
-    private static final float FONT_SIZE_EXERCISE_HEADER = 11; // e.g., "Exercises:" title if used
-    private static final float FONT_SIZE_EXERCISE_NAME = 10; // Base size, but bold
-    private static final float FONT_SIZE_TEXT = 10;
-    private static final float FONT_SIZE_DESC = 10;
-    private static final float FONT_SIZE_DETAILS = 9;
-
-    // --- Indentation (approximating visual structure) ---
-    private static final float INDENT_UNIT = 0;
-    private static final float INDENT_EXERCISE_CONTAINER = 15;
-    private static final float INDENT_EXERCISE = INDENT_EXERCISE_CONTAINER;
-    private static final float INDENT_EXERCISE_CHILD = INDENT_EXERCISE_CONTAINER + 10; // Details/Desc
-
-    // --- Reusable Standard Fonts ---
-    private static final PDFont FONT_TITLE = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    private static final PDFont FONT_UNIT_HEADER = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    private static final PDFont FONT_EXERCISE_HEADER = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    private static final PDFont FONT_EXERCISE_NAME = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    private static final PDFont FONT_TEXT = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-    private static final PDFont FONT_TEXT_ITALIC = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
-
-    // --- State variables for page generation (instance fields) ---
+    private static final PdfStyle STYLE_PREVIEW_TITLE = new PdfStyle(Fonts.BOLD, Fonts.SIZE_PREVIEW_TITLE, Colors.TEXT_DARKEST);
+    private static final PdfStyle STYLE_PREVIEW_DESC = new PdfStyle(Fonts.REGULAR, Fonts.SIZE_PREVIEW_DESC, Colors.TEXT_MEDIUM);
+    private static final PdfStyle STYLE_UNIT_HEADER = new PdfStyle(Fonts.BOLD, Fonts.SIZE_UNIT_HEADER, Colors.TEXT_DARKER);
+    private static final PdfStyle STYLE_UNIT_DESC = new PdfStyle(Fonts.REGULAR, Fonts.SIZE_UNIT_DESC, Colors.TEXT_LIGHT);
+    private static final PdfStyle STYLE_EXERCISE_NAME = new PdfStyle(Fonts.BOLD, Fonts.SIZE_EXERCISE_NAME, Colors.TEXT_DARK);
+    private static final PdfStyle STYLE_EXERCISE_DESC = new PdfStyle(Fonts.REGULAR, Fonts.SIZE_EXERCISE_DESC, Colors.TEXT_LIGHT);
+    private static final PdfStyle STYLE_EXERCISE_DETAILS = new PdfStyle(Fonts.REGULAR, Fonts.SIZE_EXERCISE_DETAILS, Colors.TEXT_LIGHTER);
+    private static final PdfStyle STYLE_PLACEHOLDER = new PdfStyle(Fonts.ITALIC, Fonts.SIZE_PLACEHOLDER, Colors.TEXT_LIGHT);
+    private static final String DEFAULT_PLAN_NAME = "[Unnamed Plan]";
+    private static final String DEFAULT_UNIT_NAME = "[Unnamed Unit]";
+    private static final String DEFAULT_EXERCISE_NAME = "[Unnamed Exercise]";
+    private static final String DEFAULT_WEEKDAY = "-";
+    private static final String DEFAULT_DURATION = "-";
+    private static final String PLACEHOLDER_NO_UNITS = "[No training units defined]";
+    private static final String PLACEHOLDER_NO_EXERCISES = "[No exercises in this unit]";
     private PDDocument document;
     private PDPageContentStream contentStream;
     private PDPage currentPage;
     private float currentY;
 
     @Override
-    public void export(TrainingPlan trainingPlan, File targetFile) { // Added throws IOException
-        // --- Input Validation ---
-        if (trainingPlan == null) {
-            throw new IllegalArgumentException("Training plan cannot be null.");
-        }
+    public void export(TrainingPlan trainingPlan, File targetFile) throws IOException {
+        Objects.requireNonNull(trainingPlan, "Training plan cannot be null.");
+        Objects.requireNonNull(targetFile, "Target file cannot be null.");
 
-        // --- PDF Generation ---
         try (PDDocument doc = new PDDocument()) {
             this.document = doc;
-            startNewPage(); // Initialize first page
+            startNewPage();
 
-            // --- Write Plan Header ---
-            writeTextLine(trainingPlan.getName(), MARGIN + INDENT_UNIT, FONT_TITLE, FONT_SIZE_TITLE, CONTENT_WIDTH);
-            addSpacing(FONT_SIZE_TITLE * (LEADING_FACTOR - 1.0f) * 0.5f);
-
-            if (trainingPlan.getDescription() != null && !trainingPlan.getDescription().trim().isEmpty()) {
-                writeWrappedText(trainingPlan.getDescription(), MARGIN + INDENT_UNIT, CONTENT_WIDTH, FONT_TEXT, FONT_SIZE_DESC);
-            }
-            addSpacing(FONT_SIZE_DESC * LEADING_FACTOR); // Space after description
-
-            // --- Draw Separator ---
+            writePlanHeader(trainingPlan);
             drawSeparator();
-            addSpacing(FONT_SIZE_UNIT_HEADER * LEADING_FACTOR * 0.8f); // Space after separator
+            writeUnitsSection(trainingPlan);
 
-            // --- Write Units and Exercises ---
-            if (trainingPlan.getTrainingUnits() != null && !trainingPlan.getTrainingUnits().isEmpty()) {
-                boolean firstUnit = true;
-                for (TrainingUnit unit : trainingPlan.getTrainingUnits().getAll()) {
-                    if (!firstUnit) {
-                        addSpacing(FONT_SIZE_UNIT_HEADER * LEADING_FACTOR * 1.2f); // Space between units
-                    }
-                    firstUnit = false;
+            closeCurrentContentStream();
+            document.save(targetFile);
+        }
+        resetState();
+    }
 
-                    // Unit Header (Unit Name + Weekday)
-                    String unitHeaderText = String.format("%s (%s)",
-                            Objects.toString(unit.getName(), "[Unnamed Unit]"),
-                            Objects.toString(unit.getWeekday(), "-"));
-                    writeWrappedText(unitHeaderText, MARGIN + INDENT_UNIT, CONTENT_WIDTH, FONT_UNIT_HEADER, FONT_SIZE_UNIT_HEADER);
-                    addSpacing(FONT_SIZE_UNIT_HEADER * (LEADING_FACTOR - 1.0f) * 0.5f);
+    private void resetState() {
+        this.document = null;
+        this.contentStream = null;
+        this.currentPage = null;
+        this.currentY = 0;
+    }
 
-                    // Exercises
-                    if (unit.getTrainingExercises() != null && !unit.getTrainingExercises().isEmpty()) {
-                        addSpacing(FONT_SIZE_TEXT * LEADING_FACTOR * 0.6f); // Space before exercises start
+    private void writePlanHeader(TrainingPlan plan) throws IOException {
+        String planName = Objects.toString(plan.getName(), DEFAULT_PLAN_NAME);
+        writeStyledWrappedText(planName, Layout.INDENT_UNIT_LEVEL, STYLE_PREVIEW_TITLE);
+        addSpacing(Layout.SPACING_AFTER_TITLE);
 
-                        for (TrainingExercise exercise : unit.getTrainingExercises().getAll()) {
-                            addSpacing(FONT_SIZE_TEXT * LEADING_FACTOR * 0.5f); // Space between exercises
-
-                            // Exercise Name
-                            writeWrappedText(Objects.toString(exercise.getName(), "[Unnamed Exercise]"),
-                                    MARGIN + INDENT_EXERCISE, CONTENT_WIDTH - INDENT_EXERCISE, FONT_EXERCISE_NAME, FONT_SIZE_EXERCISE_NAME);
-                            addSpacing(FONT_SIZE_EXERCISE_NAME * (LEADING_FACTOR - 1.0f) * 0.2f);
-
-                            // Exercise Details
-                            String details = String.format("Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
-                                    Objects.toString(exercise.getDuration(), "-"),
-                                    exercise.getSets(),
-                                    (exercise.isBallBucket() ? "Yes" : "No"));
-                            writeWrappedText(details, MARGIN + INDENT_EXERCISE_CHILD, CONTENT_WIDTH - INDENT_EXERCISE_CHILD, FONT_TEXT_ITALIC, FONT_SIZE_DETAILS);
-                            addSpacing(FONT_SIZE_DETAILS * (LEADING_FACTOR - 1.0f) * 0.2f);
-
-                            // Exercise Description
-                            if (exercise.getDescription() != null && !exercise.getDescription().trim().isEmpty()) {
-                                writeWrappedText(exercise.getDescription(),
-                                        MARGIN + INDENT_EXERCISE_CHILD, CONTENT_WIDTH - INDENT_EXERCISE_CHILD, FONT_TEXT, FONT_SIZE_DESC);
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Handle case with no units
-                addSpacing(FONT_SIZE_TEXT * LEADING_FACTOR);
-                writeTextLine("[No training units defined]", MARGIN, FONT_TEXT_ITALIC, FONT_SIZE_TEXT, CONTENT_WIDTH);
-            }
-
-            // --- Finalize ---
-            closeCurrentContentStream(); // Close the last stream
-            document.save(targetFile); // Save to the temporary file
-
-        } catch (IOException e) {
-            // Clean up temporary file if save fails? Or let caller handle?
-            // Re-throw for caller to handle.
-            throw new RuntimeException("Failed to generate PDF: " + e.getMessage(), e);
-        } finally {
-            // Clean up instance variables
-            this.contentStream = null;
-            this.document = null;
-            this.currentPage = null;
+        String description = plan.getDescription();
+        if (description != null && !description.trim().isEmpty()) {
+            writeStyledWrappedText(description, Layout.INDENT_UNIT_LEVEL, STYLE_PREVIEW_DESC, Layout.EXTRA_LINE_SPACING);
+            addSpacing(Layout.SPACING_AFTER_PREVIEW_DESC);
+        } else {
+            addSpacing(Layout.SPACING_AFTER_TITLE);
         }
     }
 
+    private void drawSeparator() throws IOException {
+        float separatorHeight = 1f;
+        float totalSpaceNeeded = Layout.SPACING_SEPARATOR + separatorHeight;
 
-    // --- Helper Methods (Copied and potentially adapted from previous version) ---
+        if (currentY - totalSpaceNeeded < Layout.MARGIN) {
+            startNewPage();
+        }
+
+        addSpacing(Layout.SPACING_SEPARATOR / 2);
+
+        contentStream.setStrokingColor(Colors.SEPARATOR);
+        contentStream.setLineWidth(0.75f);
+        contentStream.moveTo(Layout.MARGIN, currentY);
+        contentStream.lineTo(Layout.PAGE_WIDTH - Layout.MARGIN, currentY);
+        contentStream.stroke();
+        currentY -= separatorHeight;
+
+        addSpacing(Layout.SPACING_SEPARATOR / 2);
+    }
+
+    private void writeUnitsSection(TrainingPlan plan) throws IOException {
+        List<TrainingUnit> units = plan.getTrainingUnits() != null ? plan.getTrainingUnits().getAll() : List.of();
+
+        if (units.isEmpty()) {
+            addSpacing(Layout.SPACING_BETWEEN_UNITS);
+            writeStyledTextLine(PLACEHOLDER_NO_UNITS, Layout.INDENT_UNIT_LEVEL, STYLE_PLACEHOLDER);
+            return;
+        }
+
+        boolean firstUnit = true;
+        for (TrainingUnit unit : units) {
+            if (!firstUnit) {
+                addSpacing(Layout.SPACING_BETWEEN_UNITS);
+            }
+            writeUnit(unit);
+            firstUnit = false;
+        }
+    }
+
+    private void writeUnit(TrainingUnit unit) throws IOException {
+        String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
+        String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
+        String headerText = String.format("%s (%s)", unitName, weekday);
+
+        writeStyledWrappedText(headerText, Layout.INDENT_UNIT_LEVEL, STYLE_UNIT_HEADER);
+        addSpacing(Layout.SPACING_AFTER_UNIT_HEADER);
+
+        String description = unit.getDescription();
+        if (description != null && !description.trim().isEmpty()) {
+            writeStyledWrappedText(description, Layout.INDENT_UNIT_LEVEL, STYLE_UNIT_DESC, Layout.EXTRA_LINE_SPACING);
+            addSpacing(Layout.SPACING_AFTER_UNIT_DESC);
+        }
+
+        writeExercisesSection(unit);
+    }
+
+    private void writeExercisesSection(TrainingUnit unit) throws IOException {
+        List<TrainingExercise> exercises = unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
+
+        if (exercises.isEmpty()) {
+            writeStyledWrappedText(PLACEHOLDER_NO_EXERCISES, Layout.INDENT_EXERCISE_CONTAINER, STYLE_PLACEHOLDER);
+            addSpacing(Layout.SPACING_BETWEEN_EXERCISES);
+            return;
+        }
+
+        addSpacing(Layout.SPACING_BEFORE_EXERCISES);
+
+        boolean firstExercise = true;
+        for (TrainingExercise exercise : exercises) {
+            if (!firstExercise) {
+                addSpacing(Layout.SPACING_BETWEEN_EXERCISES);
+            }
+            writeExercise(exercise);
+            firstExercise = false;
+        }
+    }
+
+    private void writeExercise(TrainingExercise exercise) throws IOException {
+        String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
+        writeStyledWrappedText(exerciseName, Layout.INDENT_EXERCISE_BLOCK, STYLE_EXERCISE_NAME);
+        addSpacing(Layout.SPACING_AFTER_EXERCISE_NAME);
+
+        String description = exercise.getDescription();
+        if (description != null && !description.trim().isEmpty()) {
+            writeStyledWrappedText(description, Layout.INDENT_EXERCISE_CONTENT, STYLE_EXERCISE_DESC, Layout.EXTRA_LINE_SPACING);
+            addSpacing(Layout.SPACING_AFTER_EXERCISE_DESC);
+        }
+
+        String duration = Objects.toString(exercise.getDuration(), DEFAULT_DURATION);
+        String details = String.format("Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
+                duration,
+                exercise.getSets(),
+                (exercise.isBallBucket() ? "Yes" : "No"));
+        writeStyledWrappedText(details, Layout.INDENT_EXERCISE_CONTENT, STYLE_EXERCISE_DETAILS);
+    }
 
     private void startNewPage() throws IOException {
         closeCurrentContentStream();
         currentPage = new PDPage(PDRectangle.A4);
         document.addPage(currentPage);
         contentStream = new PDPageContentStream(document, currentPage);
-        currentY = currentPage.getMediaBox().getHeight() - MARGIN;
+        currentY = currentPage.getMediaBox().getHeight() - Layout.MARGIN;
     }
 
     private void closeCurrentContentStream() throws IOException {
@@ -170,126 +197,185 @@ public class PdfExportService implements ExportService {
 
     private void addSpacing(float space) throws IOException {
         if (space <= 0) return;
-        // Check if space fits BEFORE applying
-        if (currentY - space < MARGIN) {
+        if (currentY - space < Layout.MARGIN) {
             startNewPage();
         } else {
             currentY -= space;
         }
     }
 
-    private void drawSeparator() throws IOException {
-        float separatorSpacing = 5f;
-        addSpacing(separatorSpacing);
-
-        // Re-check Y after spacing
-        if (currentY <= MARGIN + separatorSpacing) {
-            startNewPage();
-            addSpacing(separatorSpacing); // Add space again on new page
-        }
-
-        contentStream.setStrokingColor(Color.LIGHT_GRAY);
-        contentStream.setLineWidth(0.5f);
-        contentStream.moveTo(MARGIN, currentY);
-        contentStream.lineTo(PAGE_WIDTH - MARGIN, currentY);
-        contentStream.stroke();
-
-        addSpacing(separatorSpacing);
+    private void writeStyledTextLine(String line, float indent, PdfStyle style) throws IOException {
+        writeStyledTextLine(line, indent, style, 0f);
     }
 
-    private void writeTextLine(String line, float x, PDFont font, float fontSize, float availableWidth) throws IOException {
-        float leading = fontSize * LEADING_FACTOR;
-        // Check for page break BEFORE writing
-        if (currentY - leading < MARGIN) {
+    private void writeStyledTextLine(String line, float indent, PdfStyle style, float extraLeading) throws IOException {
+        float x = Layout.MARGIN + indent;
+        float availableWidth = Layout.CONTENT_WIDTH - indent;
+        float baseLeading = style.size() * Layout.BASE_LINE_SPACING_FACTOR;
+        float totalLeading = baseLeading + extraLeading;
+
+        if (currentY - totalLeading < Layout.MARGIN) {
             startNewPage();
         }
 
-        // Basic truncation if needed (though wrapping should handle most cases)
-        float lineWidth = font.getStringWidth(line) / 1000f * fontSize;
+        float lineWidth = calculateTextWidth(line, style.font(), style.size());
         String lineToWrite = line;
-        while (lineWidth > availableWidth && !lineToWrite.isEmpty()) {
-            lineToWrite = lineToWrite.substring(0, lineToWrite.length() - 1);
-            lineWidth = font.getStringWidth(lineToWrite) / 1000f * fontSize;
-            // Consider adding "..." if truncated
+        if (lineWidth > availableWidth) {
+            lineToWrite = truncateText(line, style.font(), style.size(), availableWidth);
         }
         if (lineToWrite.isEmpty()) return;
 
         contentStream.beginText();
-        contentStream.setFont(font, fontSize);
-        contentStream.newLineAtOffset(x, currentY - fontSize); // Position baseline
+        contentStream.setFont(style.font(), style.size());
+        contentStream.setNonStrokingColor(style.color());
+        contentStream.newLineAtOffset(x, currentY - style.size());
         contentStream.showText(lineToWrite);
         contentStream.endText();
 
-        currentY -= leading; // Move Y down AFTER writing
+        currentY -= totalLeading;
     }
 
-    private void writeWrappedText(String text, float x, float maxWidth, PDFont font, float fontSize) throws IOException {
+    private void writeStyledWrappedText(String text, float indent, PdfStyle style) throws IOException {
+        writeStyledWrappedText(text, indent, style, 0f);
+    }
+
+    private void writeStyledWrappedText(String text, float indent, PdfStyle style, float extraLeadingPerLine) throws IOException {
         if (text == null || text.trim().isEmpty()) return;
 
-        List<String> lines = new ArrayList<>();
-        String remainingText = text.trim().replaceAll("\r\n", "\n"); // Normalize line breaks
+        float availableWidth = Layout.CONTENT_WIDTH - indent;
+        List<String> lines = wrapText(text, style.font(), style.size(), availableWidth);
 
-        // Handle pre-existing newlines
+        for (String line : lines) {
+            if (line.isEmpty()) {
+                addSpacing(style.size() * Layout.BASE_LINE_SPACING_FACTOR + extraLeadingPerLine);
+            } else {
+                writeStyledTextLine(line, indent, style, extraLeadingPerLine);
+            }
+        }
+    }
+
+    private float calculateTextWidth(String text, PDFont font, float fontSize) throws IOException {
+        return font.getStringWidth(text) / 1000f * fontSize;
+    }
+
+    private String truncateText(String text, PDFont font, float fontSize, float maxWidth) throws IOException {
+        String result = text;
+        float width = calculateTextWidth(result, font, fontSize);
+        while (width > maxWidth && !result.isEmpty()) {
+            result = result.substring(0, result.length() - 1);
+            width = calculateTextWidth(result, font, fontSize);
+        }
+        return result;
+    }
+
+    private List<String> wrapText(String text, PDFont font, float fontSize, float maxWidth) throws IOException {
+        List<String> lines = new ArrayList<>();
+        String remainingText = text.trim().replaceAll("\r\n", "\n");
         String[] paragraphs = remainingText.split("\n", -1);
 
         for (String paragraph : paragraphs) {
             if (paragraph.isEmpty()) {
-                lines.add(""); // Keep empty lines for paragraph spacing
+                lines.add("");
                 continue;
             }
-
-            String remainingParagraph = paragraph;
+            String remainingParagraph = paragraph.trim();
             while (!remainingParagraph.isEmpty()) {
-                int breakIndex = -1;
-                int lastSpaceIndex = -1;
+                int breakIndex = findBreakIndex(remainingParagraph, font, fontSize, maxWidth);
+                lines.add(remainingParagraph.substring(0, breakIndex).trim());
+                remainingParagraph = remainingParagraph.substring(breakIndex).trim();
+            }
+        }
+        return lines;
+    }
 
-                // Find max fitting substring
-                for (int i = 0; i <= remainingParagraph.length(); i++) {
-                    String sub = remainingParagraph.substring(0, i);
-                    float width = font.getStringWidth(sub) / 1000f * fontSize;
+    private int findBreakIndex(String text, PDFont font, float fontSize, float maxWidth) throws IOException {
+        int lastWhitespace = -1;
+        float currentWidth = 0;
 
-                    if (width > maxWidth) {
-                        breakIndex = i > 0 ? i - 1 : 0; // Last fitting char index
-                        break;
-                    }
-                    if (i > 0 && Character.isWhitespace(remainingParagraph.charAt(i - 1))) {
-                        lastSpaceIndex = i - 1;
-                    }
-                    if (i == remainingParagraph.length()) {
-                        breakIndex = i; // Fits completely
-                    }
-                }
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            float charWidth = font.getStringWidth(String.valueOf(c)) / 1000f * fontSize;
 
-                String line;
-                if (breakIndex == remainingParagraph.length()) {
-                    // Whole remaining paragraph fits
-                    line = remainingParagraph;
-                    remainingParagraph = "";
-                } else if (lastSpaceIndex > 0 && breakIndex > lastSpaceIndex) {
-                    // Break at last space before exceeding width
-                    line = remainingParagraph.substring(0, lastSpaceIndex);
-                    remainingParagraph = remainingParagraph.substring(lastSpaceIndex + 1); // Skip space
+            if (currentWidth + charWidth > maxWidth) {
+                if (lastWhitespace != -1) {
+                    return lastWhitespace + 1;
                 } else {
-                    // No suitable space or first word too long, force break
-                    int forcedBreak = breakIndex > 0 ? breakIndex : 1; // Ensure progress even if first char too wide
-                    if (breakIndex == 0 && remainingParagraph.length() > 1) { // If even 1 char > width, take 1
-                        forcedBreak = 1;
-                    }
-                    line = remainingParagraph.substring(0, forcedBreak);
-                    remainingParagraph = remainingParagraph.substring(forcedBreak);
+                    return Math.max(1, i);
                 }
-                lines.add(line.trim()); // Add calculated line
             }
-        }
+            currentWidth += charWidth;
 
-        // Write the calculated lines
-        for (String line : lines) {
-            if (line.isEmpty()) {
-                // Handle paragraph spacing by adding vertical space for empty lines
-                addSpacing(fontSize * LEADING_FACTOR);
-            } else {
-                writeTextLine(line, x, font, fontSize, maxWidth);
+            if (Character.isWhitespace(c)) {
+                lastWhitespace = i;
             }
         }
+        return text.length();
+    }
+
+    private static class Layout {
+        static final float MARGIN = 50;
+        static final float PAGE_WIDTH = PDRectangle.A4.getWidth();
+        static final float CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
+        static final float BASE_LINE_SPACING_FACTOR = 1.3f;
+        static final float EXTRA_LINE_SPACING = 1.5f; // Additional spacing for description text lines
+
+        static final float INDENT_UNIT_LEVEL = 0;
+        static final float INDENT_EXERCISE_CONTAINER = 15;
+        static final float INDENT_EXERCISE_BLOCK = INDENT_EXERCISE_CONTAINER;
+        static final float INDENT_EXERCISE_CONTENT = INDENT_EXERCISE_CONTAINER;
+
+        static final float SPACING_AFTER_TITLE = 8;
+        static final float SPACING_AFTER_PREVIEW_DESC = 12;
+        static final float SPACING_SEPARATOR = 10; // Total space around separator
+        static final float SPACING_BETWEEN_UNITS = 15;
+        static final float SPACING_AFTER_UNIT_HEADER = 6;
+        static final float SPACING_AFTER_UNIT_DESC = 10;
+        static final float SPACING_BEFORE_EXERCISES = 8;
+        static final float SPACING_BETWEEN_EXERCISES = 12;
+        static final float SPACING_AFTER_EXERCISE_NAME = 2;
+        static final float SPACING_AFTER_EXERCISE_DESC = 5;
+    }
+
+    private static class Fonts {
+        static final PDFont BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+        static final PDFont REGULAR = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        static final PDFont ITALIC = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+
+        static final float SIZE_PREVIEW_TITLE = 19;
+        static final float SIZE_PREVIEW_DESC = 11;
+        static final float SIZE_UNIT_HEADER = 15;
+        static final float SIZE_UNIT_DESC = 11;
+        static final float SIZE_EXERCISES_TITLE = 12;
+        static final float SIZE_EXERCISE_NAME = 12;
+        static final float SIZE_EXERCISE_DESC = 10.5f;
+        static final float SIZE_EXERCISE_DETAILS = 10;
+        static final float SIZE_PLACEHOLDER = 10;
+    }
+
+    private static class Colors {
+        static final Color TEXT_DARKEST = hexToColor("#111111");
+        static final Color TEXT_DARKER = hexToColor("#1A1A1A");
+        static final Color TEXT_DARK = hexToColor("#222222");
+        static final Color TEXT_MEDIUM = hexToColor("#555555");
+        static final Color TEXT_LIGHT = hexToColor("#666666");
+        static final Color TEXT_LIGHTER = hexToColor("#777777");
+        static final Color SEPARATOR = hexToColor("#E0E0E0");
+
+        static Color hexToColor(String hex) {
+            hex = hex.replace("#", "");
+            if (hex.length() != 6) return Color.BLACK;
+            try {
+                return new Color(
+                        Integer.valueOf(hex.substring(0, 2), 16),
+                        Integer.valueOf(hex.substring(2, 4), 16),
+                        Integer.valueOf(hex.substring(4, 6), 16));
+            } catch (NumberFormatException e) {
+                System.err.println("Warning: Invalid hex color format '" + hex + "'. Using black.");
+                return Color.BLACK;
+            }
+        }
+    }
+
+    private record PdfStyle(PDFont font, float size, Color color) {
     }
 }
