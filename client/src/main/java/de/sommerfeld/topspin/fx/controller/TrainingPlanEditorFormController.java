@@ -107,6 +107,34 @@ public class TrainingPlanEditorFormController {
         bindUI();
     }
 
+    private void initializeCellFactories() {
+        trainingUnitsListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(TrainingUnitViewModel item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item.getModel().getName());
+                }
+            }
+        });
+
+        trainingExercisesListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(ExerciseViewModel item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item.getModel().getName());
+                }
+            }
+        });
+    }
+
     private void unbindUI() {
         if (viewModel == null) return;
         log.info("Form Controller: Unbinding UI...");
@@ -131,7 +159,9 @@ public class TrainingPlanEditorFormController {
         }
 
         trainingUnitsListView.getSelectionModel().clearSelection();
+        trainingUnitsListView.setCellFactory(null);
         trainingExercisesListView.getSelectionModel().clearSelection();
+        trainingExercisesListView.setCellFactory(null);
 
         planNameTextField.clear();
         planDescriptionTextArea.clear();
@@ -154,6 +184,7 @@ public class TrainingPlanEditorFormController {
         planNameTextField.textProperty().bindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().bindBidirectional(viewModel.planDescriptionProperty());
 
+        initializeCellFactories();
         trainingUnitsListView.setItems(viewModel.trainingUnitsProperty());
 
         viewModel.selectedTrainingUnitProperty().addListener(selectedUnitListener);
