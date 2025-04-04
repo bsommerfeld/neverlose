@@ -42,6 +42,8 @@ public class TopspinMetaController {
         registerViewListener();
         // loadTopBar();
         loadBottomBar();
+
+        bottomBarPlaceholder.requestFocus(); // to get away from the search field
     }
 
     private void registerViewListener() {
