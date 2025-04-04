@@ -59,7 +59,7 @@ public class TrainingPlanEditorPreviewController {
             cleanupListeners();
         }
         this.viewModel = viewModel;
-        log.info("Preview Controller: ViewModel received.");
+        log.info("ViewModel received.");
         bindPreviewUI();
         setupPreviewListeners();
         updatePreview();
@@ -70,7 +70,7 @@ public class TrainingPlanEditorPreviewController {
      */
     private void bindPreviewUI() {
         Objects.requireNonNull(viewModel, "ViewModel is required for binding preview UI");
-        log.info("Preview Controller: Binding direct UI elements...");
+        log.info("Binding direct UI elements...");
 
         previewPlanNameLabel.textProperty().bind(viewModel.planNameProperty());
         previewPlanNameLabel.getStyleClass().add("preview-title");
@@ -80,7 +80,7 @@ public class TrainingPlanEditorPreviewController {
 
         unitsPreviewLabel.visibleProperty().bind(Bindings.isEmpty(previewUnitsContainer.getChildren()).not());
 
-        log.info("Preview Controller: Direct UI elements bound.");
+        log.info("Direct UI elements bound.");
     }
 
     /**
@@ -88,7 +88,7 @@ public class TrainingPlanEditorPreviewController {
      */
     private void unbindPreviewUI() {
         if (viewModel == null) return;
-        log.info("Preview Controller: Unbinding direct UI elements...");
+        log.info("Unbinding direct UI elements...");
         if (previewPlanNameLabel.textProperty().isBound()) {
             previewPlanNameLabel.textProperty().unbind();
         }
@@ -97,7 +97,7 @@ public class TrainingPlanEditorPreviewController {
         }
         previewPlanNameLabel.setText("[Plan Name Preview]");
         previewPlanDescriptionText.setText("[Plan description preview text will appear here]");
-        log.info("Preview Controller: Direct UI elements unbound.");
+        log.info("Direct UI elements unbound.");
     }
 
     /**
@@ -106,18 +106,18 @@ public class TrainingPlanEditorPreviewController {
      */
     private void setupPreviewListeners() {
         Objects.requireNonNull(viewModel, "ViewModel is required for setting up preview listeners");
-        log.info("Preview Controller: Setting up dynamic listeners...");
+        log.info("Setting up dynamic listeners...");
         addPreviewListChangeListener(viewModel.trainingUnitsProperty());
-        log.info("Preview Controller: Dynamic listeners set up.");
+        log.info("Dynamic listeners set up.");
     }
 
     /**
      * Main method to refresh the entire preview display based on the current ViewModel state.
      */
     private void updatePreview() {
-        log.info("Preview Controller: Updating Preview...");
+        log.info("Updating Preview...");
         if (viewModel == null || previewUnitsContainer == null) {
-            System.err.println("Preview Controller: Cannot update preview, ViewModel or container is null.");
+            System.err.println("Cannot update preview, ViewModel or container is null.");
             return;
         }
 
@@ -128,9 +128,9 @@ public class TrainingPlanEditorPreviewController {
                 previewUnitsContainer.getChildren().add(createUnitPreviewNode(unitVm));
             }
         } else {
-            System.err.println("Preview Controller: Training units property list is null.");
+            System.err.println("Training units property list is null.");
         }
-        log.info("Preview Controller: Preview update complete.");
+        log.info("Preview update complete.");
     }
 
 
@@ -198,7 +198,7 @@ public class TrainingPlanEditorPreviewController {
      * Should be called by the MetaController.
      */
     public void cleanupListeners() {
-        log.info("Preview Controller: Cleaning up preview listeners...");
+        log.info("Cleaning up preview listeners...");
 
         unbindPreviewUI();
 
@@ -209,7 +209,7 @@ public class TrainingPlanEditorPreviewController {
         previewChangeListeners.clear();
         previewListChangeListeners.clear();
 
-        log.info("Preview Controller: Listener cleanup complete.");
+        log.info("Listener cleanup complete.");
     }
 
     /**

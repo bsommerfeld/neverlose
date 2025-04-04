@@ -103,7 +103,7 @@ public class TrainingPlanEditorFormController {
             unbindUI();
         }
         this.viewModel = viewModel;
-        log.info("Form Controller: ViewModel received.");
+        log.info("ViewModel received.");
         bindUI();
     }
 
@@ -137,7 +137,7 @@ public class TrainingPlanEditorFormController {
 
     private void unbindUI() {
         if (viewModel == null) return;
-        log.info("Form Controller: Unbinding UI...");
+        log.info("Unbinding UI...");
 
         planNameTextField.textProperty().unbindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().unbindBidirectional(viewModel.planDescriptionProperty());
@@ -174,11 +174,11 @@ public class TrainingPlanEditorFormController {
         removeExerciseButton.setOnAction(null);
         exportPdfButton.setOnAction(null);
 
-        log.info("Form Controller: UI Unbound.");
+        log.info("UI Unbound.");
     }
 
     private void bindUI() {
-        log.info("Form Controller: Binding UI...");
+        log.info("Binding UI...");
         Objects.requireNonNull(viewModel, "ViewModel cannot be null during bindUI in Form Controller");
 
         planNameTextField.textProperty().bindBidirectional(viewModel.planNameProperty());
@@ -228,7 +228,7 @@ public class TrainingPlanEditorFormController {
 
         exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
-        log.info("Form Controller: UI Bound.");
+        log.info("UI Bound.");
     }
 
     /**
@@ -336,7 +336,7 @@ public class TrainingPlanEditorFormController {
      */
     private void unbindUnitDetails(TrainingUnitViewModel unitVm) {
         if (unitVm == null) return;
-        log.info("Form Controller: Unbinding Unit Details for: " + unitVm.nameProperty().get());
+        log.info("Unbinding Unit Details for: " + unitVm.nameProperty().get());
         unitNameTextField.textProperty().unbindBidirectional(unitVm.nameProperty());
         unitDescriptionTextArea.textProperty().unbindBidirectional(unitVm.descriptionProperty());
         unitWeekdayChoiceBox.valueProperty().unbindBidirectional(unitVm.weekdayProperty());
@@ -361,7 +361,7 @@ public class TrainingPlanEditorFormController {
      */
     private void unbindExerciseDetails(ExerciseViewModel exerciseVm) {
         if (exerciseVm == null) return;
-        log.info("Form Controller: Unbinding Exercise Details for: " + exerciseVm.nameProperty().get());
+        log.info("Unbinding Exercise Details for: " + exerciseVm.nameProperty().get());
         exerciseNameTextField.textProperty().unbindBidirectional(exerciseVm.nameProperty());
         exerciseDescriptionTextArea.textProperty().unbindBidirectional(exerciseVm.descriptionProperty());
         exerciseDurationTextField.textProperty().unbindBidirectional(exerciseVm.durationProperty());
@@ -370,7 +370,7 @@ public class TrainingPlanEditorFormController {
     }
 
     private void onSelectedUnitChanged(TrainingUnitViewModel oldSelectedUnit, TrainingUnitViewModel newSelectedUnit) {
-        log.info("Form Controller: Selected Unit Changed - New: " + (newSelectedUnit != null ? newSelectedUnit.nameProperty().get() : "null"));
+        log.info("Selected Unit Changed - New: " + (newSelectedUnit != null ? newSelectedUnit.nameProperty().get() : "null"));
 
         if (oldSelectedUnit != null) {
             ExerciseViewModel oldExercise = oldSelectedUnit.selectedExerciseProperty().get();
@@ -416,7 +416,7 @@ public class TrainingPlanEditorFormController {
     }
 
     private void onSelectedExerciseChanged(ExerciseViewModel oldSelectedExercise, ExerciseViewModel newSelectedExercise) {
-        log.info("Form Controller: Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.nameProperty().get() : "null"));
+        log.info("Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.nameProperty().get() : "null"));
         TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
 
         if (oldSelectedExercise != null) {
@@ -592,7 +592,7 @@ public class TrainingPlanEditorFormController {
      * Cleans up listeners when the view is potentially being destroyed.
      */
     public void cleanup() {
-        log.info("Form Controller: Cleaning up...");
+        log.info("Cleaning up...");
         unbindUI();
         if (viewModel != null) {
             viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
@@ -601,6 +601,6 @@ public class TrainingPlanEditorFormController {
                 currentUnit.selectedExerciseProperty().removeListener(selectedExerciseListener);
             }
         }
-        log.info("Form Controller: Cleanup complete.");
+        log.info("Cleanup complete.");
     }
 }

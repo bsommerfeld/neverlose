@@ -23,7 +23,7 @@ public class TrainingPlanEditorMetaController {
 
     @FXML
     public void initialize() {
-        log.info("Meta Controller: Initializing...");
+        log.info("Initializing...");
         this.viewModel = new TrainingPlanEditorViewModel();
 
         Objects.requireNonNull(editorFormController, "Editor Form Controller not injected!");
@@ -32,7 +32,7 @@ public class TrainingPlanEditorMetaController {
         editorFormController.initViewModel(viewModel);
         editorPreviewController.initViewModel(viewModel);
 
-        log.info("Meta Controller: Initialization complete. ViewModel injected.");
+        log.info("Initialization complete. ViewModel injected.");
     }
 
     /**
@@ -43,11 +43,11 @@ public class TrainingPlanEditorMetaController {
      * @param plan The new TrainingPlan to load.
      */
     public void setPlan(TrainingPlan plan) {
-        log.info("Meta Controller: Setting new plan...");
+        log.info("Setting new plan...");
         Objects.requireNonNull(plan, "TrainingPlan cannot be null");
         Objects.requireNonNull(viewModel, "ViewModel must not be null when setting a plan.");
         viewModel.setTrainingPlan(plan);
-        log.info("Meta Controller: New plan set in ViewModel.");
+        log.info("New plan set in ViewModel.");
     }
 
 
@@ -56,7 +56,7 @@ public class TrainingPlanEditorMetaController {
      * It delegates cleanup tasks to the sub-controllers.
      */
     public void cleanup() {
-        log.info("Meta Controller: Starting cleanup...");
+        log.info("Starting cleanup...");
         if (editorFormController != null) {
             editorFormController.cleanup();
         }
@@ -66,7 +66,7 @@ public class TrainingPlanEditorMetaController {
         if (viewModel != null) {
             // viewModel.dispose(); // Once ViewModel holds resources
         }
-        log.info("Meta Controller: Cleanup complete.");
+        log.info("Cleanup complete.");
     }
 
     public TrainingPlanEditorViewModel getViewModel() {
