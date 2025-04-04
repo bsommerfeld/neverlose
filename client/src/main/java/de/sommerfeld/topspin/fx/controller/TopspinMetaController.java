@@ -40,7 +40,7 @@ public class TopspinMetaController {
     @FXML
     private void initialize() {
         registerViewListener();
-        loadTopBar();
+        // loadTopBar();
         loadBottomBar();
     }
 
