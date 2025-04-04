@@ -185,7 +185,48 @@
 
 /* Add/Remove Button */
 .add-button, .remove-button {
-    -fx-padding: 5px 10px; /* Slightly smaller */
+    -fx-padding: 5px 10px;
+    -fx-background-color: linear-gradient(to bottom, #fdfdfd, #eeeeee);
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+
+    -fx-border-color: #cccccc;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+
+    -fx-text-fill: #333333;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.add-button:hover, .remove-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+}
+
+.add-button:pressed, .remove-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #e8e8e8, #d8d8d8);
+}
+
+.add-button {
+    -fx-border-color: #5aa45e;
+}
+.add-button:hover {
+     -fx-border-color: #6ab06f;
+}
+.add-button:pressed {
+     -fx-border-color: #4a904f;
+}
+
+.remove-button {
+    -fx-border-color: #d05c5c;
+}
+.remove-button:hover {
+     -fx-border-color: #e07c7c;
+}
+.remove-button:pressed {
+     -fx-border-color: #c04c4c;
 }
 
 /* --- 6. ListViews, ChoiceBoxes, Menus, CheckBoxes --- */

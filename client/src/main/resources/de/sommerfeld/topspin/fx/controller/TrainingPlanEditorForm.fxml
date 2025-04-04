@@ -55,9 +55,9 @@
                         <ListView fx:id="trainingUnitsListView" prefHeight="250.0" HBox.hgrow="ALWAYS"
                                   styleClass="list-view"/>
                         <VBox spacing="5" alignment="TOP_CENTER">
-                            <Button fx:id="addUnitButton" text="+ Add Unit" maxWidth="Infinity"
+                            <Button fx:id="addUnitButton" text="Add Unit" maxWidth="Infinity"
                                     styleClass="add-button"/>
-                            <Button fx:id="removeUnitButton" text="- Remove Unit" maxWidth="Infinity" disable="true"
+                            <Button fx:id="removeUnitButton" text="Remove Unit" maxWidth="Infinity" disable="true"
                                     styleClass="remove-button"/>
                         </VBox>
                     </HBox>
@@ -94,9 +94,9 @@
                         <ListView fx:id="trainingExercisesListView" prefHeight="200.0" HBox.hgrow="ALWAYS"
                                   styleClass="list-view"/>
                         <VBox spacing="5" alignment="TOP_CENTER">
-                            <Button fx:id="addExerciseButton" text="+ Add Exercise" maxWidth="Infinity"
+                            <Button fx:id="addExerciseButton" text="Add Exercise" maxWidth="Infinity"
                                     styleClass="add-button"/>
-                            <Button fx:id="removeExerciseButton" text="- Remove Exercise" maxWidth="Infinity"
+                            <Button fx:id="removeExerciseButton" text="Remove Exercise" maxWidth="Infinity"
                                     disable="true" styleClass="remove-button"/>
                         </VBox>
                     </HBox>
