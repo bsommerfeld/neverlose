@@ -54,7 +54,7 @@ public class TopspinMetaController {
     }
 
     private void loadCenter() {
-        Parent center = viewProvider.requestView(TrainingPlanEditorController.class).parent();
+        Parent center = viewProvider.requestView(TrainingPlanEditorMetaController.class).parent();
         setAnchor(center);
         centerContentPlaceholder.getChildren().setAll(center);
     }
