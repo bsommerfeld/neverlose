@@ -4,6 +4,7 @@ import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.viewmodel.ExerciseViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingPlanEditorViewModel;
 import de.sommerfeld.topspin.fx.viewmodel.TrainingUnitViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -31,6 +32,8 @@ public class TrainingPlanEditorPreviewController {
     private Label previewPlanNameLabel;
     @FXML
     private Text previewPlanDescriptionText;
+    @FXML
+    private Label unitsPreviewLabel;
     @FXML
     private VBox previewUnitsContainer;
 
@@ -70,6 +73,8 @@ public class TrainingPlanEditorPreviewController {
 
         previewPlanDescriptionText.textProperty().bind(viewModel.planDescriptionProperty());
         previewPlanDescriptionText.getStyleClass().add("preview-desc");
+
+        unitsPreviewLabel.visibleProperty().bind(Bindings.isEmpty(previewUnitsContainer.getChildren()).not());
 
         System.out.println("Preview Controller: Direct UI elements bound.");
     }

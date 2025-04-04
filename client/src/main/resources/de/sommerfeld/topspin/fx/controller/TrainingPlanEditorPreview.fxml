@@ -17,7 +17,7 @@
 
         <Separator styleClass="separator"/>
 
-        <Label text="Units Preview" styleClass="section-title"/>
+        <Label fx:id="unitsPreviewLabel" text="Units Preview" styleClass="section-title"/>
         <VBox fx:id="previewUnitsContainer" spacing="20">
             <Label fx:id="noUnitsLabel" text="No units defined yet."
                    styleClass="search-results-placeholder">
