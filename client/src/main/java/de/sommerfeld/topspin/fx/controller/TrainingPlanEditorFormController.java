@@ -9,7 +9,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
@@ -25,14 +29,26 @@ public class TrainingPlanEditorFormController {
     private TextField planNameTextField;
     @FXML
     private TextArea planDescriptionTextArea;
+
+    @FXML
+    private HBox breadcrumbBox;
+
+    @FXML
+    private StackPane contentArea;
+    @FXML
+    private ScrollPane contentScrollPane;
+
+    @FXML
+    private VBox unitListContainer;
     @FXML
     private ListView<TrainingUnitViewModel> trainingUnitsListView;
     @FXML
     private Button addUnitButton;
     @FXML
     private Button removeUnitButton;
+
     @FXML
-    private TitledPane selectedUnitPane;
+    private VBox unitDetailContainer;
     @FXML
     private TextField unitNameTextField;
     @FXML
@@ -45,8 +61,9 @@ public class TrainingPlanEditorFormController {
     private Button addExerciseButton;
     @FXML
     private Button removeExerciseButton;
+
     @FXML
-    private TitledPane selectedExercisePane;
+    private VBox exerciseDetailContainer;
     @FXML
     private TextField exerciseNameTextField;
     @FXML
@@ -57,12 +74,14 @@ public class TrainingPlanEditorFormController {
     private TextField exerciseSetsTextField; // Maybe Spinner<Integer>
     @FXML
     private CheckBox exerciseBallBucketCheckBox;
+
     @FXML
     private Button exportPdfButton;
 
     private ChangeListener<String> textToVmSetsListener = null;
     private ChangeListener<Number> vmToTextSetsListener = null;
     private IntegerProperty currentlyBoundSetsProperty = null;
+
     private final ChangeListener<ExerciseViewModel> selectedExerciseListener =
             (obs, oldExVm, newExVm) -> onSelectedExerciseChanged(oldExVm, newExVm);
     private final ChangeListener<TrainingUnitViewModel> selectedUnitListener =
@@ -74,12 +93,6 @@ public class TrainingPlanEditorFormController {
         unitWeekdayChoiceBox.setItems(FXCollections.observableArrayList(Weekday.values()));
     }
 
-    /**
-     * Injects the ViewModel and triggers UI binding.
-     * This method should be called by the MetaController after FXML loading.
-     *
-     * @param viewModel The shared ViewModel.
-     */
     public void initViewModel(TrainingPlanEditorViewModel viewModel) {
         Objects.requireNonNull(viewModel, "ViewModel cannot be null for Form Controller");
         if (this.viewModel != null) {
@@ -91,7 +104,6 @@ public class TrainingPlanEditorFormController {
         bindUI();
     }
 
-
     private void unbindUI() {
         if (viewModel == null) return;
         System.out.println("Form Controller: Unbinding UI...");
@@ -99,30 +111,38 @@ public class TrainingPlanEditorFormController {
         planNameTextField.textProperty().unbindBidirectional(viewModel.planNameProperty());
         planDescriptionTextArea.textProperty().unbindBidirectional(viewModel.planDescriptionProperty());
 
+        trainingUnitsListView.setItems(null);
         if (viewModel.selectedTrainingUnitProperty().isBound()) {
+            viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
             viewModel.selectedTrainingUnitProperty().unbind();
         }
-        trainingUnitsListView.setItems(null);
-        viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
-
         if (removeUnitButton.disableProperty().isBound()) {
             removeUnitButton.disableProperty().unbind();
         }
-        if (selectedUnitPane.disableProperty().isBound()) {
-            selectedUnitPane.disableProperty().unbind();
+
+        TrainingUnitViewModel lastSelectedUnit = trainingUnitsListView.getSelectionModel().getSelectedItem();
+        if (lastSelectedUnit != null) {
+            ExerciseViewModel lastSelectedExercise = trainingExercisesListView.getSelectionModel().getSelectedItem();
+            unbindExerciseDetails(lastSelectedExercise);
+            unbindUnitDetails(lastSelectedUnit);
         }
 
-        cleanupDetailPanes();
+        trainingUnitsListView.getSelectionModel().clearSelection();
+        trainingExercisesListView.getSelectionModel().clearSelection();
 
         planNameTextField.clear();
         planDescriptionTextArea.clear();
-        removeUnitButton.setDisable(true);
-        selectedUnitPane.setDisable(true);
-        selectedExercisePane.setDisable(true);
+        clearAndHideAllContentViews();
+        breadcrumbBox.getChildren().clear();
+
+        addUnitButton.setOnAction(null);
+        removeUnitButton.setOnAction(null);
+        addExerciseButton.setOnAction(null);
+        removeExerciseButton.setOnAction(null);
+        exportPdfButton.setOnAction(null);
 
         System.out.println("Form Controller: UI Unbound.");
     }
-
 
     private void bindUI() {
         System.out.println("Form Controller: Binding UI...");
@@ -132,19 +152,37 @@ public class TrainingPlanEditorFormController {
         planDescriptionTextArea.textProperty().bindBidirectional(viewModel.planDescriptionProperty());
 
         trainingUnitsListView.setItems(viewModel.trainingUnitsProperty());
-        viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty());
+
         viewModel.selectedTrainingUnitProperty().addListener(selectedUnitListener);
+        viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty());
 
         removeUnitButton.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
-        selectedUnitPane.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
 
-        onSelectedUnitChanged(null, viewModel.selectedTrainingUnitProperty().get());
+        TrainingUnitViewModel initialUnit = viewModel.selectedTrainingUnitProperty().get();
+        ExerciseViewModel initialExercise = null;
+        if (initialUnit != null) {
+            viewModel.selectedTrainingUnitProperty().unbind();
+            trainingUnitsListView.getSelectionModel().select(initialUnit);
+            viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty()); // Rebind
+
+            if (initialUnit.selectedExerciseProperty() != null) {
+                initialExercise = initialUnit.selectedExerciseProperty().get();
+                if (initialExercise != null) {
+                    trainingExercisesListView.getSelectionModel().select(initialExercise);
+                }
+            }
+            onSelectedUnitChanged(null, initialUnit);
+        } else {
+            showView(unitListContainer);
+            updateBreadcrumb(null, null);
+        }
 
         addUnitButton.setOnAction(event -> {
             viewModel.addTrainingUnit();
             selectAndScrollToLast(trainingUnitsListView, viewModel.trainingUnitsProperty());
         });
-        removeUnitButton.setOnAction(event -> viewModel.removeSelectedTrainingUnit());
+        removeUnitButton.setOnAction(event -> viewModel.removeSelectedTrainingUnit()); // Selection change handles view update
+
         addExerciseButton.setOnAction(event -> {
             viewModel.addExerciseToSelectedUnit();
             TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
@@ -152,67 +190,166 @@ public class TrainingPlanEditorFormController {
                 selectAndScrollToLast(trainingExercisesListView, currentUnit.exercisesProperty());
             }
         });
-        removeExerciseButton.setOnAction(event -> viewModel.removeSelectedExerciseFromSelectedUnit());
+        removeExerciseButton.setOnAction(event -> viewModel.removeSelectedExerciseFromSelectedUnit()); // Selection change handles view update
+
         exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
         System.out.println("Form Controller: UI Bound.");
     }
 
     /**
-     * Manually cleans up bindings and state related to the Unit and Exercise detail panes.
-     * Called during unbindUI.
+     * Makes the specified view node visible and managed within the StackPane,
+     * hiding and unmanaging the others.
+     * Also resets scroll position.
+     *
+     * @param viewToShow The Node (VBox container) to display.
      */
-    private void cleanupDetailPanes() {
-        if (viewModel == null) return;
+    private void showView(Node viewToShow) {
+        contentArea.getChildren().forEach(node -> {
+            boolean isVisible = (node == viewToShow);
+            node.setVisible(isVisible);
+            node.setManaged(isVisible);
+        });
+        contentScrollPane.setVvalue(0.0);
+    }
 
-        TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
-        ExerciseViewModel currentExercise = null;
-        if (currentUnit != null) {
-            if (currentUnit.selectedExerciseProperty().isBound()) {
-                currentUnit.selectedExerciseProperty().unbind();
-            }
-            currentExercise = currentUnit.selectedExerciseProperty().get();
-            currentUnit.selectedExerciseProperty().removeListener(selectedExerciseListener);
+    /**
+     * Clears and hides all dynamic content views
+     */
+    private void clearAndHideAllContentViews() {
+        unitListContainer.setVisible(false);
+        unitListContainer.setManaged(false);
+        unitDetailContainer.setVisible(false);
+        unitDetailContainer.setManaged(false);
+        exerciseDetailContainer.setVisible(false);
+        exerciseDetailContainer.setManaged(false);
+    }
+
+    // --- Breadcrumb Logic ---
+
+    /**
+     * Updates the breadcrumb navigation bar based on the current selection.
+     *
+     * @param selectedUnit     The currently selected TrainingUnitViewModel, or null.
+     * @param selectedExercise The currently selected ExerciseViewModel, or null.
+     */
+    private void updateBreadcrumb(TrainingUnitViewModel selectedUnit, ExerciseViewModel selectedExercise) {
+        breadcrumbBox.getChildren().clear();
+        String planName = viewModel.planNameProperty().get();
+        if (planName == null || planName.trim().isEmpty()) {
+            planName = "Training Plan"; // Default if no name yet
         }
 
-        onSelectedExerciseChanged(currentExercise, null);
-        onSelectedUnitChanged(currentUnit, null);
+        if (selectedUnit == null) {
+            Label planLabel = new Label(planName);
+            planLabel.getStyleClass().add("breadcrumb-item-active");
+            breadcrumbBox.getChildren().add(planLabel);
+        } else {
+            Hyperlink planLink = new Hyperlink(planName);
+            planLink.setOnAction(e -> {
+                trainingExercisesListView.getSelectionModel().clearSelection();
+                trainingUnitsListView.getSelectionModel().clearSelection();
+            });
+            planLink.getStyleClass().add("breadcrumb-item");
+            breadcrumbBox.getChildren().add(planLink);
+        }
 
+        if (selectedUnit != null) {
+            breadcrumbBox.getChildren().add(createBreadcrumbSeparator());
+            String unitName = selectedUnit.nameProperty().get();
+            if (unitName == null || unitName.trim().isEmpty()) {
+                unitName = "Selected Unit"; // Default
+            }
+
+            if (selectedExercise == null) {
+                Label unitLabel = new Label(unitName);
+                unitLabel.getStyleClass().add("breadcrumb-item-active");
+                breadcrumbBox.getChildren().add(unitLabel);
+            } else {
+                Hyperlink unitLink = new Hyperlink(unitName);
+                unitLink.setOnAction(e -> {
+                    trainingExercisesListView.getSelectionModel().clearSelection();
+                });
+                unitLink.getStyleClass().add("breadcrumb-item");
+                breadcrumbBox.getChildren().add(unitLink);
+            }
+        }
+
+        if (selectedExercise != null) {
+            breadcrumbBox.getChildren().add(createBreadcrumbSeparator());
+            String exerciseName = selectedExercise.nameProperty().get();
+            if (exerciseName == null || exerciseName.trim().isEmpty()) {
+                exerciseName = "Selected Exercise"; // Default
+            }
+            Label exerciseLabel = new Label(exerciseName);
+            exerciseLabel.getStyleClass().add("breadcrumb-item-active");
+            breadcrumbBox.getChildren().add(exerciseLabel);
+        }
+    }
+
+    /**
+     * Helper to create a visual separator for the breadcrumb
+     */
+    private Node createBreadcrumbSeparator() {
+        Label separator = new Label(">");
+        separator.getStyleClass().add("breadcrumb-separator");
+        return separator;
+    }
+
+
+    /**
+     * Unbinds controls specific to a TrainingUnitViewModel
+     */
+    private void unbindUnitDetails(TrainingUnitViewModel unitVm) {
+        if (unitVm == null) return;
+        System.out.println("Form Controller: Unbinding Unit Details for: " + unitVm.nameProperty().get());
+        unitNameTextField.textProperty().unbindBidirectional(unitVm.nameProperty());
+        unitDescriptionTextArea.textProperty().unbindBidirectional(unitVm.descriptionProperty());
+        unitWeekdayChoiceBox.valueProperty().unbindBidirectional(unitVm.weekdayProperty());
+
+        if (trainingExercisesListView.itemsProperty().isBound()) {
+            trainingExercisesListView.itemsProperty().unbind();
+        }
+        if (unitVm.selectedExerciseProperty().isBound()) {
+            unitVm.selectedExerciseProperty().removeListener(selectedExerciseListener);
+            unitVm.selectedExerciseProperty().unbind();
+        }
         trainingExercisesListView.setItems(null);
 
         if (removeExerciseButton.disableProperty().isBound()) {
             removeExerciseButton.disableProperty().unbind();
         }
         removeExerciseButton.setDisable(true);
-        selectedExercisePane.setDisable(true);
     }
 
+    /**
+     * Unbinds controls specific to an ExerciseViewModel
+     */
+    private void unbindExerciseDetails(ExerciseViewModel exerciseVm) {
+        if (exerciseVm == null) return;
+        System.out.println("Form Controller: Unbinding Exercise Details for: " + exerciseVm.nameProperty().get());
+        exerciseNameTextField.textProperty().unbindBidirectional(exerciseVm.nameProperty());
+        exerciseDescriptionTextArea.textProperty().unbindBidirectional(exerciseVm.descriptionProperty());
+        exerciseDurationTextField.textProperty().unbindBidirectional(exerciseVm.durationProperty());
+        exerciseBallBucketCheckBox.selectedProperty().unbindBidirectional(exerciseVm.ballBucketProperty());
+        unbindSetsTextField();
+    }
 
     private void onSelectedUnitChanged(TrainingUnitViewModel oldSelectedUnit, TrainingUnitViewModel newSelectedUnit) {
         System.out.println("Form Controller: Selected Unit Changed - New: " + (newSelectedUnit != null ? newSelectedUnit.nameProperty().get() : "null"));
+
         if (oldSelectedUnit != null) {
-            unitNameTextField.textProperty().unbindBidirectional(oldSelectedUnit.nameProperty());
-            unitDescriptionTextArea.textProperty().unbindBidirectional(oldSelectedUnit.descriptionProperty());
-            unitWeekdayChoiceBox.valueProperty().unbindBidirectional(oldSelectedUnit.weekdayProperty());
-
-            if (trainingExercisesListView.itemsProperty().isBound()) {
-                trainingExercisesListView.itemsProperty().unbind();
+            ExerciseViewModel oldExercise = oldSelectedUnit.selectedExerciseProperty().get();
+            if (oldExercise != null) {
+                unbindExerciseDetails(oldExercise);
             }
-
-            if (oldSelectedUnit.selectedExerciseProperty().isBound()) {
-                oldSelectedUnit.selectedExerciseProperty().unbind();
-            }
-            oldSelectedUnit.selectedExerciseProperty().removeListener(selectedExerciseListener);
-
-            trainingExercisesListView.setItems(null);
-            onSelectedExerciseChanged(oldSelectedUnit.selectedExerciseProperty().get(), null);
-
+            unbindUnitDetails(oldSelectedUnit);
         } else {
             unitNameTextField.clear();
             unitDescriptionTextArea.clear();
             unitWeekdayChoiceBox.setValue(null);
             trainingExercisesListView.setItems(null);
-            onSelectedExerciseChanged(null, null);
+            removeExerciseButton.setDisable(true);
         }
 
         if (newSelectedUnit != null) {
@@ -221,45 +358,42 @@ public class TrainingPlanEditorFormController {
             unitWeekdayChoiceBox.valueProperty().bindBidirectional(newSelectedUnit.weekdayProperty());
 
             trainingExercisesListView.setItems(newSelectedUnit.exercisesProperty());
-            newSelectedUnit.selectedExerciseProperty().bind(trainingExercisesListView.getSelectionModel().selectedItemProperty());
-            newSelectedUnit.selectedExerciseProperty().addListener(selectedExerciseListener);
-            onSelectedExerciseChanged(null, newSelectedUnit.selectedExerciseProperty().get());
 
-            if (removeExerciseButton.disableProperty().isBound()) {
-                removeExerciseButton.disableProperty().unbind();
-            }
+            newSelectedUnit.selectedExerciseProperty().addListener(selectedExerciseListener);
+            newSelectedUnit.selectedExerciseProperty().bind(trainingExercisesListView.getSelectionModel().selectedItemProperty());
+
             removeExerciseButton.disableProperty().bind(newSelectedUnit.selectedExerciseProperty().isNull());
 
-        } else {
-            unitNameTextField.clear();
-            unitDescriptionTextArea.clear();
-            unitWeekdayChoiceBox.setValue(null);
-            trainingExercisesListView.setItems(null);
+            showView(unitDetailContainer);
+            updateBreadcrumb(newSelectedUnit, null);
 
-            onSelectedExerciseChanged(null, null);
-            if (removeExerciseButton.disableProperty().isBound()) {
-                removeExerciseButton.disableProperty().unbind();
-            }
-            removeExerciseButton.setDisable(true);
+            onSelectedExerciseChanged(null, newSelectedUnit.selectedExerciseProperty().get());
+
+        } else {
+            showView(unitListContainer);
+            updateBreadcrumb(null, null);
+            unbindExerciseDetails(null);
+            exerciseNameTextField.clear();
+            exerciseDescriptionTextArea.clear();
+            exerciseDurationTextField.clear();
+            exerciseSetsTextField.clear();
+            exerciseBallBucketCheckBox.setSelected(false);
         }
     }
 
-
     private void onSelectedExerciseChanged(ExerciseViewModel oldSelectedExercise, ExerciseViewModel newSelectedExercise) {
-        System.out.println("Form Controller: Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.getModel().getName() : "null"));
+        System.out.println("Form Controller: Selected Exercise Changed - New: " + (newSelectedExercise != null ? newSelectedExercise.nameProperty().get() : "null"));
+        TrainingUnitViewModel currentUnit = viewModel.selectedTrainingUnitProperty().get();
+
         if (oldSelectedExercise != null) {
-            exerciseNameTextField.textProperty().unbindBidirectional(oldSelectedExercise.nameProperty());
-            exerciseDescriptionTextArea.textProperty().unbindBidirectional(oldSelectedExercise.descriptionProperty());
-            exerciseDurationTextField.textProperty().unbindBidirectional(oldSelectedExercise.durationProperty());
-            exerciseBallBucketCheckBox.selectedProperty().unbindBidirectional(oldSelectedExercise.ballBucketProperty());
-            unbindSetsTextField();
+            unbindExerciseDetails(oldSelectedExercise);
         } else {
             exerciseNameTextField.clear();
             exerciseDescriptionTextArea.clear();
             exerciseDurationTextField.clear();
-            exerciseBallBucketCheckBox.setSelected(false);
             unbindSetsTextField();
             exerciseSetsTextField.clear();
+            exerciseBallBucketCheckBox.setSelected(false);
         }
 
         if (newSelectedExercise != null) {
@@ -268,17 +402,28 @@ public class TrainingPlanEditorFormController {
             exerciseDurationTextField.textProperty().bindBidirectional(newSelectedExercise.durationProperty());
             exerciseBallBucketCheckBox.selectedProperty().bindBidirectional(newSelectedExercise.ballBucketProperty());
             bindSetsTextField(newSelectedExercise);
+
+            showView(exerciseDetailContainer);
+            updateBreadcrumb(currentUnit, newSelectedExercise);
+
         } else {
+            if (currentUnit != null) {
+                showView(unitDetailContainer);
+                updateBreadcrumb(currentUnit, null);
+            } else {
+                // Edge case: Unit was deselected *while* exercise was selected? Go back to list.
+                showView(unitListContainer);
+                updateBreadcrumb(null, null);
+            }
             exerciseNameTextField.clear();
             exerciseDescriptionTextArea.clear();
             exerciseDurationTextField.clear();
-            exerciseBallBucketCheckBox.setSelected(false);
             unbindSetsTextField();
             exerciseSetsTextField.clear();
+            exerciseBallBucketCheckBox.setSelected(false);
         }
-
-        selectedExercisePane.setDisable(newSelectedExercise == null);
     }
+
 
     private void unbindSetsTextField() {
         if (textToVmSetsListener != null) {
@@ -294,29 +439,45 @@ public class TrainingPlanEditorFormController {
 
     private void bindSetsTextField(ExerciseViewModel exerciseVm) {
         unbindSetsTextField();
-
-        if (exerciseVm == null) return;
+        if (exerciseVm == null) {
+            exerciseSetsTextField.clear();
+            return;
+        }
 
         currentlyBoundSetsProperty = exerciseVm.setsProperty();
-
         exerciseSetsTextField.setText(String.valueOf(currentlyBoundSetsProperty.get()));
 
         textToVmSetsListener = (obs, oldVal, newVal) -> {
+            if (currentlyBoundSetsProperty == null) return; // Guard
             try {
-                int sets = Integer.parseInt(newVal.trim());
-                if (currentlyBoundSetsProperty != null && currentlyBoundSetsProperty.get() != sets) {
+                int sets = 0; // Default to 0 if empty or invalid
+                if (newVal != null && !newVal.trim().isEmpty()) {
+                    sets = Integer.parseInt(newVal.trim());
+                }
+                if (currentlyBoundSetsProperty.get() != sets) {
                     currentlyBoundSetsProperty.set(sets);
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Invalid number format for Sets: " + newVal);
+                System.err.println("Invalid number format for Sets: " + newVal + " - Setting VM to 0");
+                final String vmValue = String.valueOf(currentlyBoundSetsProperty.get());
+                if (!exerciseSetsTextField.getText().equals(vmValue)) {
+                    exerciseSetsTextField.setText(vmValue);
+                }
             }
         };
         exerciseSetsTextField.textProperty().addListener(textToVmSetsListener);
 
         vmToTextSetsListener = (obs, oldVal, newVal) -> {
-            String currentText = exerciseSetsTextField.getText();
+            String currentText = exerciseSetsTextField.getText().trim();
             String newValueStr = newVal.toString();
-            if (!currentText.equals(newValueStr)) {
+            int currentTextParsed = 0;
+            try {
+                if (!currentText.isEmpty()) {
+                    currentTextParsed = Integer.parseInt(currentText);
+                }
+            } catch (NumberFormatException e) { /* Ignore, comparison below handles it */ }
+
+            if (currentTextParsed != newVal.intValue() || !currentText.equals(newValueStr)) {
                 exerciseSetsTextField.setText(newValueStr);
             }
         };
@@ -393,8 +554,8 @@ public class TrainingPlanEditorFormController {
     }
 
     /**
+     * f
      * Cleans up listeners when the view is potentially being destroyed.
-     * Should be called by the MetaController.
      */
     public void cleanup() {
         System.out.println("Form Controller: Cleaning up...");

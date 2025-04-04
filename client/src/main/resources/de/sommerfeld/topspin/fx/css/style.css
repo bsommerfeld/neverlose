@@ -602,3 +602,155 @@
      -fx-border-width: 1.5px;
      -fx-padding: 4.25px 11.25px; /* Adjust padding */
 }
+
+/* --- Editor Structure Adjustments --- */
+.editor-pane-wrapper {
+    -fx-background-color: #F0F0F0; /* Slightly darker background for contrast */
+}
+
+.editor-pane-fixed-top,
+.editor-pane-fixed-bottom {
+     -fx-background-color: white;
+     -fx-border-color: #E0E0E0; /* Slightly more visible border */
+     -fx-border-width: 0 0 1px 0; /* Bottom border for top */
+     /* -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.05), 4, 0, 0, 1 ); /* Optional subtle shadow */
+}
+.editor-pane-fixed-bottom {
+     -fx-border-width: 1px 0 0 0; /* Top border for bottom */
+     /* -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.05), 4, 0, 0, -1 ); */
+}
+
+.editor-pane-scroll {
+    -fx-padding: 0;
+    -fx-background: transparent; /* ScrollPane itself is transparent */
+    -fx-border-color: transparent;
+}
+
+.editor-pane-scroll .viewport {
+    -fx-background: transparent; /* Viewport is transparent */
+}
+
+/* Style for the StackPane holding the dynamic content */
+/* This provides padding AROUND the actual content "window" */
+.editor-pane-dynamic {
+    -fx-background-color: transparent; /* StackPane background is transparent */
+    -fx-padding: 10px; /* Padding around the dynamic-content-pane */
+    -fx-alignment: TOP_CENTER; /* Ensure content pane aligns top */
+}
+
+/* --- Dynamic Content "Window" Style --- */
+/* This styles the VBox containers directly */
+.dynamic-content-pane {
+    -fx-padding: 20px; /* Generous internal padding */
+    -fx-background-color: white; /* Clear white background */
+    -fx-border-color: #C8C8C8; /* A slightly more defined border */
+    -fx-border-width: 1px;
+    -fx-background-radius: 5px; /* Slightly larger radius */
+    -fx-border-radius: 5px;
+    /* A more noticeable shadow to lift the "window" */
+    -fx-effect: dropshadow( gaussian, rgba(0,0,0,0.12), 10, 0, 0, 2 );
+    -fx-alignment: TOP_LEFT; /* Align content within the VBox */
+    /* Remove VBox spacing if padding/margins on elements are sufficient */
+    /* -fx-spacing: 15px; */ /* Adjust spacing if needed */
+}
+
+/* Adjust titles within the dynamic pane for consistency */
+.dynamic-content-pane .section-title-compact {
+    -fx-padding: 0 0 15px 0; /* More padding below title */
+    -fx-font-size: 1.4em; /* Make it stand out a bit more */
+    -fx-font-weight: 600;
+    -fx-text-fill: #1A1A1A;
+    -fx-border-color: #DCDCDC; /* Keep the bottom border */
+    -fx-border-width: 0 0 1px 0;
+    /* Remove negative margins if they existed */
+    -fx-margin: 0;
+}
+.dynamic-content-pane .sub-section-title {
+     -fx-padding: 15px 0 8px 0; /* Adjust spacing */
+     -fx-font-size: 1.15em;
+}
+
+/* Optional: Compact form grid style if needed */
+.form-grid-compact {
+    -fx-hgap: 10px;
+    -fx-vgap: 8px; /* Slightly tighter vertically */
+    -fx-padding: 10px 0;
+}
+
+/* Ensure separators inside the dynamic pane look okay */
+.dynamic-content-pane .separator {
+    -fx-padding: 20px 0; /* More vertical space */
+}
+.dynamic-content-pane .separator .line {
+    -fx-border-color: #EAEAEA;
+}
+
+/* Make ListViews inside the pane fit well */
+.dynamic-content-pane .list-view {
+     -fx-border-color: #DCDCDC; /* Ensure border is visible */
+     /* Maybe remove internal padding if cell padding is enough */
+     /* -fx-padding: 0; */
+}
+
+
+/* --- Breadcrumb Bar --- */
+.breadcrumb-bar {
+    -fx-padding: 5px 0; /* Padding above/below breadcrumb items */
+    /* -fx-background-color: #f0f0f0; /* Optional subtle background */
+    /* -fx-border-color: #e0e0e0; */
+    /* -fx-border-width: 1 0; */ /* Top and bottom border */
+}
+
+.breadcrumb-item,
+.breadcrumb-item-active {
+    -fx-font-size: 0.95em;
+    -fx-padding: 3px 5px; /* Padding within each item */
+    -fx-background-radius: 3px;
+}
+
+.breadcrumb-item { /* Style for Hyperlinks (clickable items) */
+    -fx-text-fill: #007AFF; /* Use accent color */
+    -fx-underline: false;
+    -fx-border-color: transparent; /* No border */
+}
+
+.breadcrumb-item:hover {
+    -fx-underline: true;
+    -fx-background-color: #E8F2FF; /* Light blue background on hover */
+}
+
+.breadcrumb-item-active { /* Style for Labels (current/non-clickable item) */
+    -fx-font-weight: 600; /* Semi-bold for active item */
+    -fx-text-fill: #111111; /* Darker text */
+}
+
+.breadcrumb-separator {
+    -fx-padding: 0 6px; /* Space around the separator */
+    -fx-font-size: 0.95em;
+    -fx-text-fill: #888888; /* Gray separator */
+}
+
+/* --- Compact Section Title --- */
+.section-title-compact {
+    -fx-padding: 10px 0 8px 0; /* Less padding than main section titles */
+    -fx-font-weight: 600; /* Semi-bold */
+    -fx-font-size: 1.3em; /* Slightly smaller */
+    -fx-text-fill: #111111;
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 0 0 1px 0;
+}
+
+/* Thin Separator */
+.separator-thin .line{
+     -fx-border-width: 1px 0 0 0;
+     -fx-border-color: #ECECEC; /* Lighter than default */
+}
+.separator-thin{
+     -fx-padding: 5px 0; /* Less space */
+}
+
+
+/* .list-view { */
+/* -fx-pref-height: 200px; /* Or use USE_COMPUTED_SIZE */
+/* -fx-min-height: 150px; */
+/* } */
