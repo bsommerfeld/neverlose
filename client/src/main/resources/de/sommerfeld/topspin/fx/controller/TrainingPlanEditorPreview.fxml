@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 <ScrollPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
             fx:controller="de.sommerfeld.topspin.fx.controller.TrainingPlanEditorPreviewController"
-            fitToWidth="true" styleClass="preview-pane-scroll" maxWidth="595">
+            fitToWidth="true" styleClass="preview-pane-scroll" maxWidth="675">
     <VBox fx:id="previewVBox" spacing="15.0" styleClass="preview-pane">
         <padding>
             <Insets top="10" right="10" bottom="10" left="10"/>
