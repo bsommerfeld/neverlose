@@ -183,6 +183,22 @@ public class TrainingPlanEditorViewModel {
         }
     }
 
+    public void removeTrainingUnit(TrainingUnitViewModel unit) {
+        if (unit != null) {
+            this.trainingUnits.remove(unit);
+        } else {
+            System.err.println("Cannot remove unit: No unit selected.");
+        }
+    }
+
+    public void removeExerciseFromSelectedUnit(ExerciseViewModel exercise) {
+        TrainingUnitViewModel selectedUnit = selectedTrainingUnit.get();
+        if (selectedUnit != null) {
+            selectedUnit.removeExercise(exercise);
+        } else {
+            System.err.println("Cannot remove exercise: No Training Unit selected.");
+        }
+    }
 
     /**
      * @return The StringProperty for the training plan's name.

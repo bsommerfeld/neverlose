@@ -1,7 +1,12 @@
 package de.sommerfeld.topspin.fx.viewmodel;
 
-import de.sommerfeld.topspin.plan.components.*;
-import javafx.beans.property.*;
+import de.sommerfeld.topspin.plan.components.TrainingExercise;
+import de.sommerfeld.topspin.plan.components.TrainingUnit;
+import de.sommerfeld.topspin.plan.components.Weekday;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -85,6 +90,12 @@ public class TrainingUnitViewModel {
         TrainingExercise newExercise = new TrainingExercise("New Exercise", "", "5 min", 3, false);
         ExerciseViewModel newExerciseViewModel = new ExerciseViewModel(newExercise);
         this.exercises.add(newExerciseViewModel);
+    }
+
+    public void removeExercise(ExerciseViewModel exercise) {
+        if (exercise != null) {
+            this.exercises.remove(exercise);
+        }
     }
 
     public void removeSelectedExercise() {
