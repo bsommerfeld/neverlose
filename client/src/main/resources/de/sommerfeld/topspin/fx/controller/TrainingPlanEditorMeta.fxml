@@ -7,7 +7,7 @@
             prefHeight="700.0" prefWidth="1000.0"
             stylesheets="/de/sommerfeld/topspin/fx/css/style.css">
     <center>
-        <SplitPane fx:id="trainingPlanEditorSplitPane" dividerPositions="0.55" prefHeight="600.0" prefWidth="1000.0"
+        <SplitPane fx:id="trainingPlanEditorSplitPane" dividerPositions="0.25" prefHeight="600.0" prefWidth="1000.0"
                    BorderPane.alignment="CENTER">
 
             <fx:include fx:id="editorForm" source="TrainingPlanEditorForm.fxml"/>

@@ -13,7 +13,7 @@
         </padding>
         <Label fx:id="previewPlanNameLabel" text="[Plan Name Preview]" styleClass="preview-title"/>
         <Text fx:id="previewPlanDescriptionText" text="[Plan description preview text will appear here]"
-              wrappingWidth="550" styleClass="preview-text"/>
+              wrappingWidth="500" styleClass="preview-text"/>
 
         <Separator styleClass="separator"/>
 

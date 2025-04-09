@@ -143,7 +143,7 @@ public class TrainingPlanEditorPreviewController {
 
         Text unitDesc = new Text(unitVm.getModel().getDescription());
         unitDesc.getStyleClass().add("preview-unit-desc");
-        unitDesc.setWrappingWidth(380);
+        unitDesc.setWrappingWidth(475);
 
         unitBox.getChildren().addAll(unitHeader, unitDesc);
 
@@ -178,7 +178,7 @@ public class TrainingPlanEditorPreviewController {
         exName.getStyleClass().add("preview-exercise-name");
 
         Text exDesc = new Text(exVm.getModel().getDescription());
-        exDesc.setWrappingWidth(380);
+        exDesc.setWrappingWidth(450);
         exDesc.getStyleClass().add("preview-exercise-desc");
 
         String details = String.format("Duration: %s | Sets: %d | Ball Bucket: %s",
