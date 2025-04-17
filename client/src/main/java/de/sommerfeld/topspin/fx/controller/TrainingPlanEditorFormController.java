@@ -6,6 +6,7 @@ import de.sommerfeld.topspin.fx.viewmodel.TrainingUnitViewModel;
 import de.sommerfeld.topspin.logger.LogFacade;
 import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import de.sommerfeld.topspin.plan.components.Weekday;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -416,7 +417,8 @@ public class TrainingPlanEditorFormController {
             unitDescriptionTextArea.textProperty().bindBidirectional(newSelectedUnit.descriptionProperty());
             unitWeekdayChoiceBox.valueProperty().bindBidirectional(newSelectedUnit.weekdayProperty());
 
-            trainingExercisesListView.setItems(newSelectedUnit.exercisesProperty());
+            final ObservableList<ExerciseViewModel> exercises = newSelectedUnit.exercisesProperty();
+            Platform.runLater(() -> trainingExercisesListView.setItems(exercises));
 
             newSelectedUnit.selectedExerciseProperty().addListener(selectedExerciseListener);
             newSelectedUnit.selectedExerciseProperty().bind(trainingExercisesListView.getSelectionModel().selectedItemProperty());
