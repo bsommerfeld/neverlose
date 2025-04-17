@@ -28,7 +28,7 @@ public class TopspinApplication extends Application {
         Parent root = viewProvider.requestView(TopspinMetaController.class).parent();
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setTitle("Topspin");
+        stage.setTitle("Topspin MVP-0.1");
         stage.show();
     }
 }
