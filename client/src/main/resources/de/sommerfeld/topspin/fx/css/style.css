@@ -782,12 +782,60 @@
 }
 
 /* Thin Separator */
-.separator-thin .line{
+.separator-thin .line {
      -fx-border-width: 1px 0 0 0;
      -fx-border-color: #ECECEC; /* Lighter than default */
 }
-.separator-thin{
+.separator-thin {
      -fx-padding: 5px 0; /* Less space */
+}
+
+/* ======================================== */
+/* Styling for Remove Button within ListCell*/
+/* ======================================== */
+
+.remove-in-cell-button {
+    /* --- Size & Spacing --- */
+    -fx-padding: 2px 6px; /* Top/Bottom 2px, Left/Right 6px - makes it less tall than default */
+    -fx-font-size: 0.9em; /* Make font slightly smaller than default */
+    -fx-min-width: 60px;  /* Ensure a minimum width */
+    -fx-pref-width: -fx-min-width; /* Allow shrinking to min width */
+
+    /* --- Appearance --- */
+    -fx-background-color: #E0E0E0; /* Light grey background */
+    -fx-text-fill: #424242;      /* Dark grey text */
+    -fx-background-radius: 3px;   /* Slightly rounded corners */
+    -fx-border-radius: 3px;
+    -fx-border-color: #BDBDBD;   /* Subtle grey border */
+    -fx-border-width: 1px;
+
+    /* --- Behavior --- */
+    -fx-cursor: hand; /* Show a hand cursor on hover */
+}
+
+/* --- Hover State --- */
+.remove-in-cell-button:hover {
+    -fx-background-color: #f44336; /* Red background on hover for delete action */
+    -fx-text-fill: white;         /* White text on hover */
+    -fx-border-color: #d32f2f;   /* Darker red border on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1); /* Optional: subtle shadow on hover */
+}
+
+/* --- Pressed State --- */
+.remove-in-cell-button:pressed {
+    -fx-background-color: #c62828; /* Even darker red when actively pressed */
+    -fx-text-fill: white;
+    -fx-border-color: #b71c1c;
+    -fx-effect: none; /* Remove shadow when pressed */
+    /* Optional: simulate button press movement */
+    -fx-padding: 3px 5px 1px 7px;
+}
+
+/* --- Disabled State (If applicable, though unlikely for this button) --- */
+.remove-in-cell-button:disabled {
+    -fx-opacity: 0.5; /* Make it look faded when disabled */
+    -fx-cursor: default; /* Default cursor when disabled */
+    -fx-effect: none;
 }
 
 

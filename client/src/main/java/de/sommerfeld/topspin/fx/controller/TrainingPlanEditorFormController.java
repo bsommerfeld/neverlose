@@ -11,17 +11,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class TrainingPlanEditorFormController {
 
@@ -48,8 +49,6 @@ public class TrainingPlanEditorFormController {
     private ListView<TrainingUnitViewModel> trainingUnitsListView;
     @FXML
     private Button addUnitButton;
-    @FXML
-    private Button removeUnitButton;
 
     @FXML
     private VBox unitDetailContainer;
@@ -63,8 +62,6 @@ public class TrainingPlanEditorFormController {
     private ListView<ExerciseViewModel> trainingExercisesListView;
     @FXML
     private Button addExerciseButton;
-    @FXML
-    private Button removeExerciseButton;
 
     @FXML
     private VBox exerciseDetailContainer;
@@ -107,33 +104,76 @@ public class TrainingPlanEditorFormController {
         bindUI();
     }
 
+    /**
+     * Initializes the cell factories for the training units and exercises ListViews.
+     * Uses a helper method {@link #createRemovableCell(Function, Consumer)}
+     * to configure cells with a remove button and avoid code duplication.
+     */
     private void initializeCellFactories() {
-        trainingUnitsListView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(TrainingUnitViewModel item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item.getModel().getName());
+        trainingUnitsListView.setCellFactory(lv -> createRemovableCell(
+                unitVm -> (unitVm != null && unitVm.getModel() != null) ? unitVm.getModel().getName() : "Unit (no model)",
+                unitVm -> {
+                    if (unitVm != null && viewModel != null) viewModel.removeTrainingUnit(unitVm);
                 }
-            }
-        });
-
-        trainingExercisesListView.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(ExerciseViewModel item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item.getModel().getName());
+        ));
+        trainingExercisesListView.setCellFactory(lv -> createRemovableCell(
+                exerciseVm -> (exerciseVm != null && exerciseVm.getModel() != null) ? exerciseVm.getModel().getName() : "Exercise (no model)",
+                exerciseVm -> {
+                    if (exerciseVm != null && viewModel != null) viewModel.removeExerciseFromSelectedUnit(exerciseVm);
                 }
-            }
-        });
+        ));
     }
+
+    /**
+     * Creates a generic ListCell instance configured to display an item's name
+     * alongside a "Remove" button. The cell includes a flexible spacer to push
+     * the button to the right end of the cell.
+     *
+     * @param <T>           The type of the item displayed in the ListView cell.
+     * @param nameExtractor A {@link Function} that takes an item of type T and returns the String representation (e.g., name) to be displayed.
+     * @param removeAction  A {@link Consumer} that takes an item of type T and performs the action required to remove that item (typically involves calling a ViewModel method).
+     * @return A configured {@link ListCell} instance for items of type T.
+     */
+    private <T> ListCell<T> createRemovableCell(Function<T, String> nameExtractor, Consumer<T> removeAction) {
+        return new ListCell<>() {
+            private final HBox hbox = new HBox(10);
+            private final Label label = new Label();
+            private final Button removeButton = new Button("Remove");
+            private final Region spacer = new Region();
+
+            {
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(spacer, Priority.ALWAYS);
+                hbox.getChildren().addAll(label, spacer, removeButton);
+                removeButton.getStyleClass().add("remove-in-cell-button");
+
+                removeButton.setOnAction(event -> {
+                    T itemToRemove = getItem();
+                    if (itemToRemove != null) {
+                        removeAction.accept(itemToRemove);
+                    }
+                });
+            }
+
+            /**
+             * Updates the cell's appearance based on the item it currently represents.
+             * Called by the ListView virtualization mechanism.
+             */
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    label.setText(nameExtractor.apply(item));
+                    setGraphic(hbox);
+                    setText(null);
+                }
+            }
+        };
+    }
+
 
     private void unbindUI() {
         if (viewModel == null) return;
@@ -146,9 +186,6 @@ public class TrainingPlanEditorFormController {
         if (viewModel.selectedTrainingUnitProperty().isBound()) {
             viewModel.selectedTrainingUnitProperty().removeListener(selectedUnitListener);
             viewModel.selectedTrainingUnitProperty().unbind();
-        }
-        if (removeUnitButton.disableProperty().isBound()) {
-            removeUnitButton.disableProperty().unbind();
         }
 
         TrainingUnitViewModel lastSelectedUnit = trainingUnitsListView.getSelectionModel().getSelectedItem();
@@ -169,9 +206,7 @@ public class TrainingPlanEditorFormController {
         breadcrumbBox.getChildren().clear();
 
         addUnitButton.setOnAction(null);
-        removeUnitButton.setOnAction(null);
         addExerciseButton.setOnAction(null);
-        removeExerciseButton.setOnAction(null);
         exportPdfButton.setOnAction(null);
 
         log.info("UI Unbound.");
@@ -189,8 +224,6 @@ public class TrainingPlanEditorFormController {
 
         viewModel.selectedTrainingUnitProperty().addListener(selectedUnitListener);
         viewModel.selectedTrainingUnitProperty().bind(trainingUnitsListView.getSelectionModel().selectedItemProperty());
-
-        removeUnitButton.disableProperty().bind(viewModel.selectedTrainingUnitProperty().isNull());
 
         TrainingUnitViewModel initialUnit = viewModel.selectedTrainingUnitProperty().get();
         ExerciseViewModel initialExercise = null;
@@ -215,7 +248,6 @@ public class TrainingPlanEditorFormController {
             viewModel.addTrainingUnit();
             selectAndScrollToLast(trainingUnitsListView, viewModel.trainingUnitsProperty());
         });
-        removeUnitButton.setOnAction(event -> viewModel.removeSelectedTrainingUnit()); // Selection change handles view update
 
         addExerciseButton.setOnAction(event -> {
             viewModel.addExerciseToSelectedUnit();
@@ -224,7 +256,6 @@ public class TrainingPlanEditorFormController {
                 selectAndScrollToLast(trainingExercisesListView, currentUnit.exercisesProperty());
             }
         });
-        removeExerciseButton.setOnAction(event -> viewModel.removeSelectedExerciseFromSelectedUnit()); // Selection change handles view update
 
         exportPdfButton.setOnAction(event -> handleExportPdfAction());
 
@@ -349,11 +380,6 @@ public class TrainingPlanEditorFormController {
             unitVm.selectedExerciseProperty().unbind();
         }
         trainingExercisesListView.setItems(null);
-
-        if (removeExerciseButton.disableProperty().isBound()) {
-            removeExerciseButton.disableProperty().unbind();
-        }
-        removeExerciseButton.setDisable(true);
     }
 
     /**
@@ -383,7 +409,6 @@ public class TrainingPlanEditorFormController {
             unitDescriptionTextArea.clear();
             unitWeekdayChoiceBox.setValue(null);
             trainingExercisesListView.setItems(null);
-            removeExerciseButton.setDisable(true);
         }
 
         if (newSelectedUnit != null) {
@@ -395,8 +420,6 @@ public class TrainingPlanEditorFormController {
 
             newSelectedUnit.selectedExerciseProperty().addListener(selectedExerciseListener);
             newSelectedUnit.selectedExerciseProperty().bind(trainingExercisesListView.getSelectionModel().selectedItemProperty());
-
-            removeExerciseButton.disableProperty().bind(newSelectedUnit.selectedExerciseProperty().isNull());
 
             showView(unitDetailContainer);
             updateBreadcrumb(newSelectedUnit, null);

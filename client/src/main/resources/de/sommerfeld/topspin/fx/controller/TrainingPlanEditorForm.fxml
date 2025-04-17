@@ -57,8 +57,6 @@
                         <VBox spacing="5" alignment="TOP_CENTER">
                             <Button fx:id="addUnitButton" text="Add Unit" maxWidth="Infinity"
                                     styleClass="add-button"/>
-                            <Button fx:id="removeUnitButton" text="Remove Unit" maxWidth="Infinity" disable="true"
-                                    styleClass="remove-button"/>
                         </VBox>
                     </HBox>
                 </VBox>
@@ -96,8 +94,6 @@
                         <VBox spacing="5" alignment="TOP_CENTER">
                             <Button fx:id="addExerciseButton" text="Add Exercise" maxWidth="Infinity"
                                     styleClass="add-button"/>
-                            <Button fx:id="removeExerciseButton" text="Remove Exercise" maxWidth="Infinity"
-                                    disable="true" styleClass="remove-button"/>
                         </VBox>
                     </HBox>
                 </VBox>
