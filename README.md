@@ -52,7 +52,7 @@ The initial focus is on creating a solid **Training Plan Maker** with the follow
     * Generate a clean, printable PDF of your complete training plan to take to the table or share easily.
     * 
 ### Current State:
-<img src="https://github.com/user-attachments/assets/87c12372-20f2-4d7b-a50e-2a355c8b8929" alt="Current state of the Topspin UI" width="500">
+<img src="https://github.com/user-attachments/assets/a28749fe-a7bf-4170-9854-8150c063517f" alt="Current state of the Topspin UI" width="500">
 
 ---
 
