@@ -41,7 +41,7 @@ This initial version is ready for you to test!
 For Topspin to work on your device, Java 22+ is needed. You can download it [here](https://www.oracle.com/de/java/technologies/downloads/#jdk23-windows).
 
 * **Download:** Find the application package for your OS on the **[Releases Page](https://github.com/Metaphoriker/topspin/releases)**.
-* **Feedback is Crucial:** As an MVP, Topspin will evolve based on user input. Please report any bugs, suggest features, or share your general thoughts via **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**. *(<- Bitte Link zur Issues-Seite deines Repos einfügen!)*
+* **Feedback is Crucial:** As an MVP, Topspin will evolve based on user input. Please report any bugs, suggest features, or share your general thoughts via **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**.
 * **Star Us:** If you find Topspin potentially useful, please consider starring ⭐ the repository to show your support and stay updated!
 
 ---
