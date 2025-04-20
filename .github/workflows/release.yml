@@ -64,12 +64,6 @@ jobs:
           Write-Host "JavaFX Lib Path: $jfxLibPath"
           echo "JFX_SDK_PATH=$jfxLibPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Display Effective POM for 'model' module
-        run: |
-          mvn help:effective-pom -f model/pom.xml -q -Doutput=effective-pom-model.xml
-          echo "--- Effective POM Snippet for model (de.sommerfeld dependencies) ---"
-          grep 'de.sommerfeld' effective-pom-model.xml || echo "de.sommerfeld not found in effective POM"
-
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
 
@@ -140,12 +134,6 @@ jobs:
           echo "JavaFX Lib Path: $jfxLibPath"
           echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
 
-      - name: Display Effective POM for 'model' module
-        run: |
-          mvn help:effective-pom -f model/pom.xml -q -Doutput=effective-pom-model.xml
-          echo "--- Effective POM Snippet for model (de.sommerfeld dependencies) ---"
-          grep 'de.sommerfeld' effective-pom-model.xml || echo "de.sommerfeld not found in effective POM"
-
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
 
@@ -212,12 +200,6 @@ jobs:
           jfxLibPath="$(pwd)/$jfxSdkDir/lib"
           echo "JavaFX Lib Path: $jfxLibPath"
           echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
-
-      - name: Display Effective POM for 'model' module
-        run: |
-          mvn help:effective-pom -f model/pom.xml -q -Doutput=effective-pom-model.xml
-          echo "--- Effective POM Snippet for model (de.sommerfeld dependencies) ---"
-          grep 'de.sommerfeld' effective-pom-model.xml || echo "de.sommerfeld not found in effective POM"
 
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
