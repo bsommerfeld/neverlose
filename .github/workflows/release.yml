@@ -247,7 +247,7 @@ jobs:
           echo "win_exe_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT
           echo "mac_dmg_x64_glob=artifacts/macos-package-x64/*.dmg" >> $GITHUB_OUTPUT
           echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_arm64_glob=artifacts/macos-package-arm64/*.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_arm64_glob=artifacts/macos-package-aarch64/*.dmg" >> $GITHUB_OUTPUT
           echo "mac_dmg_arm64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
           echo "linux_deb_glob=artifacts/linux-package-amd64/*.deb" >> $GITHUB_OUTPUT
           echo "linux_deb_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
