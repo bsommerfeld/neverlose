@@ -94,7 +94,7 @@ jobs:
     needs: get_version
     strategy:
       matrix:
-        os: [ macos-13, macos-14 ] # macos-13=x64, macos-14=arm64 (check current runners)
+        os: [ macos-13, macos-14 ] # macos-13=x64, macos-14=aarch64 (check current runners)
     runs-on: ${{ matrix.os }}
     env:
       JFX_VERSION: 21.0.7
@@ -247,8 +247,8 @@ jobs:
           echo "win_exe_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT
           echo "mac_dmg_x64_glob=artifacts/macos-package-x64/*.dmg" >> $GITHUB_OUTPUT
           echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_arm64_glob=artifacts/macos-package-aarch64/*.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_arm64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_aarch64_glob=artifacts/macos-package-aarch64/*.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_aarch64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
           echo "linux_deb_glob=artifacts/linux-package-amd64/*.deb" >> $GITHUB_OUTPUT
           echo "linux_deb_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
 
@@ -272,14 +272,14 @@ jobs:
           asset_name: ${{ steps.assets_info.outputs.mac_dmg_x64_name }}
           asset_content_type: application/x-apple-diskimage
 
-      - name: Upload macOS arm64 DMG Asset
+      - name: Upload macOS aarch64 DMG Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifacts/macos-package-arm64/${{ steps.assets_info.outputs.mac_dmg_arm64_name }}
-          asset_name: ${{ steps.assets_info.outputs.mac_dmg_arm64_name }}
+          asset_path: artifacts/macos-package-aarch64/${{ steps.assets_info.outputs.mac_dmg_aarch64_name }}
+          asset_name: ${{ steps.assets_info.outputs.mac_dmg_aarch64_name }}
           asset_content_type: application/x-apple-diskimage
 
       - name: Upload Linux DEB Asset
