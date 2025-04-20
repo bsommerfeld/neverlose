@@ -81,7 +81,8 @@ jobs:
             --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop `
             --dest ./package-out `
             --win-menu `
-            --win-shortcut
+            --win-shortcut `
+            --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
