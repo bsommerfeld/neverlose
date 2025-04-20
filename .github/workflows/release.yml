@@ -1,0 +1,293 @@
+# .github/workflows/release.yml
+name: Build and Release TopSpin Packages
+
+# Trigger the workflow when a new release is created on GitHub
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  # Job to get the exact tag name to use as the version string
+  get_version:
+    runs-on: ubuntu-latest
+    outputs:
+      # Output the raw tag name (e.g., "MVP-0.1", "1.0")
+      tag_name: ${{ steps.version.outputs.tag_name }}
+    steps:
+      - name: Get exact tag name from release event
+        id: version
+        run: |
+          echo "tag_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+
+  # --- Build Job for Windows ---
+  build_windows:
+    needs: get_version # Get the version first
+    runs-on: windows-latest
+    env:
+      JFX_VERSION: 21.0.7 # Your JavaFX Version
+      # Use the exact tag name from the previous job as the app version
+      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Maven cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install WiX Toolset v3
+        run: choco install wixtoolset -y --version=3.14.1
+
+      - name: Download and Extract JavaFX SDK (Windows)
+        shell: powershell
+        run: |
+          $jfxUrl = "https://download2.gluonhq.com/openjfx/${env:JFX_VERSION}/openjfx-${env:JFX_VERSION}_windows-x64_bin-sdk.zip"
+          $jfxZip = "javafx-sdk.zip"
+          $jfxSdkDir = "javafx-sdk"
+          Write-Host "Downloading JavaFX SDK from $jfxUrl"
+          Invoke-WebRequest -Uri $jfxUrl -OutFile $jfxZip
+          Write-Host "Extracting $jfxZip to $jfxSdkDir"
+          Expand-Archive -Path $jfxZip -DestinationPath .
+          $extractedDir = (Get-ChildItem -Directory -Filter "javafx-sdk*")[0].FullName
+          Move-Item -Path $extractedDir -Destination $jfxSdkDir
+          $jfxLibPath = Join-Path -Path (Resolve-Path $jfxSdkDir).Path -ChildPath "lib"
+          Write-Host "JavaFX Lib Path: $jfxLibPath"
+          echo "JFX_SDK_PATH=$jfxLibPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Build JAR with Maven
+        run: mvn -B package
+
+      - name: Run jpackage for Windows (EXE)
+        shell: powershell
+        run: |
+          jpackage --type exe `
+            --name "TopSpin" `
+            --app-version "${{ env.APP_VERSION }}" `
+            --vendor "Benjamin Sommerfeld" `
+            --input client/target `
+            --main-jar topspin.jar `
+            --main-class de.sommerfeld.topspin.Main `
+            --module-path "${env:JFX_SDK_PATH}" `
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base `
+            --dest ./package-out `
+            --win-menu `
+            --win-shortcut
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-package-x64
+          path: ./package-out/*.exe
+
+  # --- Build Job for macOS ---
+  build_macos:
+    needs: get_version
+    strategy:
+      matrix:
+        os: [ macos-13, macos-14 ] # macos-13=x64, macos-14=arm64 (check current runners)
+    runs-on: ${{ matrix.os }}
+    env:
+      JFX_VERSION: 21.0.7
+      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
+      MACOS_ARCH: ${{ contains(matrix.os, '14') && 'aarch64' || 'x64' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: ${{ env.MACOS_ARCH }}
+
+      - name: Set up Maven cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ env.MACOS_ARCH}}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.MACOS_ARCH}}-maven-
+
+      - name: Download and Extract JavaFX SDK (macOS)
+        run: |
+          jfxUrl="https://download2.gluonhq.com/openjfx/${JFX_VERSION}/openjfx-${JFX_VERSION}_osx-${MACOS_ARCH}_bin-sdk.zip"
+          jfxZip="javafx-sdk.zip"
+          jfxSdkDir="javafx-sdk"
+          echo "Downloading JavaFX SDK for ${MACOS_ARCH} from $jfxUrl"
+          curl -L -o $jfxZip $jfxUrl
+          echo "Extracting $jfxZip"
+          unzip -q $jfxZip
+          extractedDir=$(find . -d -name "javafx-sdk*" -type d -maxdepth 1)
+          mv "$extractedDir" "$jfxSdkDir"
+          jfxLibPath="$(pwd)/$jfxSdkDir/lib"
+          echo "JavaFX Lib Path: $jfxLibPath"
+          echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
+
+      - name: Build JAR with Maven
+        run: mvn -B package
+
+      - name: Run jpackage for macOS (DMG)
+        run: |
+          jpackage --type dmg \
+            --name "TopSpin" \
+            --app-version "${APP_VERSION}" \
+            --vendor "Benjamin Sommerfeld" \
+            --input client/target \
+            --main-jar topspin.jar \
+            --main-class de.sommerfeld.topspin.Main \
+            --module-path "${JFX_SDK_PATH}" \
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base \
+            --dest ./package-out
+
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-package-${{ env.MACOS_ARCH }}
+          path: ./package-out/*.dmg
+
+  # --- Build Job for Linux ---
+  build_linux:
+    needs: get_version
+    runs-on: ubuntu-latest
+    env:
+      JFX_VERSION: 21.0.7
+      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
+      LINUX_ARCH: x64
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: ${{ env.LINUX_ARCH }}
+
+      - name: Set up Maven cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install Linux Prerequisites (for .deb)
+        run: sudo apt-get update && sudo apt-get install -y fakeroot
+
+      - name: Download and Extract JavaFX SDK (Linux)
+        run: |
+          jfxUrl="https://download2.gluonhq.com/openjfx/${JFX_VERSION}/openjfx-${JFX_VERSION}_linux-${LINUX_ARCH}_bin-sdk.zip"
+          jfxZip="javafx-sdk.zip"
+          jfxSdkDir="javafx-sdk"
+          echo "Downloading JavaFX SDK for ${LINUX_ARCH} from $jfxUrl"
+          curl -L -o $jfxZip $jfxUrl
+          echo "Extracting $jfxZip"
+          unzip -q $jfxZip
+          extractedDir=$(find . -d -name "javafx-sdk*" -type d -maxdepth 1)
+          mv "$extractedDir" "$jfxSdkDir"
+          jfxLibPath="$(pwd)/$jfxSdkDir/lib"
+          echo "JavaFX Lib Path: $jfxLibPath"
+          echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
+
+      - name: Build JAR with Maven
+        run: mvn -B package
+
+      - name: Run jpackage for Linux (DEB)
+        run: |
+          jpackage --type deb \
+            --name "TopSpin" \
+            --app-version "${APP_VERSION}" \
+            --vendor "Benjamin Sommerfeld" \
+            --input client/target \
+            --main-jar topspin.jar \
+            --main-class de.sommerfeld.topspin.Main \
+            --module-path "${JFX_SDK_PATH}" \
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base \
+            --dest ./package-out
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-package-amd64
+          path: ./package-out/*.deb
+
+  # --- Release Job ---
+  release_assets:
+    runs-on: ubuntu-latest
+    needs: [ get_version, build_windows, build_macos, build_linux ]
+    permissions:
+      contents: write # Required to upload release assets
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      # Define asset details using the exact tag name
+      - name: Set Asset Variables
+        id: assets_info
+        run: |
+          TAG_NAME=${{ needs.get_version.outputs.tag_name }}
+          echo "win_exe_glob=artifacts/windows-package-x64/*.exe" >> $GITHUB_OUTPUT
+          echo "win_exe_name=TopSpin-${TAG_NAME}-windows-x64.exe" >> $GITHUB_OUTPUT
+          echo "mac_dmg_x64_glob=artifacts/macos-package-x64/*.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}-macos-x64.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_arm64_glob=artifacts/macos-package-arm64/*.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_arm64_name=TopSpin-${TAG_NAME}-macos-arm64.dmg" >> $GITHUB_OUTPUT
+          echo "linux_deb_glob=artifacts/linux-package-amd64/*.deb" >> $GITHUB_OUTPUT
+          echo "linux_deb_name=TopSpin-${TAG_NAME}-linux-amd64.deb" >> $GITHUB_OUTPUT
+
+      - name: Upload Windows EXE Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.assets_info.outputs.win_exe_glob }}
+          asset_name: ${{ steps.assets_info.outputs.win_exe_name }}
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+      - name: Upload macOS x64 DMG Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.assets_info.outputs.mac_dmg_x64_glob }}
+          asset_name: ${{ steps.assets_info.outputs.mac_dmg_x64_name }}
+          asset_content_type: application/x-apple-diskimage
+
+      - name: Upload macOS arm64 DMG Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.assets_info.outputs.mac_dmg_arm64_glob }}
+          asset_name: ${{ steps.assets_info.outputs.mac_dmg_arm64_name }}
+          asset_content_type: application/x-apple-diskimage
+
+      - name: Upload Linux DEB Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ steps.assets_info.outputs.linux_deb_glob }}
+          asset_name: ${{ steps.assets_info.outputs.linux_deb_name }}
+          asset_content_type: application/vnd.debian.binary-package
