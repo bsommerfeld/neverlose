@@ -82,17 +82,14 @@
         <dependency>
             <groupId>de.sommerfeld</groupId>
             <artifactId>model</artifactId>
-            <version>MVP-0.1</version>
         </dependency>
         <dependency>
             <groupId>de.sommerfeld</groupId>
             <artifactId>export</artifactId>
-            <version>MVP-0.1</version>
         </dependency>
         <dependency>
             <groupId>de.sommerfeld</groupId>
             <artifactId>logger</artifactId>
-            <version>MVP-0.1</version>
         </dependency>
     </dependencies>
 </project>

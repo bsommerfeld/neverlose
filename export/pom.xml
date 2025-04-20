@@ -17,7 +17,6 @@
         <dependency>
             <groupId>de.sommerfeld</groupId>
             <artifactId>model</artifactId>
-            <version>MVP-0.1</version>
         </dependency>
     </dependencies>
 

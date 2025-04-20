@@ -22,7 +22,6 @@
         <dependency>
             <groupId>de.sommerfeld</groupId>
             <artifactId>logger</artifactId>
-            <version>MVP-0.1</version>
         </dependency>
     </dependencies>
 </project>
