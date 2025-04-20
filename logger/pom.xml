@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>logger</artifactId>
+    <version>MVP-0.1</version>
 
     <dependencies>
         <dependency>
