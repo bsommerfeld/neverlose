@@ -78,7 +78,7 @@ jobs:
             --main-jar topspin.jar `
             --main-class de.sommerfeld.topspin.Main `
             --module-path "${env:JFX_SDK_PATH}" `
-            --add-modules ALL-MODULE-PATH \
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop `
             --dest ./package-out `
             --win-menu `
             --win-shortcut
@@ -147,7 +147,7 @@ jobs:
             --main-jar topspin.jar \
             --main-class de.sommerfeld.topspin.Main \
             --module-path "${JFX_SDK_PATH}" \
-            --add-modules ALL-MODULE-PATH \
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
             --dest ./package-out
 
       - name: Upload macOS Artifact
@@ -214,7 +214,7 @@ jobs:
             --main-jar topspin.jar \
             --main-class de.sommerfeld.topspin.Main \
             --module-path "${JFX_SDK_PATH}" \
-            --add-modules ALL-MODULE-PATH \
+            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
             --dest ./package-out
 
       - name: Upload Linux Artifact
