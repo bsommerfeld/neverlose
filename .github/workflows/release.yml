@@ -244,13 +244,13 @@ jobs:
         run: |
           TAG_NAME=${{ needs.get_version.outputs.tag_name }}
           echo "win_exe_glob=artifacts/windows-package-x64/*.exe" >> $GITHUB_OUTPUT
-          echo "win_exe_name=TopSpin-${TAG_NAME}-windows-x64.exe" >> $GITHUB_OUTPUT
+          echo "win_exe_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT
           echo "mac_dmg_x64_glob=artifacts/macos-package-x64/*.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}-macos-x64.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
           echo "mac_dmg_arm64_glob=artifacts/macos-package-arm64/*.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_arm64_name=TopSpin-${TAG_NAME}-macos-arm64.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_arm64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
           echo "linux_deb_glob=artifacts/linux-package-amd64/*.deb" >> $GITHUB_OUTPUT
-          echo "linux_deb_name=TopSpin-${TAG_NAME}-linux-amd64.deb" >> $GITHUB_OUTPUT
+          echo "linux_deb_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
 
       - name: Upload Windows EXE Asset
         uses: actions/upload-release-asset@v1
