@@ -21,8 +21,4 @@ public class BottomBarController {
     public void onNewPlan(ActionEvent actionEvent) {
         viewProvider.triggerViewChange(TrainingPlanEditorMetaController.class, p -> p.setPlan(new TrainingPlan("New Plan", "")));
     }
-
-//    @FXML
-//    public void onShowAllPlans(ActionEvent actionEvent) {
-//    }
 }
