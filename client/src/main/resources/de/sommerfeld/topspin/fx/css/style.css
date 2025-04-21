@@ -38,11 +38,14 @@
 }
 
 .footer-label {
-    -fx-font-size: 11px;
-    -fx-text-fill: #555555;
+    -fx-font-size: 11pt;
+    -fx-font-weight: bold;
+    -fx-text-fill: #757575;
+    -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0.0, 0, 1);
+    -fx-alignment: center-left;
 }
 
-.footer-button-green {
+.new-plan-button {
     -fx-background-color: #4CAF50; /* Grüner Akzent */
     -fx-text-fill: white;
     -fx-font-weight: bold;
@@ -52,7 +55,7 @@
     -fx-cursor: hand;
 }
 
-.footer-button-green:hover {
+.new-plan-button:hover {
     -fx-background-color: #45a049;
 }
 
@@ -127,12 +130,4 @@
     -fx-border-style: solid;
     -fx-border-color: #E0E0E0;
     -fx-border-width: 1px 0 0 0; /* Nur obere Linie */
-}
-
-.footer-label {
-    -fx-font-size: 11pt;
-    -fx-font-weight: bold;
-    -fx-text-fill: #757575;
-    -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0.0, 0, 1);
-    -fx-alignment: center-left;
 }
