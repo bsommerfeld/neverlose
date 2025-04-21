@@ -10,6 +10,7 @@ import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class TopspinApplication extends Application {
@@ -28,6 +29,7 @@ public class TopspinApplication extends Application {
         Parent root = viewProvider.requestView(TopspinMetaController.class).parent();
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.getIcons().setAll(new Image("de/sommerfeld/topspin/fx/logo.png"));
         stage.setTitle("Topspin MVP-0.1");
         stage.show();
     }
