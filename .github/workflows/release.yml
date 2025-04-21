@@ -105,7 +105,7 @@ jobs:
             --win-menu `
             --win-shortcut `
             --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1 `
-            --icon packaging/windows/TopSpin.ico `
+            --icon .packaging/windows/TopSpin.ico `
             --verbose
 
       - name: Upload Windows Artifact
@@ -179,7 +179,7 @@ jobs:
             --module-path "${JFX_SDK_PATH}" \
             --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
             --dest ./package-out \
-            --icon packaging/macos/TopSpin.icns
+            --icon .packaging/macos/TopSpin.icns
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
@@ -252,7 +252,7 @@ jobs:
             --module-path "${JFX_SDK_PATH}" \
             --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
             --dest ./package-out \
-            --icon packaging/linux/TopSpin.png
+            --icon .packaging/linux/TopSpin.png
 
       - name: Upload Linux Artifact
         uses: actions/upload-artifact@v4
