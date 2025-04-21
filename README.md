@@ -1,64 +1,71 @@
-<img src="https://github.com/user-attachments/assets/2f5335e3-b095-4e2f-a9de-e3ac46fbaf45" alt="Topspin Logo" width="100" height="100" align="right" />
+<img src="https://github.com/user-attachments/assets/2f5335e3-b095-4e2f-a9de-e3ac46fbaf45" alt="MP Logo" width="100" height="100" align="right" />
 <br><br><br>
 
-# Topspin - Training Planner for Table Tennis 🏓 (MVP v0.1)
+# TopSpin - Training Planner for Table Tennis 🏓
 
-Topspin is a desktop application designed to help **table tennis players, coaches, and clubs** create structured and
-effective training plans. Move beyond scattered notes and generic spreadsheets with a tool focused specifically on table
-tennis needs.
-
-This is the initial **Minimum Viable Product (MVP) release (v0.1)**, focused on core planning functionality.
+A modern, cross-platform desktop client for easily creating, managing, and exporting table tennis training plans.
 
 ---
 
-## Core Features (Version 0.1)
+## ✨ Features
 
-This version allows you to:
+* **📝 Plan & Structure:** Easily create complete training plans. Organize them into clear training units (e.g., per weekday) and add specific exercises with details like duration, sets, and notes.
+* **💾 Save & Load:** Never lose your work! Plans are automatically saved locally as easy-to-read JSON files in your application data folder and reloaded when you start the app.
+* **🔍 Overview & Quick Access:** Stay organized! A clean startup view shows all your plans, which you can instantly filter and find using the integrated search bar.
+* **⬆️ Integrated Updater:** Stay up-to-date! Topspin checks for new versions on GitHub Releases (on startup or via indicator click) and helps you through the update process (download & installer launch).
+* **📄 PDF Export:** Take your plan to the training! Generate a printable PDF version of your training plan.
+* **💻 Cross-Platform & Simple:** Use Topspin on Windows, macOS (Intel & Apple Silicon), or Linux. **No separate Java installation needed** – the required Java runtime is bundled right inside the installer!
 
-* **Create Training Plans:** Define plans with a clear `Name` and `Description`.
-* **Add Training Units:** Structure your week by adding units (e.g., "Tuesday Forehand Focus") with `Name`,
-  `Description`, and `Weekday`.
-* **Define Exercises:** Detail each unit with specific exercises, including:
-    * `Name` (e.g., "Multiball FH Topspin")
-    * `Description` (e.g., "Focus on spin variation, 2 positions")
-    * `Duration` (e.g., "15 min")
-    * `Sets` (e.g., "3")
-    * `Ball Bucket` needed? (Yes/No flag)
-* **Export to PDF:** Generate a clean, printable PDF document of your complete training plan to share or take to the
-  table.
+## 📸 Screenshot (Current Version)
 
-### Current State (UI Preview):
+![Current TopSpin UI](https://github.com/user-attachments/assets/041029b4-cf95-4a61-bcbd-e2d351741c32)
 
-<img src="https://github.com/user-attachments/assets/a28749fe-a7bf-4170-9854-8150c063517f" alt="Current state of the Topspin UI" width="500">
+*Current view shows the plan overview with search bar and "+ New Plan" button.*
 
 ---
 
-## Technology
+## 🚀 Technology Stack
 
-This MVP is a **desktop application** built using **Java** and **JavaFX**.
-
----
-
-## Getting Started & Feedback (MVP v0.1)
-
-This initial version is ready for you to test!
-For Topspin to work on your device, Java 21+ is needed. You can download
-it [here](https://www.oracle.com/de/java/technologies/downloads/#jdk23-windows).
-
-* **Download:** Find the application package for your OS on the **[Releases Page](https://github.com/Metaphoriker/topspin/releases)**.
-* **Feedback is Crucial:** As an MVP, Topspin will evolve based on user input. Please report any bugs, suggest features,
-  or share your general thoughts via **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**.
-* **Star Us:** If you find Topspin potentially useful, please consider starring ⭐ the repository to show your support
-  and stay updated!
+* **Language:** Java 21
+* **UI Framework:** JavaFX 21
+* **Build Tool:** Apache Maven
+* **Dependency Injection:** Google Guice
+* **JSON Processing:** Jackson Databind
+* **Logging:** Logback (via custom LogFacade)
+* **Packaging:** `jpackage` (JDK Tool)
+* **CI/CD & Hosting:** GitHub Actions & GitHub Releases
 
 ---
 
-## License
+## 🏁 Getting Started / Installation
 
-The core of Topspin is released under the **[MIT License](LICENSE)**.
+**No separate Java installation is necessary!** The required Java runtime is bundled directly within the installation package.
+
+1.  Go to the **[Releases Page](https://github.com/Metaphoriker/topspin/releases)**.
+2.  Download the appropriate package for your operating system:
+    * Windows: `.exe` file
+    * macOS: `.dmg` file (choose x64 or aarch64/Apple Silicon)
+    * Linux: `.deb` file (amd64)
+3.  Run the downloaded file to install the application.
+4.  Launch TopSpin via the Start Menu or the created shortcut.
 
 ---
 
-## Contact
+## 💬 Feedback & Contributing
 
-For all feedback, questions, and bug reports, please use **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**.
+This project is under active development. Feedback is extremely valuable!
+
+* **Bugs & Feature Requests:** Please report everything via **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**.
+* **Support:** If you like TopSpin or see its potential, please show your support by starring ⭐ the repository!
+
+---
+
+## 📄 License
+
+TopSpin is released under the **[MIT License](LICENSE)**.
+
+---
+
+## 📧 Contact
+
+For feedback, questions, and bug reports, please primarily use **[GitHub Issues](https://github.com/Metaphoriker/topspin/issues)**.
