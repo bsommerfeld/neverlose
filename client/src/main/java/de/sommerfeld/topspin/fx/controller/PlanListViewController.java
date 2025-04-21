@@ -82,7 +82,7 @@ public class PlanListViewController {
         } catch (IOException e) {
             log.error("Failed to load plan summaries from storage path: {}", planStorageService.getStoragePath(), e);
             // TODO: Benutzerfeedback geben (z.B. Dialog oder Label in der View)
-            Platform.runLater(() -> allPlans.clear());
+            Platform.runLater(allPlans::clear);
         }
     }
 
@@ -136,7 +136,7 @@ public class PlanListViewController {
 
         ImageView iconView = null;
         try {
-            Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/plan-icon.jpg")));
+            Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/plan-icon.jpg")));
             iconView = new ImageView(icon);
             iconView.setFitHeight(32);
             iconView.setFitWidth(32);
