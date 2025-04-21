@@ -91,6 +91,26 @@ jobs:
             --win-shortcut `
             --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1
 
+      - name: Manually Copy Java Launchers into Bundled JRE
+        shell: powershell
+        # Force copy java.exe and javaw.exe from the JDK used by the runner
+        # into the jpackage-created runtime's bin directory.
+        run: |
+          $JreBinPath = ".\package-out\TopSpin\runtime\bin"
+          $JdkBinPath = Join-Path -Path $env:JAVA_HOME -ChildPath "bin"
+          if (Test-Path -Path $JreBinPath) {
+            Write-Host "Target JRE bin directory found: $JreBinPath"
+            Write-Host "Copying java.exe from $JdkBinPath to $JreBinPath"
+            Copy-Item -Path (Join-Path -Path $JdkBinPath -ChildPath "java.exe") -Destination $JreBinPath -Force -ErrorAction Continue
+            Write-Host "Copying javaw.exe from $JdkBinPath to $JreBinPath"
+            Copy-Item -Path (Join-Path -Path $JdkBinPath -ChildPath "javaw.exe") -Destination $JreBinPath -Force -ErrorAction Continue
+            Write-Host "Contents of $JreBinPath after copy:"
+            Get-ChildItem -Path $JreBinPath | Select-Object Name, Length, LastWriteTime
+          } else {
+            Write-Error "Bundled JRE bin directory not found at $JreBinPath - cannot copy launchers."
+            exit 1 # Fail the step if directory doesn't exist
+          }
+
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
