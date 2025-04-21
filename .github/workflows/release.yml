@@ -73,23 +73,39 @@ jobs:
           New-Item -Path .\staging -ItemType Directory
           Copy-Item -Path client/target/topspin.jar -Destination .\staging\topspin.jar
 
-      - name: Run jpackage for Windows (EXE)
+      - name: Download and Extract JRE 21 (Temurin)
+        shell: powershell
+        run: |
+          $jreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.zip"
+          $jreZip = "jre-21.zip"
+          $jreDir = "jre-21" 
+          Write-Host "Downloading JRE from $jreUrl"
+          Invoke-WebRequest -Uri $jreUrl -OutFile $jreZip
+          Write-Host "Extracting $jreZip"
+          Expand-Archive -Path $jreZip -DestinationPath .
+          $extractedDir = (Get-ChildItem -Directory -Filter "jdk*jre*")[0].FullName
+          Move-Item -Path $extractedDir -Destination $jreDir
+          $jreImagePath = (Resolve-Path $jreDir).Path
+          Write-Host "JRE Image Path: $jreImagePath"
+          echo "JRE_IMAGE_PATH=$jreImagePath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Remove-Item -Path $jreZip
+
+      - name: Run jpackage for Windows (EXE) using Prebuilt JRE
         shell: powershell
         run: |
           jpackage --type exe `
-            --verbose `
             --name "TopSpin" `
             --app-version "${{ env.APP_VERSION }}" `
             --vendor "Benjamin Sommerfeld" `
             --input staging `
             --main-jar topspin.jar `
             --main-class de.sommerfeld.topspin.Main `
-            --module-path "${env:JFX_SDK_PATH}" `
-            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop `
+            --runtime-image "${env:JRE_IMAGE_PATH}" `
             --dest ./package-out `
             --win-menu `
             --win-shortcut `
-            --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1
+            --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1 `
+            --verbose
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
