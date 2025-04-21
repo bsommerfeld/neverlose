@@ -40,7 +40,6 @@ public class UpdateIndicatorController {
     private ImageView statusIcon;
     @FXML
     private ProgressIndicator progressIndicator;
-    private File downloadedInstallerFile = null;
 
     @Inject
     public UpdateIndicatorController(UpdateService updateService) {
@@ -101,7 +100,6 @@ public class UpdateIndicatorController {
 
         updateService.downloadAsync(progressCallback)
                 .thenAcceptAsync(downloadedFile -> {
-                    this.downloadedInstallerFile = downloadedFile;
                     updateVisuals(UpdateState.IDLE, new UpdateResult.DownloadOk(downloadedFile));
                     statusTooltip.setText("Download complete. Click here to install.");
                 }, Platform::runLater)
@@ -169,7 +167,6 @@ public class UpdateIndicatorController {
                     case UpdateResult.DownloadOk(File downloadedFile) -> {
                         statusIcon.setImage(iconInfo);
                         tooltipText = "Update downloaded. Click here to install.";
-                        this.downloadedInstallerFile = downloadedFile;
                     }
                     case null, default -> {
                         statusIcon.setImage(iconError);
