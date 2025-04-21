@@ -255,19 +255,22 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R artifacts
 
-      # Define asset details using the exact tag name
+      # Define variables for actual local filenames AND desired unique release filenames
       - name: Set Asset Variables
         id: assets_info
         run: |
           TAG_NAME=${{ needs.get_version.outputs.tag_name }}
-          echo "win_exe_glob=artifacts/windows-package-x64/*.exe" >> $GITHUB_OUTPUT
-          echo "win_exe_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT
-          echo "mac_dmg_x64_glob=artifacts/macos-package-x64/*.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_x64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_aarch64_glob=artifacts/macos-package-aarch64/*.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_aarch64_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
-          echo "linux_deb_glob=artifacts/linux-package-amd64/*.deb" >> $GITHUB_OUTPUT
-          echo "linux_deb_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
+          echo "win_exe_local_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT 
+          echo "win_exe_release_name=TopSpin-${TAG_NAME}-windows-x64.exe" >> $GITHUB_OUTPUT 
+
+          echo "mac_dmg_x64_local_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
+          echo "mac_dmg_x64_release_name=TopSpin-${TAG_NAME}-macos-x64.dmg" >> $GITHUB_OUTPUT
+
+          echo "mac_dmg_aarch64_local_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT 
+          echo "mac_dmg_aarch64_release_name=TopSpin-${TAG_NAME}-macos-aarch64.dmg" >> $GITHUB_OUTPUT
+
+          echo "linux_deb_local_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT 
+          echo "linux_deb_release_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
 
       - name: Upload Windows EXE Asset
         uses: actions/upload-release-asset@v1
@@ -275,8 +278,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifacts/windows-package-x64/${{ steps.assets_info.outputs.win_exe_name }}
-          asset_name: ${{ steps.assets_info.outputs.win_exe_name }}
+          # Path to the ACTUAL downloaded file
+          asset_path: artifacts/windows-package-x64/${{ steps.assets_info.outputs.win_exe_local_name }}
+          # Unique name for the file on the Release page
+          asset_name: ${{ steps.assets_info.outputs.win_exe_release_name }}
           asset_content_type: application/vnd.microsoft.portable-executable
 
       - name: Upload macOS x64 DMG Asset
@@ -285,8 +290,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifacts/macos-package-x64/${{ steps.assets_info.outputs.mac_dmg_x64_name }}
-          asset_name: ${{ steps.assets_info.outputs.mac_dmg_x64_name }}
+          # Path to the ACTUAL downloaded file
+          asset_path: artifacts/macos-package-x64/${{ steps.assets_info.outputs.mac_dmg_x64_local_name }}
+          # Unique name for the file on the Release page
+          asset_name: ${{ steps.assets_info.outputs.mac_dmg_x64_release_name }}
           asset_content_type: application/x-apple-diskimage
 
       - name: Upload macOS aarch64 DMG Asset
@@ -295,8 +302,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifacts/macos-package-aarch64/${{ steps.assets_info.outputs.mac_dmg_aarch64_name }}
-          asset_name: ${{ steps.assets_info.outputs.mac_dmg_aarch64_name }}
+          # Path to the ACTUAL downloaded file (in aarch64 dir)
+          asset_path: artifacts/macos-package-aarch64/${{ steps.assets_info.outputs.mac_dmg_aarch64_local_name }}
+          # Unique name for the file on the Release page
+          asset_name: ${{ steps.assets_info.outputs.mac_dmg_aarch64_release_name }}
           asset_content_type: application/x-apple-diskimage
 
       - name: Upload Linux DEB Asset
@@ -305,6 +314,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifacts/linux-package-amd64/${{ steps.assets_info.outputs.linux_deb_name }}
-          asset_name: ${{ steps.assets_info.outputs.linux_deb_name }}
+          # Path to the ACTUAL downloaded file
+          asset_path: artifacts/linux-package-amd64/${{ steps.assets_info.outputs.linux_deb_local_name }}
+          # Unique name for the file on the Release page
+          asset_name: ${{ steps.assets_info.outputs.linux_deb_release_name }}
           asset_content_type: application/vnd.debian.binary-package
