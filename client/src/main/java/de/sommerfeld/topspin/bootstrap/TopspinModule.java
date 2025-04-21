@@ -1,9 +1,11 @@
 package de.sommerfeld.topspin.bootstrap;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import de.sommerfeld.topspin.export.ExportService;
 import de.sommerfeld.topspin.export.PdfExportService;
+import de.sommerfeld.topspin.fx.state.SearchState;
 import de.sommerfeld.topspin.fx.view.ViewLoader;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import de.sommerfeld.topspin.persistence.guice.PersistenceModule;
@@ -21,5 +23,7 @@ public class TopspinModule extends AbstractModule {
 
         bind(ViewProvider.class).asEagerSingleton();
         bind(ViewLoader.class).in(Singleton.class);
+
+        bind(SearchState.class).in(Scopes.SINGLETON);
     }
 }
