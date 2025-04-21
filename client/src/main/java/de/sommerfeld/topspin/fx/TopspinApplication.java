@@ -7,6 +7,7 @@ import de.sommerfeld.topspin.fx.controller.TopspinMetaController;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import de.sommerfeld.topspin.logger.LogFacade;
 import de.sommerfeld.topspin.logger.LogFacadeFactory;
+import de.sommerfeld.topspin.updater.guice.UpdaterModule;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,7 +20,7 @@ public class TopspinApplication extends Application {
     private final LogFacade log = LogFacadeFactory.getLogger();
 
     public TopspinApplication() {
-        this.injector = Guice.createInjector(new TopspinModule());
+        this.injector = Guice.createInjector(new TopspinModule(), new UpdaterModule());
     }
 
     @Override
@@ -30,7 +31,7 @@ public class TopspinApplication extends Application {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.getIcons().setAll(new Image("de/sommerfeld/topspin/fx/logo.png"));
-        stage.setTitle("Topspin MVP-0.1");
+        stage.setTitle("TopSpin");
         stage.show();
     }
 }
