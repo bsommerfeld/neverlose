@@ -2,7 +2,6 @@
 
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -18,7 +17,4 @@
     <Label text="Sommerfeld" styleClass="footer-label"/>
 
     <Region HBox.hgrow="ALWAYS"/>
-
-    <Button fx:id="createNewPlanButton" text="+ New Plan" styleClass="footer-button-green"
-            mnemonicParsing="false" onAction="#onNewPlan"/>
 </HBox>

@@ -3,9 +3,6 @@ package de.sommerfeld.topspin.fx.controller;
 import com.google.inject.Inject;
 import de.sommerfeld.topspin.fx.view.View;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
-import de.sommerfeld.topspin.plan.TrainingPlan;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 
 @View
 public class BottomBarController {
@@ -15,10 +12,5 @@ public class BottomBarController {
     @Inject
     public BottomBarController(ViewProvider viewProvider) {
         this.viewProvider = viewProvider;
-    }
-
-    @FXML
-    public void onNewPlan(ActionEvent actionEvent) {
-        viewProvider.triggerViewChange(TrainingPlanEditorMetaController.class, p -> p.setPlan(new TrainingPlan("New Plan", "")));
     }
 }

@@ -41,13 +41,14 @@ public class TopspinMetaController {
     private void initialize() {
         registerViewListener();
         loadTopBar();
+        loadPlanListView();
         loadBottomBar();
 
         bottomBarPlaceholder.requestFocus(); // to get away from the search field
     }
 
     private void registerViewListener() {
-        viewProvider.registerViewChangeListener(TrainingPlanEditorMetaController.class, p -> loadCenter());
+        viewProvider.registerViewChangeListener(TrainingPlanEditorMetaController.class, p -> loadEditor());
     }
 
     private void loadTopBar() {
@@ -55,14 +56,22 @@ public class TopspinMetaController {
         topBarPlaceholder.getChildren().add(topBar);
     }
 
-    private void loadCenter() {
-        Parent center = viewProvider.requestView(TrainingPlanEditorMetaController.class).parent();
-        setAnchor(center);
-        centerContentPlaceholder.getChildren().setAll(center);
+    private void loadEditor() {
+        loadCenter(TrainingPlanEditorMetaController.class);
+    }
+
+    private void loadPlanListView() {
+        loadCenter(PlanListViewController.class);
     }
 
     private void loadBottomBar() {
         Parent bottomBar = viewProvider.requestView(BottomBarController.class).parent();
         bottomBarPlaceholder.getChildren().add(bottomBar);
+    }
+
+    private void loadCenter(Class<?> clazz) {
+        Parent center = viewProvider.requestView(clazz).parent();
+        setAnchor(center);
+        centerContentPlaceholder.getChildren().setAll(center);
     }
 }
