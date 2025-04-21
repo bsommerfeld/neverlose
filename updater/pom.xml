@@ -7,6 +7,7 @@
         <groupId>de.sommerfeld</groupId>
         <artifactId>topspin</artifactId>
         <version>MVP-0.1</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>updater</artifactId>
