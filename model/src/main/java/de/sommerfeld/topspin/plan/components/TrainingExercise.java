@@ -29,12 +29,20 @@ public class TrainingExercise {
     private boolean ballBucket;
 
     public TrainingExercise(String name, String description, String duration, int sets, boolean ballBucket) {
-        this.id = UUID.randomUUID();
+        this(UUID.randomUUID(), name, description, duration, sets, ballBucket);
+    }
+
+    public TrainingExercise(UUID uuid, String name, String description, String duration, int sets, boolean ballBucket) {
+        this.id = uuid;
         this.name = name;
         this.description = description;
         this.duration = duration;
         this.sets = sets;
         this.ballBucket = ballBucket;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {

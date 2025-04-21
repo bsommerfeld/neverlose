@@ -12,16 +12,23 @@ import java.util.UUID;
 public class TrainingPlan {
 
     private final UUID id;
-
+    private final TrainingUnits trainingUnits;
     private String name;
     private String description;
-    private final TrainingUnits trainingUnits;
 
     public TrainingPlan(String name, String description) {
-        this.id = UUID.randomUUID();
+        this(UUID.randomUUID(), name, description, new TrainingUnits());
+    }
+
+    public TrainingPlan(UUID uuid, String name, String description, TrainingUnits trainingUnits) {
+        this.id = uuid;
         this.name = name;
         this.description = description;
-        this.trainingUnits = new TrainingUnits();
+        this.trainingUnits = trainingUnits;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {

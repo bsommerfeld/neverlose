@@ -14,18 +14,25 @@ import java.util.UUID;
 public class TrainingUnit {
 
     private final UUID id;
-
+    private final TrainingExercises trainingExercises;
     private String name;
     private String description;
     private Weekday weekday;
-    private final TrainingExercises trainingExercises;
 
     public TrainingUnit(String name, String description, Weekday weekday) {
-        this.id = UUID.randomUUID();
+        this(UUID.randomUUID(), name, description, weekday, new TrainingExercises());
+    }
+
+    public TrainingUnit(UUID uuid, String name, String description, Weekday weekday, TrainingExercises trainingExercises) {
+        this.id = uuid;
         this.name = name;
         this.description = description;
         this.weekday = weekday;
-        this.trainingExercises = new TrainingExercises();
+        this.trainingExercises = trainingExercises;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getName() {

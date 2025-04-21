@@ -47,6 +47,11 @@
                 <version>MVP-0.1</version>
             </dependency>
             <dependency>
+                <groupId>de.sommerfeld</groupId>
+                <artifactId>persistence</artifactId>
+                <version>MVP-0.1</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>7.0.0</version>

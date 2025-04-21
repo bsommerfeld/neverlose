@@ -97,6 +97,10 @@
             <artifactId>updater</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.sommerfeld</groupId>
+            <artifactId>persistence</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
