@@ -157,24 +157,29 @@ public class UpdateIndicatorController {
 
         switch (state) {
             case IDLE:
-                if (result instanceof UpdateResult.UpdateAvailable available) {
-                    statusIcon.setImage(iconDownload);
-                    tooltipText = "Update available (v" + available.latestVersion().value() + "). Click to download.";
-                } else if (result instanceof UpdateResult.UpToDate) {
-                    statusIcon.setImage(iconCheck);
-                    tooltipText = "Application is up-to-date (v" + updateService.getCurrentVersion().value() + ")";
-                } else if (result instanceof UpdateResult.DownloadOk(File downloadedFile)) {
-                    statusIcon.setImage(iconInfo);
-                    tooltipText = "Update downloaded. Click here to install.";
-                    this.downloadedInstallerFile = downloadedFile;
-                } else {
-                    statusIcon.setImage(iconError);
-                    String errorMsg = "... Click to retry check.";
-                    if (result instanceof UpdateResult.CheckFailed(Throwable cause))
-                        errorMsg = "Check failed: " + getShortErrorMessage(cause) + " Click to retry.";
-                    if (result instanceof UpdateResult.DownloadFailed(Throwable cause))
-                        errorMsg = "Download failed: " + getShortErrorMessage(cause) + " Click to retry check.";
-                    tooltipText = errorMsg;
+                switch (result) {
+                    case UpdateResult.UpdateAvailable available -> {
+                        statusIcon.setImage(iconDownload);
+                        tooltipText = "Update available (v" + available.latestVersion().value() + "). Click to download.";
+                    }
+                    case UpdateResult.UpToDate ignored -> {
+                        statusIcon.setImage(iconCheck);
+                        tooltipText = "Application is up-to-date (v" + updateService.getCurrentVersion().value() + ")";
+                    }
+                    case UpdateResult.DownloadOk(File downloadedFile) -> {
+                        statusIcon.setImage(iconInfo);
+                        tooltipText = "Update downloaded. Click here to install.";
+                        this.downloadedInstallerFile = downloadedFile;
+                    }
+                    case null, default -> {
+                        statusIcon.setImage(iconError);
+                        String errorMsg = "... Click to retry check.";
+                        if (result instanceof UpdateResult.CheckFailed(Throwable cause))
+                            errorMsg = "Check failed: " + getShortErrorMessage(cause) + " Click to retry.";
+                        if (result instanceof UpdateResult.DownloadFailed(Throwable cause))
+                            errorMsg = "Download failed: " + getShortErrorMessage(cause) + " Click to retry check.";
+                        tooltipText = errorMsg;
+                    }
                 }
                 break;
             case CHECKING:
