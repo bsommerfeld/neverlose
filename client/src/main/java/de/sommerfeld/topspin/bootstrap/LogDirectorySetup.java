@@ -36,8 +36,11 @@ public class LogDirectorySetup {
         Path baseDirPath;
 
         if (os.contains("win")) {
+            String localAppDataEnv = System.getenv("LOCALAPPDATA");
             String appDataEnv = System.getenv("APPDATA");
-            if (appDataEnv != null && !appDataEnv.isEmpty()) {
+            if (localAppDataEnv != null && !localAppDataEnv.isBlank()) {
+                baseDirPath = Paths.get(localAppDataEnv);
+            } else if (appDataEnv != null && !appDataEnv.isEmpty()) {
                 baseDirPath = Paths.get(appDataEnv);
             } else {
                 baseDirPath = Paths.get(userHome, "AppData", "Roaming");
