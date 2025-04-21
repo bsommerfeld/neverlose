@@ -67,6 +67,12 @@ jobs:
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
 
+      - name: Prepare Clean Input Directory for jpackage
+        shell: powershell
+        run: |
+          New-Item -Path .\staging -ItemType Directory
+          Copy-Item -Path client/target/topspin.jar -Destination .\staging\topspin.jar
+
       - name: Run jpackage for Windows (EXE)
         shell: powershell
         run: |
@@ -74,7 +80,7 @@ jobs:
             --name "TopSpin" `
             --app-version "${{ env.APP_VERSION }}" `
             --vendor "Benjamin Sommerfeld" `
-            --input client/target `
+            --input staging `
             --main-jar topspin.jar `
             --main-class de.sommerfeld.topspin.Main `
             --module-path "${env:JFX_SDK_PATH}" `
@@ -138,13 +144,18 @@ jobs:
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
 
+      - name: Prepare Clean Input Directory for jpackage
+        run: |
+          mkdir staging
+          cp client/target/topspin.jar staging/topspin.jar
+
       - name: Run jpackage for macOS (DMG)
         run: |
           jpackage --type dmg \
             --name "TopSpin" \
             --app-version "${APP_VERSION}" \
             --vendor "Benjamin Sommerfeld" \
-            --input client/target \
+            --input staging \
             --main-jar topspin.jar \
             --main-class de.sommerfeld.topspin.Main \
             --module-path "${JFX_SDK_PATH}" \
@@ -205,13 +216,18 @@ jobs:
       - name: Build JAR with Maven (Debug)
         run: mvn -B package -X
 
+      - name: Prepare Clean Input Directory for jpackage
+        run: |
+          mkdir staging
+          cp client/target/topspin.jar staging/topspin.jar
+
       - name: Run jpackage for Linux (DEB)
         run: |
           jpackage --type deb \
             --name "TopSpin" \
             --app-version "${APP_VERSION}" \
             --vendor "Benjamin Sommerfeld" \
-            --input client/target \
+            --input staging \
             --main-jar topspin.jar \
             --main-class de.sommerfeld.topspin.Main \
             --module-path "${JFX_SDK_PATH}" \
