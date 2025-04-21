@@ -164,7 +164,7 @@ public class UpdateIndicatorController {
                         statusIcon.setImage(iconCheck);
                         tooltipText = "Application is up-to-date (v" + updateService.getCurrentVersion().value() + ")";
                     }
-                    case UpdateResult.DownloadOk(File downloadedFile) -> {
+                    case UpdateResult.DownloadOk(File ignored) -> {
                         statusIcon.setImage(iconInfo);
                         tooltipText = "Update downloaded. Click here to install.";
                     }
