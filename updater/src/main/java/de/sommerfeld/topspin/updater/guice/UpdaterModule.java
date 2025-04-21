@@ -1,8 +1,5 @@
 package de.sommerfeld.topspin.updater.guice;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
@@ -48,6 +45,7 @@ public class UpdaterModule extends AbstractModule {
                 .build();
     }
 
+    /* Commented out due to object mapper collision with PersistenceModule
     @Provides
     @Singleton
     ObjectMapper provideObjectMapper() {
@@ -55,4 +53,5 @@ public class UpdaterModule extends AbstractModule {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .registerModule(new JavaTimeModule());
     }
+     */
 }
