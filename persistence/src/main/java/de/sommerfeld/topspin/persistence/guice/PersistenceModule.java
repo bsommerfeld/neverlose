@@ -87,9 +87,10 @@ public class PersistenceModule extends AbstractModule {
         }
 
         Path appStoragePath = baseDirPath.resolve(APP_NAME).toAbsolutePath();
-        log.debug("Determined application storage base path: {}", appStoragePath);
-        tryCreateDirectories(appStoragePath);
-        return appStoragePath;
+        Path finalStoragePath = appStoragePath.resolve("data");
+        log.debug("Determined application storage base path: {}", finalStoragePath);
+        tryCreateDirectories(finalStoragePath);
+        return finalStoragePath;
     }
 
 
