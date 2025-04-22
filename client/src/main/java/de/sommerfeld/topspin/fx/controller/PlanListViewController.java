@@ -8,6 +8,7 @@ import de.sommerfeld.topspin.logger.LogFacade;
 import de.sommerfeld.topspin.logger.LogFacadeFactory;
 import de.sommerfeld.topspin.persistence.model.PlanSummary;
 import de.sommerfeld.topspin.persistence.service.PlanStorageService;
+import de.sommerfeld.topspin.plan.TrainingPlan;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -136,7 +137,7 @@ public class PlanListViewController {
 
         ImageView iconView = null;
         try {
-            Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/plan-icon.jpg")));
+            Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/plan-icon.jpg"))); // TODO: png
             iconView = new ImageView(icon);
             iconView.setFitHeight(32);
             iconView.setFitWidth(32);
@@ -149,7 +150,7 @@ public class PlanListViewController {
         nameLabel.getStyleClass().add("plan-card-title");
         nameLabel.setWrapText(true);
 
-        Label idLabel = new Label("ID: " + summary.identifier().substring(0, Math.min(summary.identifier().length(), 15)) + "...");
+        Label idLabel = new Label("ID: " + summary.identifier().toString().substring(0, Math.min(summary.identifier().toString().length(), 8)) + "...");
         idLabel.getStyleClass().add("plan-card-subtitle");
 
         if (iconView != null) {
@@ -168,13 +169,14 @@ public class PlanListViewController {
      * Loads the full plan and triggers a view change to the editor.
      */
     private void handlePlanSelection(PlanSummary summary) {
-        log.info("Plan selected: {}", summary.identifier());
+        log.info("Plan selected: ID={}, Name={}", summary.identifier(), summary.name());
         // TODO: Evtl. Loading-Indikator anzeigen
 
         try {
-            Optional<de.sommerfeld.topspin.plan.TrainingPlan> planOptional = planStorageService.loadPlan(summary.identifier());
+            Optional<TrainingPlan> planOptional = planStorageService.loadPlan(summary.identifier());
+
             if (planOptional.isPresent()) {
-                de.sommerfeld.topspin.plan.TrainingPlan loadedPlan = planOptional.get();
+                TrainingPlan loadedPlan = planOptional.get();
                 log.debug("Plan '{}' loaded successfully, switching to editor.", loadedPlan.getName());
                 viewProvider.triggerViewChange(TrainingPlanEditorMetaController.class, editor -> editor.setPlan(loadedPlan));
                 searchState.setSearchTerm("");

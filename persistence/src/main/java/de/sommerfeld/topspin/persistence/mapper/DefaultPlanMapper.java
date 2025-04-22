@@ -23,7 +23,7 @@ public class DefaultPlanMapper implements PlanMapper {
         Objects.requireNonNull(plan, "Cannot map null TrainingPlan");
         List<TrainingUnitDTO> unitDTOs = (plan.getTrainingUnits() == null) ? Collections.emptyList() :
                 plan.getTrainingUnits().getAll().stream()
-                        .map(this::toUnitDTO)
+                        .map(this::toDTO)
                         .toList();
 
         return new TrainingPlanDTO(
@@ -34,11 +34,12 @@ public class DefaultPlanMapper implements PlanMapper {
         );
     }
 
-    private TrainingUnitDTO toUnitDTO(TrainingUnit unit) {
+    @Override
+    public TrainingUnitDTO toDTO(TrainingUnit unit) {
         Objects.requireNonNull(unit, "Cannot map null TrainingUnit");
         List<TrainingExerciseDTO> exerciseDTOs = (unit.getTrainingExercises() == null) ? Collections.emptyList() :
                 unit.getTrainingExercises().getAll().stream()
-                        .map(this::toExerciseDTO)
+                        .map(this::toDTO)
                         .toList();
 
         return new TrainingUnitDTO(
@@ -50,7 +51,8 @@ public class DefaultPlanMapper implements PlanMapper {
         );
     }
 
-    private TrainingExerciseDTO toExerciseDTO(TrainingExercise exercise) {
+    @Override
+    public TrainingExerciseDTO toDTO(TrainingExercise exercise) {
         Objects.requireNonNull(exercise, "Cannot map null TrainingExercise");
         return new TrainingExerciseDTO(
                 exercise.getId(),
@@ -68,7 +70,7 @@ public class DefaultPlanMapper implements PlanMapper {
 
         List<TrainingUnit> units = (dto.trainingUnits() == null) ? Collections.emptyList() :
                 dto.trainingUnits().stream()
-                        .map(this::toUnitDomain)
+                        .map(this::toDomain)
                         .toList();
 
         TrainingUnits trainingUnits = new TrainingUnits();
@@ -82,12 +84,13 @@ public class DefaultPlanMapper implements PlanMapper {
         );
     }
 
-    private TrainingUnit toUnitDomain(TrainingUnitDTO dto) {
+    @Override
+    public TrainingUnit toDomain(TrainingUnitDTO dto) {
         Objects.requireNonNull(dto, "Cannot map null TrainingUnitDTO");
 
         List<TrainingExercise> exercises = (dto.trainingExercises() == null) ? Collections.emptyList() :
                 dto.trainingExercises().stream()
-                        .map(this::toExerciseDomain)
+                        .map(this::toDomain)
                         .toList();
 
         TrainingExercises trainingExercises = new TrainingExercises();
@@ -102,8 +105,10 @@ public class DefaultPlanMapper implements PlanMapper {
         );
     }
 
-    private TrainingExercise toExerciseDomain(TrainingExerciseDTO dto) {
+    @Override
+    public TrainingExercise toDomain(TrainingExerciseDTO dto) {
         Objects.requireNonNull(dto, "Cannot map null TrainingExerciseDTO");
+
         return new TrainingExercise(
                 dto.id(),
                 dto.name(),
@@ -113,4 +118,5 @@ public class DefaultPlanMapper implements PlanMapper {
                 dto.ballBucket()
         );
     }
+
 }
