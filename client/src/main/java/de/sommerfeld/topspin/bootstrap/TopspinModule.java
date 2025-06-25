@@ -9,13 +9,11 @@ import de.sommerfeld.topspin.fx.state.SearchState;
 import de.sommerfeld.topspin.fx.view.ViewLoader;
 import de.sommerfeld.topspin.fx.view.ViewProvider;
 import de.sommerfeld.topspin.persistence.guice.PersistenceModule;
-import de.sommerfeld.topspin.updater.guice.UpdaterModule;
 
 public class TopspinModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        install(new UpdaterModule());
         install(new PersistenceModule());
 
         bind(Bootstrap.class).to(TopspinBootstrap.class);

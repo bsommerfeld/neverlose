@@ -94,10 +94,6 @@
         </dependency>
         <dependency>
             <groupId>de.sommerfeld</groupId>
-            <artifactId>updater</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.sommerfeld</groupId>
             <artifactId>persistence</artifactId>
         </dependency>
         <dependency>
