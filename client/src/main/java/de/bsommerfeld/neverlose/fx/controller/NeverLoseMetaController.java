@@ -34,30 +34,15 @@ public class NeverLoseMetaController {
 
   @FXML
   private void initialize() {
-    registerViewListener();
     loadTopBar();
-    loadPlanListView();
     loadBottomBar();
 
     bottomBarPlaceholder.requestFocus(); // to get away from the search field
   }
 
-  private void registerViewListener() {
-    viewProvider.registerViewChangeListener(
-        TrainingPlanEditorMetaController.class, p -> loadEditor());
-  }
-
   private void loadTopBar() {
     Parent topBar = viewProvider.requestView(TopBarController.class).parent();
     topBarPlaceholder.getChildren().add(topBar);
-  }
-
-  private void loadEditor() {
-    loadCenter(TrainingPlanEditorMetaController.class);
-  }
-
-  private void loadPlanListView() {
-    loadCenter(PlanListViewController.class);
   }
 
   private void loadBottomBar() {
