@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
 
-    <property name="LOG_DIR" value="${de.sommerfeld.neverlose.logdir:-logs}"/>
+    <property name="LOG_DIR" value="${de.bsommerfeld.neverlose.logdir:-logs}"/>
     <property name="LOG_FILE_PREFIX" value="neverlose"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
