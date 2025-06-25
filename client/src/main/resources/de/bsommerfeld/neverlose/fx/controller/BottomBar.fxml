@@ -14,7 +14,7 @@
         <Insets top="5" right="10" bottom="5" left="10"/>
     </padding>
 
-    <Label text="Sommerfeld" styleClass="footer-label"/>
+    <Label text="NeverLose" styleClass="footer-label"/>
 
     <Region HBox.hgrow="ALWAYS"/>
 </HBox>

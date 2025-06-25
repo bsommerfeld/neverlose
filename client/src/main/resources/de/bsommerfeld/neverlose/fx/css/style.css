@@ -1,133 +1,189 @@
 /* --- Global / Base --- */
 .root {
-    /* Standard-Schriftart und -größe für die Anwendung */
-    -fx-font-family: "System"; /* Nutzt die Standard-Systemschrift */
+    /* Color Palette based on NeverLose design concept */
+    -never-blue: #1a3a8f; /* Deep royal blue for "Never" elements */
+    -lose-orange: #ff7b29; /* Vibrant warm orange for "Lose" elements */
+    -accent-silver: #c0c0c0; /* Polished silver for interactive elements */
+    -accent-gold: #d4af37; /* Matte gold for premium accents */
+    -bg-light: #f5f5f0; /* Light warm gray background */
+    -bg-dark: #2a2a2a; /* Deep charcoal for dark mode */
+    -text-primary: #333333; /* Primary text color */
+    -text-secondary: #666666; /* Secondary text color */
+
+    /* Typography */
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Modern sans-serif for body text */
     -fx-font-size: 13px;
-    -fx-base: #FFFFFF; /* Helle Grundfarbe */
-    -fx-background: #F4F4F8; /* Leicht grauer Hintergrund */
-    -fx-text-fill: #333333; /* Standard-Textfarbe */
+    -fx-base: -bg-light; /* Light background base */
+    -fx-background: -bg-light; /* Light warm gray background */
+    -fx-text-fill: -text-primary; /* Standard text color */
 }
 
 /* --- Top Bar --- */
 .top-search-bar {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E0E0E0;
-    -fx-border-width: 0 0 1 0; /* Nur untere Linie */
+    -fx-background-color: -bg-light;
+    -fx-border-color: -accent-silver;
+    -fx-border-width: 0 0 1 0; /* Bottom line only */
     -fx-padding: 5 10 5 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
 }
 
 .search-field {
-    -fx-background-radius: 15px; /* Abgerundete Ecken */
+    -fx-background-radius: 15px; /* Rounded corners */
     -fx-border-radius: 15px;
-    -fx-border-color: #D0D0D0;
+    -fx-border-color: -accent-silver;
+    -fx-background-color: white;
     -fx-padding: 5 10 5 10;
-    -fx-prompt-text-fill: #999999;
+    -fx-prompt-text-fill: -text-secondary;
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
 }
 
 .search-field:focused {
-    -fx-border-color: #8080FF; /* Leichte Akzentfarbe bei Fokus */
-    -fx-effect: dropshadow(gaussian, rgba(128, 128, 255, 0.3), 5, 0, 0, 1);
+    -fx-border-color: -never-blue; /* Blue accent on focus */
+    -fx-effect: dropshadow(gaussian, rgba(26, 58, 143, 0.3), 5, 0, 0, 1);
 }
 
 /* --- Bottom Bar (Footer) --- */
 .footer-bar {
-    -fx-background-color: #E8E8EE;
-    -fx-border-color: #D0D0D0;
-    -fx-border-width: 1 0 0 0; /* Nur obere Linie */
+    -fx-background-color: -bg-light;
+    -fx-border-color: -accent-silver;
+    -fx-border-width: 1 0 0 0; /* Top line only */
     -fx-padding: 5 10 5 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 3, 0, 0, -1);
 }
 
 .footer-label {
     -fx-font-size: 11pt;
     -fx-font-weight: bold;
-    -fx-text-fill: #757575;
+    -fx-text-fill: -never-blue; /* Royal blue for "Never" branding */
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
     -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0.0, 0, 1);
     -fx-alignment: center-left;
 }
 
 .new-plan-button {
-    -fx-background-color: #4CAF50; /* Grüner Akzent */
+    -fx-background-color: -lose-orange; /* Orange for "Lose" elements */
     -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
     -fx-padding: 5 12 5 12;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
 }
 
 .new-plan-button:hover {
-    -fx-background-color: #45a049;
+    -fx-background-color: derive(-lose-orange, -10%); /* Slightly darker orange on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
 }
 
 /* --- Plan List View --- */
 .plan-list-view-background {
-    -fx-background-color: #F4F4F8; /* Leicht grauer Hintergrund */
+    -fx-background-color: -bg-light; /* Light warm gray background */
 }
 
 .plan-list-scroll-pane {
-    -fx-background-color: transparent; /* Macht ScrollPane transparent */
-    -fx-border-color: transparent; /* Keine Ränder */
+    -fx-background-color: transparent; /* Transparent ScrollPane */
+    -fx-border-color: transparent; /* No borders */
 }
 
 .plan-list-flow-pane {
-    /* Abstände werden in FXML gesetzt (hgap, vgap, padding) */
-    /* Kein spezifisches Styling hier nötig, außer ggf. Hintergrund */
+    /* Spacing set in FXML (hgap, vgap, padding) */
     -fx-background-color: transparent;
 }
 
-/* Die Kachel für jeden einzelnen Plan */
+/* Card for each individual plan */
 .plan-card {
     -fx-background-color: white;
     -fx-padding: 15px;
-    -fx-background-radius: 8px; /* Abgerundete Ecken */
+    -fx-background-radius: 8px; /* Rounded corners */
     -fx-border-radius: 8px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2); /* Subtiler Schatten */
-    -fx-pref-width: 200px; /* Beispielbreite */
-    -fx-pref-height: 120px; /* Beispielhöhe */
-    /* Übergang für Hover-Effekt */
+    -fx-border-color: derive(-accent-silver, 20%); /* Very subtle border */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2); /* Subtle shadow */
+    -fx-pref-width: 200px; /* Example width */
+    -fx-pref-height: 120px; /* Example height */
+    /* Transition for hover effect */
     -fx-transition: all 0.2s ease-in-out;
 }
 
 .plan-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 4); /* Stärkerer Schatten */
-    -fx-scale-x: 1.02; /* Leichte Vergrößerung */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 4); /* Stronger shadow */
+    -fx-scale-x: 1.02; /* Slight enlargement */
     -fx-scale-y: 1.02;
-    /* Optional: -fx-border-color: #A0A0FF; -fx-border-width: 1px; */
+    -fx-border-color: -accent-gold; /* Gold accent on hover */
+    -fx-border-width: 1px;
 }
 
-/* Titel (Plan-Name) innerhalb der Kachel */
+/* Title (Plan Name) within the card */
 .plan-card-title {
-    -fx-font-size: 15px; /* Etwas größer */
+    -fx-font-size: 16px; /* Slightly larger */
     -fx-font-weight: bold;
-    -fx-text-fill: #222222; /* Dunkler Text */
-    -fx-padding: 0 0 5 0; /* Abstand nach unten */
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
+    -fx-text-fill: -never-blue; /* Royal blue for "Never" branding */
+    -fx-padding: 0 0 5 0; /* Bottom padding */
 }
 
-/* Subtitel (Plan-ID) innerhalb der Kachel */
+/* Subtitle (Plan ID) within the card */
 .plan-card-subtitle {
     -fx-font-size: 11px;
-    -fx-text-fill: #777777; /* Grauer Text */
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
+    -fx-text-fill: -lose-orange; /* Orange for "Lose" elements */
 }
 
-/* Platzhalter-Text, wenn keine Pläne gefunden wurden */
+/* Placeholder text when no plans are found */
 .search-results-placeholder {
      -fx-font-size: 16px;
-     -fx-text-fill: #888888;
+     -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
+     -fx-text-fill: -text-secondary;
      -fx-alignment: center;
-     /* Stellt sicher, dass es den Platz in der FlowPane einnimmt */
-     /* Dies muss evtl. im Java-Code gesetzt werden, je nachdem wie FlowPane das handhabt */
-     /* z.B. durch Setzen von prefWidth/prefHeight auf die Größe der FlowPane */
+     /* Ensures it takes up space in the FlowPane */
+     /* This may need to be set in Java code depending on how FlowPane handles it */
+     /* e.g., by setting prefWidth/prefHeight to the size of the FlowPane */
 }
 
-/* --- Allgemeine Stile --- */
-.button { /* Standard-Button-Styling etwas aufhübschen */
+/* --- General Styles --- */
+.button { /* Standard button styling */
+    -fx-background-color: -accent-silver; /* Silver for interactive elements */
+    -fx-text-fill: -text-primary;
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
 }
 
-.separator *.line { /* Linien von Separator etwas heller machen */
+.button:hover {
+    -fx-background-color: derive(-accent-silver, -10%); /* Slightly darker on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 1);
+}
+
+.button:pressed {
+    -fx-background-color: derive(-accent-silver, -20%); /* Even darker when pressed */
+}
+
+.separator *.line { /* Lighter lines for separators */
     -fx-border-style: solid;
-    -fx-border-color: #E0E0E0;
-    -fx-border-width: 1px 0 0 0; /* Nur obere Linie */
+    -fx-border-color: -accent-silver;
+    -fx-border-width: 1px 0 0 0; /* Top line only */
+}
+
+/* --- Typography Classes --- */
+.title-text {
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -never-blue; /* Royal blue for "Never" branding */
+}
+
+.subtitle-text {
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
+    -fx-font-size: 18px;
+    -fx-text-fill: -lose-orange; /* Orange for "Lose" elements */
+}
+
+.body-text {
+    -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for body text */
+    -fx-font-size: 13px;
+    -fx-text-fill: -text-primary;
 }
