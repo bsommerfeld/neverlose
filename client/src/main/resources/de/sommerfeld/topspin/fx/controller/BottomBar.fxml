@@ -17,5 +17,4 @@
     <Label text="Sommerfeld" styleClass="footer-label"/>
 
     <Region HBox.hgrow="ALWAYS"/>
-    <fx:include source="component/UpdateIndicator.fxml"/>
 </HBox>
