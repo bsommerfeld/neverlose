@@ -6,7 +6,7 @@
 
     <groupId>de.sommerfeld</groupId>
     <artifactId>topspin</artifactId>
-    <version>MVP-0.1</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -18,8 +18,9 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <revision>MVP-0.1</revision>
+        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -28,22 +29,22 @@
             <dependency>
                 <groupId>de.sommerfeld</groupId>
                 <artifactId>model</artifactId>
-                <version>MVP-0.1</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.sommerfeld</groupId>
                 <artifactId>export</artifactId>
-                <version>MVP-0.1</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.sommerfeld</groupId>
                 <artifactId>logger</artifactId>
-                <version>MVP-0.1</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.sommerfeld</groupId>
                 <artifactId>persistence</artifactId>
-                <version>MVP-0.1</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>

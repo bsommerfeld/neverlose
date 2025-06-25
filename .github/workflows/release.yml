@@ -1,341 +1,197 @@
-# .github/workflows/release.yml
-name: Build and Release TopSpin Packages
+# .github/workflows/release-main.yml
+name: Release CI - Main (Manual Changelog, Explicit Body Update)
 
-# Trigger the workflow when a new release is created on GitHub
 on:
-  release:
-    types: [ created ]
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
 
 jobs:
-  # Job to get the exact tag name to use as the version string
-  get_version:
+  build_and_release:
+    name: Build, Create Release, and Set Notes
     runs-on: ubuntu-latest
     outputs:
-      # Output the raw tag name (e.g., "MVP-0.1", "1.0")
-      tag_name: ${{ steps.version.outputs.tag_name }}
-    steps:
-      - name: Get exact tag name from release event
-        id: version
-        run: |
-          echo "tag_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+      release_tag: ${{ github.ref_name }}
 
-  # --- Build Job for Windows ---
-  build_windows:
-    needs: get_version # Get the version first
-    runs-on: windows-latest
-    env:
-      JFX_VERSION: 21.0.7 # Your JavaFX Version
-      # Use the exact tag name from the previous job as the app version
-      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up JDK 21
+      - name: Set up JDK 24
         uses: actions/setup-java@v4
         with:
+          java-version: '24'
           distribution: 'temurin'
-          java-version: '21'
+          cache: maven
 
-      - name: Set up Maven cache
-        uses: actions/cache@v4
+      - name: Build with Maven (Multi-Module Project)
+        run: |
+          echo "Building Multi-Module Maven Project..."
+          mvn -B clean package --file pom.xml
+          echo "Build completed. Listing target artifacts..."
+          find . -name "*.jar" -type f -exec ls -la {} \;
+
+      - name: Prepare artifacts for jDeploy
+        run: |
+          echo "Preparing artifacts for jDeploy..."
+          mkdir -p target
+          # Kopiere das Hauptartefakt (assembled JAR) für jDeploy
+          cp client/target/topspin.jar target/topspin.jar || echo "Main artifact not found at expected location"
+          
+          # Zeige verfügbare Artifacts
+          echo "Available artifacts:"
+          find . -name "*.jar" -type f
+
+      - name: Read CHANGELOG.md Content
+        id: read_manual_changelog
+        run: |
+          CHANGELOG_SOURCE_FILE="CHANGELOG.md"
+          CHANGELOG_CONTENT=$(cat "${CHANGELOG_SOURCE_FILE}" 2>/dev/null || echo -e "### Changelog für ${{ github.ref_name }}\n\n*${CHANGELOG_SOURCE_FILE} nicht gefunden oder leer.*")
+          
+          # Escape für multiline string in environment variable for next step
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//'%'/'%25'}"
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\n'/'%0A'}"
+          CHANGELOG_CONTENT="${CHANGELOG_CONTENT//$'\r'/'%0D'}"
+          echo "changelog_text=${CHANGELOG_CONTENT}" >> $GITHUB_OUTPUT
+          
+          echo "--- Inhalt von ${CHANGELOG_SOURCE_FILE} ---"
+          cat "${CHANGELOG_SOURCE_FILE}" || echo "${CHANGELOG_SOURCE_FILE} nicht gefunden."
+          echo "-----------------------------------------"
+
+      - name: Build App Installer Bundles and Create/Update GitHub Release (jDeploy)
+        id: jdeploy_release
+        uses: shannah/jdeploy@master
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # jDeploy erstellt die Release. Der Body wird von jDeploy initial gesetzt.
 
-      - name: Install WiX Toolset v3
-        run: choco install wixtoolset -y --version=3.14.1
-
-      - name: Download and Extract JavaFX SDK (Windows)
-        shell: powershell
+      - name: Wait for jDeploy Release to be available via API
         run: |
-          $jfxUrl = "https://download2.gluonhq.com/openjfx/${env:JFX_VERSION}/openjfx-${env:JFX_VERSION}_windows-x64_bin-sdk.zip"
-          $jfxZip = "javafx-sdk.zip"
-          $jfxSdkDir = "javafx-sdk"
-          Write-Host "Downloading JavaFX SDK from $jfxUrl"
-          Invoke-WebRequest -Uri $jfxUrl -OutFile $jfxZip
-          Write-Host "Extracting $jfxZip to $jfxSdkDir"
-          Expand-Archive -Path $jfxZip -DestinationPath .
-          $extractedDir = (Get-ChildItem -Directory -Filter "javafx-sdk*")[0].FullName
-          Move-Item -Path $extractedDir -Destination $jfxSdkDir
-          $jfxLibPath = Join-Path -Path (Resolve-Path $jfxSdkDir).Path -ChildPath "lib"
-          Write-Host "JavaFX Lib Path: $jfxLibPath"
-          echo "JFX_SDK_PATH=$jfxLibPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "Warte 20 Sekunden, damit die von jDeploy erstellte/aktualisierte Release via API abrufbar ist..."
+          sleep 20
 
-      - name: Build JAR with Maven (Debug)
-        run: mvn -B package -X
-
-      - name: Prepare Clean Input Directory for jpackage
-        shell: powershell
+      - name: Update Release Body with Manual Changelog and jDeploy Info
+        id: update_release_body
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+          MANUAL_CHANGELOG_ENCODED: ${{ steps.read_manual_changelog.outputs.changelog_text }}
         run: |
-          New-Item -Path .\staging -ItemType Directory
-          Copy-Item -Path client/target/topspin.jar -Destination .\staging\topspin.jar
+          echo "Hole den von jDeploy gesetzten Release Body für Tag: ${TAG_NAME}"
+          JDEPLOY_BODY_PART=$(gh release view "${TAG_NAME}" --json body -q .body || echo "*jDeploy Artefakte und Installer wurden dieser Release hinzugefügt.*")
 
-      - name: Download and Extract JRE 21 (Temurin)
-        shell: powershell
+          if [ -z "$(echo -e "${JDEPLOY_BODY_PART}" | tr -d '[:space:]')" ]; then
+            echo "Warnung: jDeploy hat keinen signifikanten Body gesetzt oder Abruf fehlgeschlagen. Verwende Standardtext für jDeploy-Teil."
+            JDEPLOY_BODY_PART="*jDeploy Artefakte und Installer wurden dieser Release hinzugefügt.*"
+          else
+            echo "Erfolgreich den von jDeploy gesetzten Release Body (oder Teile davon) geholt."
+          fi
+          
+          # Dekodiere den Changelog-Text zurück für die Verwendung in der Datei
+          DECODED_MANUAL_CHANGELOG=$(echo "${MANUAL_CHANGELOG_ENCODED}" | sed 's/%25/%/g; s/%0A/\n/g; s/%0D/\r/g')
+
+          {
+            echo -e "${DECODED_MANUAL_CHANGELOG}"
+            echo "" 
+            echo "---" 
+            echo "" 
+            echo "**App Installers & jDeploy Info (wie von jDeploy generiert):**"
+            echo "" 
+            echo -e "${JDEPLOY_BODY_PART}" 
+            echo ""
+            echo "---"
+            echo ""
+            echo "**NOTE:** When auto-updates are activated, the application will update automatically at startup."
+          } > combined_release_notes.md
+
+          echo "Kombinierte Notizen, die für den Release Body verwendet werden:"
+          cat combined_release_notes.md
+          echo "---------------------------------------------------------------"
+
+          gh release edit "${TAG_NAME}" --notes-file combined_release_notes.md
+          echo "GitHub Release Notes für ${TAG_NAME} wurden aktualisiert."
+
+      - name: Attach original CHANGELOG.md as Release Asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
         run: |
-          $jreUrl = "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.3_9.zip"
-          $jreZip = "jre-21.zip"
-          $jreDir = "jre-21" 
-          Write-Host "Downloading JRE from $jreUrl"
-          Invoke-WebRequest -Uri $jreUrl -OutFile $jreZip
-          Write-Host "Extracting $jreZip"
-          Expand-Archive -Path $jreZip -DestinationPath .
-          $extractedDir = (Get-ChildItem -Directory -Filter "jdk*jre*")[0].FullName
-          Move-Item -Path $extractedDir -Destination $jreDir
-          $jreImagePath = (Resolve-Path $jreDir).Path
-          Write-Host "JRE Image Path: $jreImagePath"
-          echo "JRE_IMAGE_PATH=$jreImagePath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Remove-Item -Path $jreZip
+          if [ -f "CHANGELOG.md" ]; then
+            echo "Versuche, CHANGELOG.md an Release ${TAG_NAME} anzuhängen..."
+            gh release upload "${TAG_NAME}" CHANGELOG.md --clobber
+            echo "CHANGELOG.md wurde als Asset an die Release ${TAG_NAME} angehängt."
+          else
+            echo "CHANGELOG.md nicht gefunden, konnte nicht als Asset angehängt werden."
+          fi
 
-      - name: Run jpackage for Windows (EXE) using Prebuilt JRE
-        shell: powershell
+      - name: Verify Final Release Body (Optional Logging)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          jpackage --type exe `
-            --name "TopSpin" `
-            --app-version "${{ env.APP_VERSION }}" `
-            --vendor "Benjamin Sommerfeld" `
-            --input staging `
-            --main-jar topspin.jar `
-            --main-class de.sommerfeld.topspin.Main `
-            --runtime-image "${env:JRE_IMAGE_PATH}" `
-            --dest ./package-out `
-            --win-menu `
-            --win-shortcut `
-            --win-upgrade-uuid a59579d4-9a04-4840-ae5b-355e5d1863c1 `
-            --icon .packaging/windows/TopSpin.ico `
-            --verbose
+          echo "Warte 10 Sekunden vor der finalen Verifizierung..."
+          sleep 10
+          echo "VERIFIZIERE finalen Release Body Inhalt:"
+          VERIFIED_BODY=$(gh release view "${{ github.ref_name }}" --json body -q .body || echo "VERIFIZIERUNGSFEHLER")
+          if [[ "${VERIFIED_BODY}" == "VERIFIZIERUNGSFEHLER" ]] || [ -z "$(echo -e "${VERIFIED_BODY}" | tr -d '[:space:]')" ]; then
+            echo "WARNUNG: Finaler Release Body erscheint LEER oder nur Whitespace nach dem Editieren!"
+          else
+            echo "ERFOLG: Finaler Release Body ist NICHT leer. Inhalt:"
+            echo "------------------- VERIFIZIERTER FINALER BODY START -------------------"
+            echo -e "${VERIFIED_BODY}"
+            echo "-------------------- VERIFIZIERTER FINALER BODY ENDE --------------------"
+          fi
 
-      - name: Upload Windows Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-package-x64
-          path: ./package-out/*.exe
-
-  # --- Build Job for macOS ---
-  build_macos:
-    needs: get_version
-    strategy:
-      matrix:
-        os: [ macos-13, macos-14 ] # macos-13=x64, macos-14=aarch64 (check current runners)
-    runs-on: ${{ matrix.os }}
-    env:
-      JFX_VERSION: 21.0.7
-      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
-      MACOS_ARCH: ${{ contains(matrix.os, '14') && 'aarch64' || 'x64' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          architecture: ${{ env.MACOS_ARCH }}
-
-      - name: Set up Maven cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ env.MACOS_ARCH}}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.MACOS_ARCH}}-maven-
-
-      - name: Download and Extract JavaFX SDK (macOS)
-        run: |
-          jfxUrl="https://download2.gluonhq.com/openjfx/${JFX_VERSION}/openjfx-${JFX_VERSION}_osx-${MACOS_ARCH}_bin-sdk.zip"
-          jfxZip="javafx-sdk.zip"
-          jfxSdkDir="javafx-sdk"
-          echo "Downloading JavaFX SDK for ${MACOS_ARCH} from $jfxUrl"
-          curl -L -o $jfxZip $jfxUrl
-          echo "Extracting $jfxZip"
-          unzip -q $jfxZip
-          extractedDir=$(find . -d -name "javafx-sdk*" -type d -maxdepth 1)
-          mv "$extractedDir" "$jfxSdkDir"
-          jfxLibPath="$(pwd)/$jfxSdkDir/lib"
-          echo "JavaFX Lib Path: $jfxLibPath"
-          echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
-
-      - name: Build JAR with Maven (Debug)
-        run: mvn -B package -X
-
-      - name: Prepare Clean Input Directory for jpackage
-        run: |
-          mkdir staging
-          cp client/target/topspin.jar staging/topspin.jar
-
-      - name: Run jpackage for macOS (DMG)
-        run: |
-          jpackage --type dmg \
-            --name "TopSpin" \
-            --app-version "${APP_VERSION}" \
-            --vendor "Benjamin Sommerfeld" \
-            --input staging \
-            --main-jar topspin.jar \
-            --main-class de.sommerfeld.topspin.Main \
-            --module-path "${JFX_SDK_PATH}" \
-            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
-            --dest ./package-out \
-            --icon .packaging/macos/TopSpin.icns
-
-      - name: Upload macOS Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-package-${{ env.MACOS_ARCH }}
-          path: ./package-out/*.dmg
-
-  # --- Build Job for Linux ---
-  build_linux:
-    needs: get_version
-    runs-on: ubuntu-latest
-    env:
-      JFX_VERSION: 21.0.7
-      APP_VERSION: ${{ needs.get_version.outputs.tag_name }}
-      LINUX_ARCH: x64
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          architecture: ${{ env.LINUX_ARCH }}
-
-      - name: Set up Maven cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Install Linux Prerequisites (for .deb)
-        run: sudo apt-get update && sudo apt-get install -y fakeroot
-
-      - name: Download and Extract JavaFX SDK (Linux)
-        run: |
-          jfxUrl="https://download2.gluonhq.com/openjfx/${JFX_VERSION}/openjfx-${JFX_VERSION}_linux-${LINUX_ARCH}_bin-sdk.zip"
-          jfxZip="javafx-sdk.zip"
-          jfxSdkDir="javafx-sdk"
-          echo "Downloading JavaFX SDK for ${LINUX_ARCH} from $jfxUrl"
-          curl -L -o $jfxZip $jfxUrl
-          echo "Extracting $jfxZip"
-          unzip -q $jfxZip
-          extractedDir=$(find . -d -name "javafx-sdk*" -type d -maxdepth 1)
-          mv "$extractedDir" "$jfxSdkDir"
-          jfxLibPath="$(pwd)/$jfxSdkDir/lib"
-          echo "JavaFX Lib Path: $jfxLibPath"
-          echo "JFX_SDK_PATH=$jfxLibPath" >> $GITHUB_ENV
-
-      - name: Build JAR with Maven (Debug)
-        run: mvn -B package -X
-
-      - name: Prepare Clean Input Directory for jpackage
-        run: |
-          mkdir staging
-          cp client/target/topspin.jar staging/topspin.jar
-
-      - name: Run jpackage for Linux (DEB)
-        run: |
-          jpackage --type deb \
-            --name "TopSpin" \
-            --app-version "${APP_VERSION}" \
-            --vendor "Benjamin Sommerfeld" \
-            --input staging \
-            --main-jar topspin.jar \
-            --main-class de.sommerfeld.topspin.Main \
-            --module-path "${JFX_SDK_PATH}" \
-            --add-modules javafx.controls,javafx.fxml,javafx.graphics,javafx.base,java.base,java.desktop \
-            --dest ./package-out \
-            --icon .packaging/linux/TopSpin.png
-
-      - name: Upload Linux Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-package-amd64
-          path: ./package-out/*.deb
-
-  # --- Release Job ---
-  release_assets:
-    runs-on: ubuntu-latest
-    needs: [ get_version, build_windows, build_macos, build_linux ]
-    permissions:
-      contents: write # Required to upload release assets
-    steps:
-      - name: Download all build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Display structure of downloaded files
-        run: ls -R artifacts
-
-      # Define variables for actual local filenames AND desired unique release filenames
-      - name: Set Asset Variables
-        id: assets_info
-        run: |
-          TAG_NAME=${{ needs.get_version.outputs.tag_name }}
-          echo "win_exe_local_name=TopSpin-${TAG_NAME}.exe" >> $GITHUB_OUTPUT 
-          echo "win_exe_release_name=TopSpin-${TAG_NAME}-windows-x64.exe" >> $GITHUB_OUTPUT 
-
-          echo "mac_dmg_x64_local_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT
-          echo "mac_dmg_x64_release_name=TopSpin-${TAG_NAME}-macos-x64.dmg" >> $GITHUB_OUTPUT
-
-          echo "mac_dmg_aarch64_local_name=TopSpin-${TAG_NAME}.dmg" >> $GITHUB_OUTPUT 
-          echo "mac_dmg_aarch64_release_name=TopSpin-${TAG_NAME}-macos-aarch64.dmg" >> $GITHUB_OUTPUT
-
-          echo "linux_deb_local_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT 
-          echo "linux_deb_release_name=topspin_${TAG_NAME}_amd64.deb" >> $GITHUB_OUTPUT
-
-      - name: Upload Windows EXE Asset
-        uses: actions/upload-release-asset@v1
+      - name: Clear and Commit CHANGELOG.md for next release
+        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          # Path to the ACTUAL downloaded file
-          asset_path: artifacts/windows-package-x64/${{ steps.assets_info.outputs.win_exe_local_name }}
-          # Unique name for the file on the Release page
-          asset_name: ${{ steps.assets_info.outputs.win_exe_release_name }}
-          asset_content_type: application/vnd.microsoft.portable-executable
-
-      - name: Upload macOS x64 DMG Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          # Path to the ACTUAL downloaded file
-          asset_path: artifacts/macos-package-x64/${{ steps.assets_info.outputs.mac_dmg_x64_local_name }}
-          # Unique name for the file on the Release page
-          asset_name: ${{ steps.assets_info.outputs.mac_dmg_x64_release_name }}
-          asset_content_type: application/x-apple-diskimage
-
-      - name: Upload macOS aarch64 DMG Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          # Path to the ACTUAL downloaded file (in aarch64 dir)
-          asset_path: artifacts/macos-package-aarch64/${{ steps.assets_info.outputs.mac_dmg_aarch64_local_name }}
-          # Unique name for the file on the Release page
-          asset_name: ${{ steps.assets_info.outputs.mac_dmg_aarch64_release_name }}
-          asset_content_type: application/x-apple-diskimage
-
-      - name: Upload Linux DEB Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          # Path to the ACTUAL downloaded file
-          asset_path: artifacts/linux-package-amd64/${{ steps.assets_info.outputs.linux_deb_local_name }}
-          # Unique name for the file on the Release page
-          asset_name: ${{ steps.assets_info.outputs.linux_deb_release_name }}
-          asset_content_type: application/vnd.debian.binary-package
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          TARGET_BRANCH="${DEFAULT_BRANCH}"
+          if [ -z "$TARGET_BRANCH" ]; then
+            echo "Warnung: Default-Branch konnte nicht automatisch bestimmt werden. Verwende 'main' als Fallback."
+            TARGET_BRANCH="main" 
+          fi
+          echo "Zielbranch für das Leeren des Changelogs: ${TARGET_BRANCH}"
+          
+          CURRENT_GIT_STATE=$(git rev-parse --abbrev-ref HEAD)
+          if [[ "${CURRENT_GIT_STATE}" == "HEAD" ]]; then 
+            echo "Im Detached HEAD Zustand. Checke Branch ${TARGET_BRANCH} aus."
+            if ! git show-ref --verify --quiet "refs/heads/${TARGET_BRANCH}"; then
+                echo "Lokaler Branch ${TARGET_BRANCH} existiert nicht. Versuche Remote-Branch zu holen und zu tracken."
+                git fetch origin "${TARGET_BRANCH}:${TARGET_BRANCH}" || (echo "Fehler beim Holen von origin/${TARGET_BRANCH}" && exit 1)
+            fi
+            git checkout "${TARGET_BRANCH}"
+          elif [[ "${CURRENT_GIT_STATE}" != "${TARGET_BRANCH}" ]]; then
+            echo "Wechsle von ${CURRENT_GIT_STATE} zu ${TARGET_BRANCH}."
+            git checkout "${TARGET_BRANCH}"
+          fi
+          
+          echo "Aktualisiere lokalen Branch ${TARGET_BRANCH}..."
+          git pull origin "${TARGET_BRANCH}" --ff-only
+          
+          CHANGELOG_FILE_TO_CLEAR="CHANGELOG.md"
+          if [ -f "${CHANGELOG_FILE_TO_CLEAR}" ]; then
+            echo -e "## Changelog\n\n### Added\n\n### Changed\n\n### Fixed\n\n### Removed\n" > "${CHANGELOG_FILE_TO_CLEAR}"
+            echo "CHANGELOG.md wurde mit dem Template für das nächste Release überschrieben."
+          
+            git add "${CHANGELOG_FILE_TO_CLEAR}"
+            if ! git diff --staged --quiet; then
+              git commit -m "chore: Reset ${CHANGELOG_FILE_TO_CLEAR} for next release [skip ci]"
+              git push origin "${TARGET_BRANCH}"
+              echo "${CHANGELOG_FILE_TO_CLEAR} wurde geleert und die Änderung gepusht auf Branch ${TARGET_BRANCH}."
+            else
+              echo "${CHANGELOG_FILE_TO_CLEAR} wurde nicht geändert (war bereits im Template-Zustand)."
+            fi
+          else
+            echo "FEHLER: ${CHANGELOG_FILE_TO_CLEAR} nicht gefunden, kann nicht geleert/zurückgesetzt werden."
+          fi

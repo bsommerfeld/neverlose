@@ -6,12 +6,12 @@
     <parent>
         <groupId>de.sommerfeld</groupId>
         <artifactId>topspin</artifactId>
-        <version>MVP-0.1</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>export</artifactId>
-    <version>MVP-0.1</version>
+    <version>${revision}</version>
 
     <dependencies>
         <dependency>
