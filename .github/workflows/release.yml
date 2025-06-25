@@ -42,7 +42,7 @@ jobs:
           echo "Preparing artifacts for jDeploy..."
           mkdir -p target
           # Kopiere das Hauptartefakt (assembled JAR) für jDeploy
-          cp client/target/topspin.jar target/topspin.jar || echo "Main artifact not found at expected location"
+          cp client/target/neverlose.jar target/neverlose.jar || echo "Main artifact not found at expected location"
           
           # Zeige verfügbare Artifacts
           echo "Available artifacts:"

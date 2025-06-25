@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.sommerfeld</groupId>
-        <artifactId>topspin</artifactId>
+        <artifactId>neverlose</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -27,10 +27,10 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>topspin</finalName>
+                    <finalName>neverlose</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>de.sommerfeld.topspin.Main</mainClass>
+                            <mainClass>de.sommerfeld.neverlose.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

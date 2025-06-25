@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+            fx:controller="de.sommerfeld.neverlose.fx.controller.TrainingPlanEditorFormController"
+            styleClass="editor-pane-wrapper">
+
+    <top>
+        <VBox spacing="10.0" styleClass="editor-pane-fixed-top">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <Label text="Training Plan Details" styleClass="section-title"/>
+            <GridPane hgap="10.0" vgap="5.0" styleClass="form-grid">
+                <columnConstraints>
+                    <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <Label text="Plan Name:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                <TextField fx:id="planNameTextField" promptText="Enter training plan name" GridPane.rowIndex="0"
+                           GridPane.columnIndex="1" HBox.hgrow="ALWAYS" styleClass="text-input"/>
+
+                <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                <TextArea fx:id="planDescriptionTextArea" promptText="Enter plan description" prefRowCount="3"
+                          wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1" HBox.hgrow="ALWAYS"
+                          styleClass="text-input"/>
+            </GridPane>
+
+            <Separator styleClass="separator-thin"/>
+
+            <HBox fx:id="breadcrumbBox" alignment="CENTER_LEFT" styleClass="breadcrumb-bar">
+                <padding>
+                    <Insets top="5" bottom="5"/>
+                </padding>
+            </HBox>
+
+            <Separator styleClass="separator-thin"/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="editor-pane-scroll" fx:id="contentScrollPane">
+            <StackPane fx:id="contentArea" styleClass="editor-pane-dynamic">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+
+                <VBox fx:id="unitListContainer" spacing="10.0" managed="false" visible="false"
+                      styleClass="dynamic-content-pane">
+                    <Label text="Training Units" styleClass="section-title-compact"/>
+                    <HBox spacing="10">
+                        <ListView fx:id="trainingUnitsListView" prefHeight="250.0" HBox.hgrow="ALWAYS"
+                                  styleClass="list-view"/>
+                        <VBox spacing="5" alignment="TOP_CENTER">
+                            <Button fx:id="addUnitButton" text="Add Unit" maxWidth="Infinity"
+                                    styleClass="add-button"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="unitDetailContainer" spacing="10.0" managed="false" visible="false"
+                      styleClass="dynamic-content-pane">
+                    <Label text="Unit Details" styleClass="section-title-compact"/>
+                    <GridPane hgap="10" vgap="5" styleClass="form-grid-compact">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                        <Label text="Unit Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextField fx:id="unitNameTextField" promptText="Selected unit name" GridPane.rowIndex="0"
+                                   GridPane.columnIndex="1" HBox.hgrow="ALWAYS" styleClass="text-input"/>
+
+                        <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextArea fx:id="unitDescriptionTextArea" promptText="Selected unit description"
+                                  prefRowCount="2"
+                                  wrapText="true" GridPane.rowIndex="1" GridPane.columnIndex="1" HBox.hgrow="ALWAYS"
+                                  styleClass="text-input"/>
+
+                        <Label text="Weekday:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+                        <ChoiceBox fx:id="unitWeekdayChoiceBox" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                   prefWidth="150"/>
+                    </GridPane>
+
+                    <Separator styleClass="separator"/>
+                    <Label text="Exercises in this Unit" styleClass="sub-section-title"/>
+                    <HBox spacing="10">
+                        <ListView fx:id="trainingExercisesListView" prefHeight="200.0" HBox.hgrow="ALWAYS"
+                                  styleClass="list-view"/>
+                        <VBox spacing="5" alignment="TOP_CENTER">
+                            <Button fx:id="addExerciseButton" text="Add Exercise" maxWidth="Infinity"
+                                    styleClass="add-button"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="exerciseDetailContainer" spacing="10.0" managed="false" visible="false"
+                      styleClass="dynamic-content-pane">
+                    <Label text="Exercise Details" styleClass="section-title-compact"/>
+                    <GridPane hgap="10" vgap="5" styleClass="form-grid-compact">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="NEVER" minWidth="100.0" prefWidth="120.0"/>
+                            <ColumnConstraints hgrow="ALWAYS"/>
+                        </columnConstraints>
+                        <Label text="Exercise Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextField fx:id="exerciseNameTextField" promptText="Selected exercise name"
+                                   GridPane.rowIndex="0" GridPane.columnIndex="1" HBox.hgrow="ALWAYS"
+                                   styleClass="text-input"/>
+
+                        <Label text="Description:" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextArea fx:id="exerciseDescriptionTextArea" promptText="Selected exercise description"
+                                  prefRowCount="2" wrapText="true" GridPane.rowIndex="1"
+                                  GridPane.columnIndex="1" HBox.hgrow="ALWAYS" styleClass="text-input"/>
+
+                        <Label text="Duration:" GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextField fx:id="exerciseDurationTextField" promptText="e.g., 10 min" GridPane.rowIndex="2"
+                                   GridPane.columnIndex="1" styleClass="text-input"/>
+
+                        <Label text="Sets:" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <TextField fx:id="exerciseSetsTextField" promptText="e.g., 3" GridPane.rowIndex="3"
+                                   GridPane.columnIndex="1" styleClass="text-input"/>
+
+                        <Label text="Ball Bucket?" GridPane.rowIndex="4" GridPane.columnIndex="0"
+                               styleClass="form-label"/>
+                        <CheckBox fx:id="exerciseBallBucketCheckBox" GridPane.rowIndex="4"
+                                  GridPane.columnIndex="1"/>
+                    </GridPane>
+                </VBox>
+
+            </StackPane>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" styleClass="editor-pane-fixed-bottom">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button fx:id="exportPdfButton" text="Export as PDF" mnemonicParsing="false" styleClass="export-button"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>
