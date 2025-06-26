@@ -59,6 +59,7 @@ public class ExerciseControl extends VBox {
 
         // Name field
         Label nameLabel = new Label("Name:");
+        nameLabel.getStyleClass().add("exercise-label");
         nameField = new TextField(exercise.getName());
         nameField.getStyleClass().add("exercise-name-field");
         nameField.textProperty().addListener((obs, oldVal, newVal) -> 
@@ -67,6 +68,7 @@ public class ExerciseControl extends VBox {
 
         // Description field
         Label descLabel = new Label("Description:");
+        descLabel.getStyleClass().add("exercise-label");
         descriptionField = new TextField(exercise.getDescription());
         descriptionField.getStyleClass().add("exercise-description-field");
         descriptionField.textProperty().addListener((obs, oldVal, newVal) -> 
@@ -75,6 +77,7 @@ public class ExerciseControl extends VBox {
 
         // Duration field
         Label durationLabel = new Label("Duration:");
+        durationLabel.getStyleClass().add("exercise-label");
         durationField = new TextField(exercise.getDuration());
         durationField.getStyleClass().add("exercise-duration-field");
         durationField.textProperty().addListener((obs, oldVal, newVal) -> 
@@ -82,6 +85,7 @@ public class ExerciseControl extends VBox {
 
         // Sets spinner
         Label setsLabel = new Label("Sets:");
+        setsLabel.getStyleClass().add("exercise-label");
         setsSpinner = new Spinner<>(1, 100, exercise.getSets());
         setsSpinner.setEditable(true);
         setsSpinner.valueProperty().addListener((obs, oldVal, newVal) -> 
@@ -90,6 +94,7 @@ public class ExerciseControl extends VBox {
 
         // Ball bucket checkbox
         Label ballBucketLabel = new Label("Ball Bucket:");
+        ballBucketLabel.getStyleClass().add("exercise-label");
         ballBucketCheckBox = new CheckBox();
         ballBucketCheckBox.setSelected(exercise.isBallBucket());
         ballBucketCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> 

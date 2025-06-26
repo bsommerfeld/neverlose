@@ -486,6 +486,12 @@
     -fx-cursor: hand;
 }
 
+.exercise-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+    -fx-font-family: "Lato, 'Segoe UI', System";
+}
+
 /* Delete button for plan cards */
 .delete-button {
     -fx-background-color: #e74c3c; /* Red color for delete action */
