@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/17"
-            fx:controller="de.bsommerfeld.neverlose.fx.controller.TemplateBrowserController"
             styleClass="template-browser">
     <top>
         <Label text="Training Unit Templates" styleClass="template-browser-title">

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -115,7 +116,8 @@ public class TrainingPlanEditorController {
    * @param unit the training unit to add
    */
   private void addTrainingUnitToUI(TrainingUnit unit) {
-    TrainingUnitControl unitControl = new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate);
+    TrainingUnitControl unitControl =
+        new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate);
     trainingUnitsContainer.getChildren().add(unitControl);
   }
 
@@ -153,9 +155,14 @@ public class TrainingPlanEditorController {
     addButton.getStyleClass().add("add-unit-button");
     addButton.setOnAction(event -> handleAddUnit());
 
+    Button addFromTemplate = new Button("From Template");
+    addFromTemplate.getStyleClass().add("add-from-template-button");
+    addFromTemplate.setOnAction(event -> handleAddFromTemplate());
+
     // Create an HBox to center the button
-    HBox buttonContainer = new HBox(addButton);
-    buttonContainer.setAlignment(javafx.geometry.Pos.CENTER);
+    HBox buttonContainer = new HBox(addButton, addFromTemplate);
+    buttonContainer.setSpacing(10);
+    buttonContainer.setAlignment(Pos.CENTER);
 
     trainingUnitsContainer.getChildren().add(buttonContainer);
   }
@@ -177,15 +184,20 @@ public class TrainingPlanEditorController {
   @FXML
   private void handleAddFromTemplate() {
     try {
+      // Create the controller instance with the required dependencies
+      TemplateBrowserController controller = new TemplateBrowserController(planStorageService);
+
       // Load the template browser view
       javafx.fxml.FXMLLoader loader =
           new javafx.fxml.FXMLLoader(
               getClass()
                   .getResource("/de/bsommerfeld/neverlose/fx/controller/TemplateBrowser.fxml"));
+
+      // Set the controller before loading
+      loader.setController(controller);
       javafx.scene.Parent root = loader.load();
 
-      // Get the controller and set the callback
-      TemplateBrowserController controller = loader.getController();
+      // Set the callback
       controller.setTemplateSelectedCallback(this::addTemplateToTrainingPlan);
 
       // Create a new stage for the template browser
