@@ -78,6 +78,9 @@ public class NeverLoseMetaController {
     TopBarController topBarController = topBarWrapper.controller();
     topBarController.setPlanListViewController(controller);
 
+    // Refresh the plan list to ensure it's up-to-date
+    controller.refreshPlans();
+
     Parent center = viewWrapper.parent();
     setAnchor(center);
     centerContentPlaceholder.getChildren().setAll(center);
