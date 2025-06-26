@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -10,13 +9,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" 
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane"
             xmlns="http://javafx.com/javafx/17.0.12"
             stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
             fx:controller="de.bsommerfeld.neverlose.fx.controller.TrainingPlanEditorController"
             styleClass="plan-editor-background">
-    
+
     <!-- Top Action Bar -->
     <top>
         <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="editor-action-bar">
@@ -27,17 +25,17 @@
             <Button fx:id="exportButton" text="Export" onAction="#handleExport" styleClass="editor-action-button"/>
         </HBox>
     </top>
-    
+
     <!-- Center Content - Document-like View -->
     <center>
         <AnchorPane styleClass="editor-background">
-            <ScrollPane fitToWidth="true" styleClass="editor-scroll-pane" AnchorPane.topAnchor="0.0" 
-                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+            <ScrollPane fitToWidth="true" styleClass="editor-scroll-pane" AnchorPane.topAnchor="0.0"
+                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
                 <VBox alignment="TOP_CENTER" spacing="20">
                     <padding>
                         <Insets top="20" right="20" bottom="20" left="20"/>
                     </padding>
-                    
+
                     <!-- Document-like Container -->
                     <VBox styleClass="editor-document" maxWidth="800" prefWidth="800">
                         <!-- Header Section -->
@@ -45,31 +43,33 @@
                             <padding>
                                 <Insets top="20" right="20" bottom="20" left="20"/>
                             </padding>
-                            
+
                             <!-- Plan Name -->
-                            <TextField fx:id="planNameField" styleClass="editor-title-field" promptText="Training Plan Name">
+                            <TextField fx:id="planNameField" styleClass="editor-title-field"
+                                       promptText="Training Plan Name">
                                 <font>
                                     <Font size="24.0"/>
                                 </font>
                             </TextField>
-                            
+
                             <!-- Plan Description -->
-                            <TextField fx:id="planDescriptionField" styleClass="editor-description-field" promptText="Training Plan Description">
+                            <TextField fx:id="planDescriptionField" styleClass="editor-description-field"
+                                       promptText="Training Plan Description">
                                 <font>
                                     <Font size="16.0"/>
                                 </font>
                             </TextField>
                         </VBox>
-                        
+
                         <!-- Training Units Container -->
                         <VBox fx:id="trainingUnitsContainer" spacing="20" styleClass="training-units-container">
                             <padding>
                                 <Insets top="20" right="20" bottom="20" left="20"/>
                             </padding>
-                            
+
                             <!-- Add Unit Button -->
                             <HBox alignment="CENTER">
-                                <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit" 
+                                <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit"
                                         styleClass="add-unit-button">
                                     <font>
                                         <Font size="18.0"/>
