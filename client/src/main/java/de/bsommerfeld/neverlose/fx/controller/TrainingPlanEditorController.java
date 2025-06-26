@@ -14,6 +14,7 @@ import java.io.File;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -164,20 +165,20 @@ public class TrainingPlanEditorController {
         exportService.export(trainingPlan, file);
         log.info("Training plan successfully exported to: {}", file.getAbsolutePath());
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Export Successful");
-        alert.setHeaderText(null);
-        alert.setContentText("The training plan has been successfully saved as a PDF.");
-        alert.showAndWait();
+        showStyledAlert(
+            Alert.AlertType.INFORMATION,
+            "Export Successful",
+            null,
+            "The training plan has been successfully saved as a PDF.");
 
       } catch (Exception e) {
         log.error("Error exporting training plan", e);
 
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Export Error");
-        alert.setHeaderText("The export failed.");
-        alert.setContentText("An error occurred while saving the PDF file: " + e.getMessage());
-        alert.showAndWait();
+        showStyledAlert(
+            Alert.AlertType.ERROR,
+            "Export Error",
+            "The export failed.",
+            "An error occurred while saving the PDF file: " + e.getMessage());
       }
     } else {
       log.info("Export canceled by user.");
@@ -192,5 +193,26 @@ public class TrainingPlanEditorController {
 
       // The training units are updated directly by their controls
     }
+  }
+
+  /**
+   * Creates and shows an Alert with the application's stylesheet applied.
+   *
+   * @param alertType the type of the alert
+   * @param title the title of the alert
+   * @param headerText the header text (can be null)
+   * @param contentText the content text
+   */
+  private void showStyledAlert(
+      Alert.AlertType alertType, String title, String headerText, String contentText) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+    alert.setContentText(contentText);
+
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+
+    alert.showAndWait();
   }
 }

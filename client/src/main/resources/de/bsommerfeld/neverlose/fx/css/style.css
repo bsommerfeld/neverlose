@@ -1,3 +1,5 @@
+@import "alerts.css";
+
 /* --- Global / Base --- */
 .root {
     /* Color Palette based on NeverLose design concept */
@@ -56,7 +58,7 @@
     -fx-font-weight: bold;
     -fx-text-fill: -never-blue; /* Royal blue for "Never" branding */
     -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
-    -fx-effect: dropshadow(one-pass-box, rgba(255,255,255,0.8), 1, 0.0, 0, 1);
+    -fx-effect: dropshadow(one-pass-box, rgba(255, 255, 255, 0.8), 1, 0.0, 0, 1);
     -fx-alignment: center-left;
 }
 
@@ -133,13 +135,13 @@
 
 /* Placeholder text when no plans are found */
 .search-results-placeholder {
-     -fx-font-size: 16px;
-     -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
-     -fx-text-fill: -text-secondary;
-     -fx-alignment: center;
-     /* Ensures it takes up space in the FlowPane */
-     /* This may need to be set in Java code depending on how FlowPane handles it */
-     /* e.g., by setting prefWidth/prefHeight to the size of the FlowPane */
+    -fx-font-size: 16px;
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
+    -fx-text-fill: -text-secondary;
+    -fx-alignment: center;
+    /* Ensures it takes up space in the FlowPane */
+    /* This may need to be set in Java code depending on how FlowPane handles it */
+    /* e.g., by setting prefWidth/prefHeight to the size of the FlowPane */
 }
 
 /* --- General Styles --- */
@@ -390,3 +392,5 @@
 .exercise-ball-bucket-checkbox {
     -fx-cursor: hand;
 }
+
+
