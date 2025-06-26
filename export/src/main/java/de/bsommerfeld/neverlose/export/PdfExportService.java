@@ -36,6 +36,8 @@ public class PdfExportService implements ExportService {
       new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_SUBTITLE, Theme.Colors.TEXT_MEDIUM);
   private static final PdfStyle STYLE_UNIT_HEADER =
       new PdfStyle(FONT_BOLD, Theme.Fonts.SIZE_UNIT_HEADER, Theme.Colors.TEXT_DARKER);
+  private static final PdfStyle STYLE_UNIT_WEEKDAY =
+      new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_UNIT_WEEKDAY, Theme.Colors.TEXT_LIGHTER);
   private static final PdfStyle STYLE_UNIT_DESC =
       new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_UNIT_DESC, Theme.Colors.TEXT_LIGHT);
   private static final PdfStyle STYLE_EXERCISE_NAME =
@@ -150,15 +152,19 @@ public class PdfExportService implements ExportService {
   private float calculateUnitHeight(TrainingUnit unit) throws IOException {
     float totalHeight = 0;
 
-    // Unit header
+    // Unit name
     String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
-    String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
-    String headerText = String.format("%s (%s)", unitName, weekday);
-
-    List<String> headerLines = wrapText(headerText, STYLE_UNIT_HEADER.font(), 
+    List<String> nameLines = wrapText(unitName, STYLE_UNIT_HEADER.font(), 
         STYLE_UNIT_HEADER.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
-    totalHeight += headerLines.size() * STYLE_UNIT_HEADER.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    totalHeight += nameLines.size() * STYLE_UNIT_HEADER.size() * Layout.BASE_LINE_SPACING_FACTOR;
     totalHeight += Layout.SPACING_AFTER_UNIT_HEADER;
+
+    // Weekday (on a separate line)
+    String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
+    List<String> weekdayLines = wrapText(weekday, STYLE_UNIT_WEEKDAY.font(), 
+        STYLE_UNIT_WEEKDAY.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+    totalHeight += weekdayLines.size() * STYLE_UNIT_WEEKDAY.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    totalHeight += Layout.SPACING_AFTER_UNIT_WEEKDAY;
 
     // Unit description
     String description = unit.getDescription();
@@ -237,10 +243,12 @@ public class PdfExportService implements ExportService {
     // Write the unit content
     String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
     String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
-    String headerText = String.format("%s (%s)", unitName, weekday);
 
-    writeStyledWrappedText(headerText, Layout.INDENT_UNIT_LEVEL, STYLE_UNIT_HEADER);
+    // Write unit name and weekday on separate lines
+    writeStyledWrappedText(unitName, Layout.INDENT_UNIT_LEVEL, STYLE_UNIT_HEADER);
     addSpacing(Layout.SPACING_AFTER_UNIT_HEADER);
+    writeStyledWrappedText(weekday, Layout.INDENT_UNIT_LEVEL, STYLE_UNIT_WEEKDAY);
+    addSpacing(Layout.SPACING_AFTER_UNIT_WEEKDAY);
 
     String description = unit.getDescription();
     if (description != null && !description.trim().isEmpty()) {
@@ -608,6 +616,7 @@ public class PdfExportService implements ExportService {
     static final float SPACING_SEPARATOR = Theme.Layout.SPACING_SEPARATOR;
     static final float SPACING_BETWEEN_UNITS = Theme.Layout.SPACING_BETWEEN_UNITS;
     static final float SPACING_AFTER_UNIT_HEADER = Theme.Layout.SPACING_AFTER_UNIT_HEADER;
+    static final float SPACING_AFTER_UNIT_WEEKDAY = Theme.Layout.SPACING_AFTER_UNIT_WEEKDAY;
     static final float SPACING_AFTER_UNIT_DESC = Theme.Layout.SPACING_AFTER_UNIT_DESC;
     static final float SPACING_BEFORE_EXERCISES = Theme.Layout.SPACING_BEFORE_EXERCISES;
     static final float SPACING_BETWEEN_EXERCISES = Theme.Layout.SPACING_BETWEEN_EXERCISES;
