@@ -111,6 +111,8 @@ public class PlanListViewController {
         viewProvider.requestView(PlanCardController.class);
     PlanCardController controller = viewWrapper.controller();
     controller.setPlan(plan);
+    controller.setPlanStorageService(planStorageService);
+    controller.setParentController(this);
 
     // Add double-click event handler to open the plan
     Node planCard = viewWrapper.parent();

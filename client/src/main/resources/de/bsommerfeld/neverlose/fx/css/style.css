@@ -393,4 +393,24 @@
     -fx-cursor: hand;
 }
 
+/* Delete button for plan cards */
+.delete-button {
+    -fx-background-color: #e74c3c; /* Red color for delete action */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+}
 
+.delete-button:hover {
+    -fx-background-color: derive(#e74c3c, -10%); /* Slightly darker red on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 1);
+}
+
+.delete-button:pressed {
+    -fx-background-color: derive(#e74c3c, -20%); /* Even darker when pressed */
+}
