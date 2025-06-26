@@ -12,6 +12,7 @@ import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
+import de.bsommerfeld.neverlose.plan.components.collection.TrainingExercises;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -128,8 +129,31 @@ public class TrainingPlanEditorController {
    */
   private void saveUnitAsTemplate(TrainingUnit unit) {
     try {
-      planStorageService.saveUnit(unit);
-      log.info("Training unit saved as template successfully: {}", unit.getName());
+      // Create a new unit with the same ID to ensure it overwrites any existing template with the same ID
+      TrainingUnit templateUnit = new TrainingUnit(
+          unit.getId(),
+          unit.getName(),
+          unit.getDescription(),
+          unit.getWeekday(),
+          new TrainingExercises());
+
+      // Copy all exercises from the original unit to the template unit
+      for (TrainingExercise exercise : unit.getTrainingExercises().getAll()) {
+        // Create a copy of each exercise
+        TrainingExercise templateExercise = new TrainingExercise(
+            exercise.getName(),
+            exercise.getDescription(),
+            exercise.getDuration(),
+            exercise.getSets(),
+            exercise.isBallBucket());
+
+        // Add it to the template unit
+        templateUnit.getTrainingExercises().add(templateExercise);
+      }
+
+      // Save the template unit
+      planStorageService.saveUnit(templateUnit);
+      log.info("Training unit saved as template successfully: {}", templateUnit.getName());
 
       // Show success message
       showStyledAlert(
