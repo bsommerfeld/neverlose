@@ -4,7 +4,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
             prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.12"
             fx:controller="de.bsommerfeld.neverlose.fx.controller.NeverLoseMetaController">
     <top>

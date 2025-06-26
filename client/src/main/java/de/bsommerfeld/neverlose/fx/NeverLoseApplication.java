@@ -28,6 +28,10 @@ public class NeverLoseApplication extends Application {
     ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
     Parent root = viewProvider.requestView(NeverLoseMetaController.class).parent();
     Scene scene = new Scene(root);
+
+    // Centrally load the application stylesheet
+    scene.getStylesheets().add("/de/bsommerfeld/neverlose/fx/css/style.css");
+
     stage.setScene(scene);
     stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/logo.png"));
     stage.setTitle("NeverLose");

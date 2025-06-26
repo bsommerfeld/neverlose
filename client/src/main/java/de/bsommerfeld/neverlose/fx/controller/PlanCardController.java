@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 
@@ -89,6 +90,12 @@ public class PlanCardController {
         confirmDialog.setHeaderText("Delete Plan \"" + plan.name() + "\"?");
         confirmDialog.setContentText("Do you really want to delete this plan? This action cannot be made undo.");
 
+        // Apply application stylesheet to the dialog
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        if (deleteButton.getScene() != null) {
+            dialogPane.getStylesheets().addAll(deleteButton.getScene().getStylesheets());
+        }
+
         Optional<ButtonType> result = confirmDialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
@@ -119,6 +126,13 @@ public class PlanCardController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        // Apply application stylesheet to the dialog
+        DialogPane dialogPane = alert.getDialogPane();
+        if (deleteButton.getScene() != null) {
+            dialogPane.getStylesheets().addAll(deleteButton.getScene().getStylesheets());
+        }
+
         alert.showAndWait();
     }
 }

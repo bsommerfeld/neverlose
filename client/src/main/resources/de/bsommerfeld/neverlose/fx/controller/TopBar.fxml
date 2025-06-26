@@ -9,7 +9,6 @@
 <?import javafx.scene.image.ImageView?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" spacing="10" styleClass="top-search-bar"
       prefHeight="40.0" xmlns="http://javafx.com/javafx/21"
-      stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
       HBox.hgrow="ALWAYS"
       fx:controller="de.bsommerfeld.neverlose.fx.controller.TopBarController">
     <padding>
