@@ -6,11 +6,15 @@ import de.bsommerfeld.neverlose.fx.components.TrainingUnitControl;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
+import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -135,10 +139,45 @@ public class TrainingPlanEditorController {
     updateModelFromUI();
 
     try {
+      // Check if a plan with the same name already exists (but with a different ID)
+      String planName = trainingPlan.getName();
+      UUID existingPlanId = findExistingPlanByName(planName);
+
+      if (existingPlanId != null && !existingPlanId.equals(trainingPlan.getId())) {
+        // A plan with this name exists but has a different ID
+        // Update the existing plan instead of creating a new one
+        log.info("Plan with name '{}' already exists. Updating existing plan.", planName);
+        trainingPlan = new TrainingPlan(
+            existingPlanId, 
+            planName, 
+            trainingPlan.getDescription(), 
+            trainingPlan.getTrainingUnits());
+      }
+
       String identifier = planStorageService.savePlan(trainingPlan);
       log.info("Training plan saved successfully with identifier: {}", identifier);
     } catch (Exception e) {
       log.error("Error saving training plan", e);
+    }
+  }
+
+  /**
+   * Finds an existing plan by name.
+   *
+   * @param name the name to search for
+   * @return the UUID of the existing plan, or null if no plan with that name exists
+   */
+  private UUID findExistingPlanByName(String name) {
+    try {
+      List<PlanSummary> summaries = planStorageService.loadPlanSummaries();
+      return summaries.stream()
+          .filter(summary -> summary.name().equals(name))
+          .map(summary -> summary.identifier())
+          .findFirst()
+          .orElse(null);
+    } catch (IOException e) {
+      log.error("Error loading plan summaries", e);
+      return null;
     }
   }
 
