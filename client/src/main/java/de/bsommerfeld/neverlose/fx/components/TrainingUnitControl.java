@@ -37,6 +37,7 @@ public class TrainingUnitControl extends VBox {
   private final VBox exercisesContainer;
   private final PlanStorageService planStorageService;
   private Consumer<TrainingUnit> saveAsTemplateCallback;
+  private Consumer<TrainingUnit> onRemoveCallback;
 
   /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit.
@@ -45,7 +46,7 @@ public class TrainingUnitControl extends VBox {
    * @param planStorageService the service for loading and saving templates
    */
   public TrainingUnitControl(TrainingUnit trainingUnit, PlanStorageService planStorageService) {
-    this(trainingUnit, planStorageService, null);
+    this(trainingUnit, planStorageService, null, null);
   }
 
   /**
@@ -56,12 +57,15 @@ public class TrainingUnitControl extends VBox {
    * @param planStorageService the service for loading and saving templates
    * @param saveAsTemplateCallback callback to be called when the "Save as Template" button is
    *     clicked
+   * @param onRemoveCallback callback to be called when the "Remove" button is clicked
    */
   public TrainingUnitControl(
-      TrainingUnit trainingUnit, PlanStorageService planStorageService, Consumer<TrainingUnit> saveAsTemplateCallback) {
+      TrainingUnit trainingUnit, PlanStorageService planStorageService, 
+      Consumer<TrainingUnit> saveAsTemplateCallback, Consumer<TrainingUnit> onRemoveCallback) {
     this.trainingUnit = trainingUnit;
     this.planStorageService = planStorageService;
     this.saveAsTemplateCallback = saveAsTemplateCallback;
+    this.onRemoveCallback = onRemoveCallback;
 
     // Configure the VBox
     setSpacing(10);
@@ -90,7 +94,13 @@ public class TrainingUnitControl extends VBox {
     saveAsTemplateButton.getStyleClass().add("save-as-template-button");
     saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 
-    header.getChildren().addAll(nameField, weekdayComboBox, saveAsTemplateButton);
+    // Remove button (red X)
+    Button removeButton = new Button("X");
+    removeButton.getStyleClass().add("remove-button");
+    removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+    removeButton.setOnAction(e -> handleRemove());
+
+    header.getChildren().addAll(nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
 
     // Description field
     descriptionField = new TextField(trainingUnit.getDescription());
@@ -131,8 +141,24 @@ public class TrainingUnitControl extends VBox {
    * @param exercise the exercise to add
    */
   private void addExerciseToUI(TrainingExercise exercise) {
-    ExerciseControl exerciseControl = new ExerciseControl(exercise, planStorageService);
+    ExerciseControl exerciseControl = new ExerciseControl(exercise, planStorageService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
+  }
+
+  /**
+   * Removes an exercise from the training unit and updates the UI.
+   *
+   * @param exercise the exercise to remove
+   */
+  private void removeExercise(TrainingExercise exercise) {
+    // Remove the exercise from the training unit
+    trainingUnit.getTrainingExercises().remove(exercise);
+
+    // Update the UI
+    exercisesContainer.getChildren().clear();
+    for (TrainingExercise ex : trainingUnit.getTrainingExercises().getAll()) {
+      addExerciseToUI(ex);
+    }
   }
 
   /** Handles the action of adding a new exercise. */
@@ -164,6 +190,34 @@ public class TrainingUnitControl extends VBox {
   private void handleSaveAsTemplate() {
     if (saveAsTemplateCallback != null) {
       saveAsTemplateCallback.accept(trainingUnit);
+    }
+  }
+
+  /**
+   * Handles the action of removing the training unit. If a callback is set, it will be
+   * called with the training unit after confirmation.
+   */
+  private void handleRemove() {
+    // Show confirmation dialog
+    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+    confirmDialog.setTitle("Remove Training Unit");
+    confirmDialog.setHeaderText("Are you sure you want to remove this training unit?");
+    confirmDialog.setContentText("This action cannot be undone.");
+
+    // Apply application stylesheet to the dialog
+    DialogPane dialogPane = confirmDialog.getDialogPane();
+    if (getScene() != null && getScene().getRoot() != null) {
+        dialogPane.getStylesheets().addAll(getScene().getStylesheets());
+    }
+
+    // Wait for user response
+    java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+
+    // If user confirmed, call the callback
+    if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+        if (onRemoveCallback != null) {
+            onRemoveCallback.accept(trainingUnit);
+        }
     }
   }
 

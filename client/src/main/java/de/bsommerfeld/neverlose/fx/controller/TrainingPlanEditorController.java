@@ -119,8 +119,21 @@ public class TrainingPlanEditorController {
    */
   private void addTrainingUnitToUI(TrainingUnit unit) {
     TrainingUnitControl unitControl =
-        new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate);
+        new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate, this::removeTrainingUnit);
     trainingUnitsContainer.getChildren().add(unitControl);
+  }
+
+  /**
+   * Removes a training unit from the training plan and updates the UI.
+   *
+   * @param unit the training unit to remove
+   */
+  private void removeTrainingUnit(TrainingUnit unit) {
+    // Remove the unit from the training plan
+    trainingPlan.getTrainingUnits().remove(unit);
+
+    // Update the UI
+    updateUIFromModel();
   }
 
   /**

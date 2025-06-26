@@ -7,6 +7,7 @@ import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -35,6 +36,7 @@ public class ExerciseControl extends VBox {
     private final Spinner<Integer> setsSpinner;
     private final CheckBox ballBucketCheckBox;
     private final PlanStorageService planStorageService;
+    private Consumer<TrainingExercise> onRemoveCallback;
 
     /**
      * Creates a new ExerciseControl for the specified TrainingExercise.
@@ -43,8 +45,20 @@ public class ExerciseControl extends VBox {
      * @param planStorageService the service for loading and saving templates
      */
     public ExerciseControl(TrainingExercise exercise, PlanStorageService planStorageService) {
+        this(exercise, planStorageService, null);
+    }
+
+    /**
+     * Creates a new ExerciseControl for the specified TrainingExercise with a callback for removal.
+     *
+     * @param exercise the TrainingExercise to represent
+     * @param planStorageService the service for loading and saving templates
+     * @param onRemoveCallback callback to be called when the "Remove" button is clicked
+     */
+    public ExerciseControl(TrainingExercise exercise, PlanStorageService planStorageService, Consumer<TrainingExercise> onRemoveCallback) {
         this.exercise = exercise;
         this.planStorageService = planStorageService;
+        this.onRemoveCallback = onRemoveCallback;
 
         // Configure the VBox
         setSpacing(8);
@@ -122,7 +136,13 @@ public class ExerciseControl extends VBox {
         saveAsTemplateButton.getStyleClass().add("save-as-template-button");
         saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 
-        HBox buttonContainer = new HBox(saveAsTemplateButton);
+        // Create a remove button (red X)
+        Button removeButton = new Button("X");
+        removeButton.getStyleClass().add("remove-button");
+        removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        removeButton.setOnAction(e -> handleRemove());
+
+        HBox buttonContainer = new HBox(10, removeButton, saveAsTemplateButton);
         buttonContainer.setAlignment(Pos.CENTER_RIGHT);
         buttonContainer.setPadding(new Insets(5, 0, 0, 0));
 
@@ -205,6 +225,34 @@ public class ExerciseControl extends VBox {
                 "Error Saving",
                 "Saving as template has failed.",
                 "An error occurred: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles the action of removing the exercise. If a callback is set, it will be
+     * called with the exercise after confirmation.
+     */
+    private void handleRemove() {
+        // Show confirmation dialog
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Remove Exercise");
+        confirmDialog.setHeaderText("Are you sure you want to remove this exercise?");
+        confirmDialog.setContentText("This action cannot be undone.");
+
+        // Apply application stylesheet to the dialog
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        if (getScene() != null && getScene().getRoot() != null) {
+            dialogPane.getStylesheets().addAll(getScene().getStylesheets());
+        }
+
+        // Wait for user response
+        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+
+        // If user confirmed, call the callback
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+            if (onRemoveCallback != null) {
+                onRemoveCallback.accept(exercise);
+            }
         }
     }
 
