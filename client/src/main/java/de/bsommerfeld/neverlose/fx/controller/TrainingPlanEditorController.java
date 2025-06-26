@@ -155,13 +155,33 @@ public class TrainingPlanEditorController {
 
       if (existingPlanId != null && !existingPlanId.equals(trainingPlan.getId())) {
         // A plan with this name exists but has a different ID
-        // Update the existing plan instead of creating a new one
-        log.info("Plan with name '{}' already exists. Updating existing plan.", planName);
-        trainingPlan = new TrainingPlan(
-            existingPlanId, 
-            planName, 
-            trainingPlan.getDescription(), 
-            trainingPlan.getTrainingUnits());
+        // Show confirmation dialog before overwriting
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Overwrite Plan?");
+        confirmDialog.setHeaderText("A Plan with the name '" + planName + "' already exists.");
+        confirmDialog.setContentText("Do you really want to overwrite the existing plan?");
+
+        // Apply application stylesheet to the dialog
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+
+        // Wait for user response
+        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+
+        // If user confirmed, update the existing plan
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+          log.info("User confirmed overwriting plan with name '{}'.", planName);
+          trainingPlan =
+              new TrainingPlan(
+                  existingPlanId,
+                  planName,
+                  trainingPlan.getDescription(),
+                  trainingPlan.getTrainingUnits());
+        } else {
+          // User canceled, abort save operation
+          log.info("User canceled overwriting plan with name '{}'.", planName);
+          return;
+        }
       }
 
       String identifier = planStorageService.savePlan(trainingPlan);
