@@ -211,7 +211,7 @@ public class TrainingPlanEditorController {
     alert.setContentText(contentText);
 
     DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+    dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
 
     alert.showAndWait();
   }
