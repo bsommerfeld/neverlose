@@ -92,6 +92,7 @@ public class Theme {
     // Indentation
     public static final float INDENT_UNIT_LEVEL = 15; // Added padding to fix left alignment issue
     public static final float INDENT_EXERCISE_CONTAINER = 15;
+    public static final float INDENT_EXERCISE_INTERNAL = 10; // Internal padding inside exercise containers
     public static final float INDENT_EXERCISE_BLOCK = INDENT_EXERCISE_CONTAINER;
     public static final float INDENT_EXERCISE_CONTENT = INDENT_EXERCISE_CONTAINER;
 
