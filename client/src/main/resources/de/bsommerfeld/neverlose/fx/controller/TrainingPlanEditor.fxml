@@ -67,12 +67,19 @@
                                 <Insets top="20" right="20" bottom="20" left="20"/>
                             </padding>
 
-                            <!-- Add Unit Button -->
-                            <HBox alignment="CENTER">
+                            <!-- Add Unit Buttons -->
+                            <HBox alignment="CENTER" spacing="10">
                                 <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit"
                                         styleClass="add-unit-button">
                                     <font>
                                         <Font size="18.0"/>
+                                    </font>
+                                </Button>
+                                <Button fx:id="addFromTemplateButton" text="Add From Templates"
+                                        onAction="#handleAddFromTemplate"
+                                        styleClass="add-from-template-button">
+                                    <font>
+                                        <Font size="14.0"/>
                                     </font>
                                 </Button>
                             </HBox>

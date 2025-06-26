@@ -190,6 +190,72 @@
     -fx-text-fill: -text-primary;
 }
 
+/* --- Template Browser --- */
+.template-browser {
+    -fx-background-color: -bg-light;
+}
+
+.template-browser-title {
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -never-blue;
+    -fx-alignment: center;
+}
+
+.template-card {
+    -fx-background-color: white;
+    -fx-padding: 10px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: derive(-accent-silver, 20%);
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+    -fx-pref-width: 180px;
+    -fx-pref-height: 100px;
+    -fx-cursor: hand;
+}
+
+.template-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 4);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-border-color: -accent-gold;
+    -fx-border-width: 1px;
+}
+
+.template-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif";
+    -fx-text-fill: -never-blue;
+    -fx-padding: 5 0 0 0;
+    -fx-alignment: center;
+}
+
+.delete-template-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.delete-template-button:hover {
+    -fx-background-color: derive(#e74c3c, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+.no-templates-message {
+    -fx-font-size: 14px;
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-text-fill: -text-secondary;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+}
+
 /* --- Training Plan Editor --- */
 .plan-editor-background {
     -fx-background-color: #f0f0f0; /* Light gray background */
@@ -292,6 +358,19 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
 }
 
+.add-from-template-button {
+    -fx-background-color: -never-blue;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.add-from-template-button:hover {
+    -fx-background-color: derive(-never-blue, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+}
+
 /* --- Training Unit Control --- */
 .training-unit-control {
     -fx-background-color: #f9f9f9;
@@ -336,6 +415,20 @@
     -fx-border-color: -accent-silver;
     -fx-border-radius: 3px;
     -fx-background-radius: 3px;
+}
+
+.save-as-template-button {
+    -fx-background-color: -accent-gold;
+    -fx-text-fill: -text-primary;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.save-as-template-button:hover {
+    -fx-background-color: derive(-accent-gold, -10%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
 }
 
 .exercises-container {

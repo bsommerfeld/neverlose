@@ -9,6 +9,7 @@ import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
+import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.File;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
@@ -113,8 +115,36 @@ public class TrainingPlanEditorController {
    * @param unit the training unit to add
    */
   private void addTrainingUnitToUI(TrainingUnit unit) {
-    TrainingUnitControl unitControl = new TrainingUnitControl(unit);
+    TrainingUnitControl unitControl = new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate);
     trainingUnitsContainer.getChildren().add(unitControl);
+  }
+
+  /**
+   * Saves a training unit as a template.
+   *
+   * @param unit the training unit to save as a template
+   */
+  private void saveUnitAsTemplate(TrainingUnit unit) {
+    try {
+      planStorageService.saveUnit(unit);
+      log.info("Training unit saved as template successfully: {}", unit.getName());
+
+      // Show success message
+      showStyledAlert(
+          Alert.AlertType.INFORMATION,
+          "Template saved",
+          null,
+          "The Training Unit was successfully saved as template.");
+    } catch (Exception e) {
+      log.error("Error saving training unit as template", e);
+
+      // Show error message
+      showStyledAlert(
+          Alert.AlertType.ERROR,
+          "Error while saving template",
+          "Saving the template has failed.",
+          "An error occurred: " + e.getMessage());
+    }
   }
 
   /** Adds the "Add Unit" button to the container. */
@@ -141,6 +171,78 @@ public class TrainingPlanEditorController {
 
     // Update the UI
     updateUIFromModel();
+  }
+
+  /** Handles the action of adding a unit from a template. */
+  @FXML
+  private void handleAddFromTemplate() {
+    try {
+      // Load the template browser view
+      javafx.fxml.FXMLLoader loader =
+          new javafx.fxml.FXMLLoader(
+              getClass()
+                  .getResource("/de/bsommerfeld/neverlose/fx/controller/TemplateBrowser.fxml"));
+      javafx.scene.Parent root = loader.load();
+
+      // Get the controller and set the callback
+      TemplateBrowserController controller = loader.getController();
+      controller.setTemplateSelectedCallback(this::addTemplateToTrainingPlan);
+
+      // Create a new stage for the template browser
+      Stage templateBrowserStage = new Stage();
+      templateBrowserStage.setTitle("Training Unit Templates");
+      templateBrowserStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+      templateBrowserStage.initOwner(rootPane.getScene().getWindow());
+
+      // Set the scene and show the stage
+      Scene scene = new Scene(root, 600, 400);
+      scene.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+      templateBrowserStage.setScene(scene);
+      templateBrowserStage.showAndWait();
+
+    } catch (Exception e) {
+      log.error("Error opening template browser", e);
+      showStyledAlert(
+          Alert.AlertType.ERROR,
+          "Error Opening",
+          "The template browser could not be opened.",
+          "An error occurred: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Adds a template unit to the training plan.
+   *
+   * @param templateUnit the template unit to add
+   */
+  private void addTemplateToTrainingPlan(TrainingUnit templateUnit) {
+    // Create a new unit with a new ID
+    TrainingUnit newUnit =
+        new TrainingUnit(
+            templateUnit.getName(), templateUnit.getDescription(), templateUnit.getWeekday());
+
+    // Copy all exercises from the template to the new unit
+    for (TrainingExercise exercise : templateUnit.getTrainingExercises().getAll()) {
+      // Create a copy of each exercise
+      TrainingExercise newExercise =
+          new TrainingExercise(
+              exercise.getName(),
+              exercise.getDescription(),
+              exercise.getDuration(),
+              exercise.getSets(),
+              exercise.isBallBucket());
+
+      // Add it to the new unit
+      newUnit.getTrainingExercises().add(newExercise);
+    }
+
+    // Add the new unit to the training plan
+    trainingPlan.getTrainingUnits().add(newUnit);
+
+    // Update the UI
+    updateUIFromModel();
+
+    log.info("Added template unit '{}' to training plan", templateUnit.getName());
   }
 
   /** Handles the save button action. */

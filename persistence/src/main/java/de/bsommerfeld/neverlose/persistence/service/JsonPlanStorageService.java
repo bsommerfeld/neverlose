@@ -189,6 +189,12 @@ public class JsonPlanStorageService implements PlanStorageService {
   }
 
   @Override
+  public List<UnitSummary> loadUnitSummaries() throws IOException {
+    // This is an alias for loadAllUnitSummaries() for API consistency
+    return loadAllUnitSummaries();
+  }
+
+  @Override
   public boolean deleteUnit(UUID unitId) throws IOException {
     Objects.requireNonNull(unitId, "unitId cannot be null");
     Path filePath = getUnitFilePath(unitId);
@@ -239,6 +245,12 @@ public class JsonPlanStorageService implements PlanStorageService {
   public List<ExerciseSummary> loadAllExerciseSummaries() throws IOException {
     log.debug("Loading exercise summaries from directory: {}", exercisesPath);
     return loadSummaries(exercisesPath, ExerciseSummary.class, "Exercise");
+  }
+
+  @Override
+  public List<ExerciseSummary> loadExerciseSummaries() throws IOException {
+    // This is an alias for loadAllExerciseSummaries() for API consistency
+    return loadAllExerciseSummaries();
   }
 
   @Override

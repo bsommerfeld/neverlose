@@ -102,6 +102,15 @@ public interface PlanStorageService {
   List<UnitSummary> loadAllUnitSummaries() throws IOException;
 
   /**
+   * Retrieves a list of summaries for all available training unit templates.
+   * This is an alias for loadAllUnitSummaries() for API consistency.
+   *
+   * @return A List of UnitSummary objects, possibly sorted by name. Empty list if none found.
+   * @throws IOException If an error occurs reading the storage directory.
+   */
+  List<UnitSummary> loadUnitSummaries() throws IOException;
+
+  /**
    * Deletes a specific training unit template identified by its unique ID.
    *
    * @param unitId The UUID of the unit to delete. Must not be null.
@@ -145,6 +154,15 @@ public interface PlanStorageService {
    * @throws IOException If an error occurs reading the storage directory.
    */
   List<ExerciseSummary> loadAllExerciseSummaries() throws IOException;
+
+  /**
+   * Retrieves a list of summaries for all available training exercise templates.
+   * This is an alias for loadAllExerciseSummaries() for API consistency.
+   *
+   * @return A List of ExerciseSummary objects, possibly sorted by name. Empty list if none found.
+   * @throws IOException If an error occurs reading the storage directory.
+   */
+  List<ExerciseSummary> loadExerciseSummaries() throws IOException;
 
   /**
    * Deletes a specific training exercise template identified by its unique ID.

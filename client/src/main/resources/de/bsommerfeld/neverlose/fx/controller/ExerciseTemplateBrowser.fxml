@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/17"
+            fx:controller="de.bsommerfeld.neverlose.fx.controller.ExerciseTemplateBrowserController"
+            styleClass="template-browser">
+    <top>
+        <Label text="Exercise Templates" styleClass="template-browser-title">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+        </Label>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <FlowPane fx:id="templatesContainer" hgap="10" vgap="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </FlowPane>
+        </ScrollPane>
+    </center>
+</BorderPane>
