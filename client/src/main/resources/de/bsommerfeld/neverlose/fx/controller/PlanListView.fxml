@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+           styleClass="plan-list-view-background"
+           fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanListViewController">
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" styleClass="plan-list-scroll-pane">
+        <FlowPane fx:id="flowPane" hgap="15" vgap="15" styleClass="plan-list-flow-pane">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+        </FlowPane>
+    </ScrollPane>
+</StackPane>

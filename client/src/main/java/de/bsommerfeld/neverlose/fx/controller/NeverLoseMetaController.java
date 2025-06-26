@@ -3,6 +3,8 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
+import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
+import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
@@ -37,6 +39,9 @@ public class NeverLoseMetaController {
     loadTopBar();
     loadBottomBar();
 
+    // Show the plan list view as the default view
+    showPlanListView();
+
     bottomBarPlaceholder.requestFocus(); // to get away from the search field
   }
 
@@ -57,6 +62,39 @@ public class NeverLoseMetaController {
    */
   public void loadCenter(Class<?> clazz) {
     Parent center = viewProvider.requestView(clazz).parent();
+    setAnchor(center);
+    centerContentPlaceholder.getChildren().setAll(center);
+  }
+
+  /** Shows the plan list view in the center content area. */
+  public void showPlanListView() {
+    ViewWrapper<PlanListViewController> viewWrapper =
+        viewProvider.requestView(PlanListViewController.class);
+    PlanListViewController controller = viewWrapper.controller();
+    controller.setMetaController(this);
+
+    // Connect the TopBarController with the PlanListViewController for search functionality
+    ViewWrapper<TopBarController> topBarWrapper = viewProvider.requestView(TopBarController.class);
+    TopBarController topBarController = topBarWrapper.controller();
+    topBarController.setPlanListViewController(controller);
+
+    Parent center = viewWrapper.parent();
+    setAnchor(center);
+    centerContentPlaceholder.getChildren().setAll(center);
+  }
+
+  /**
+   * Shows the training plan editor for the given plan in the center content area.
+   *
+   * @param plan the plan to edit
+   */
+  public void showTrainingPlanEditor(TrainingPlan plan) {
+    ViewWrapper<TrainingPlanEditorController> viewWrapper =
+        viewProvider.requestView(TrainingPlanEditorController.class);
+    TrainingPlanEditorController controller = viewWrapper.controller();
+    controller.setTrainingPlan(plan);
+
+    Parent center = viewWrapper.parent();
     setAnchor(center);
     centerContentPlaceholder.getChildren().setAll(center);
   }
