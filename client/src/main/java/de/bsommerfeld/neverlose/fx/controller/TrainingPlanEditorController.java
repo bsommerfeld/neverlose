@@ -141,8 +141,13 @@ public class TrainingPlanEditorController {
         // Update the model with the current UI state
         updateModelFromUI();
 
-        // TODO: Implement saving logic
-        System.out.println("Saving training plan: " + trainingPlan);
+        try {
+            // Save the training plan using the storage service
+            String identifier = planStorageService.savePlan(trainingPlan);
+            System.out.println("Training plan saved successfully with identifier: " + identifier);
+        } catch (Exception e) {
+            System.err.println("Error saving training plan: " + e);
+        }
     }
 
     /**
@@ -153,8 +158,19 @@ public class TrainingPlanEditorController {
         // Update the model with the current UI state
         updateModelFromUI();
 
-        // TODO: Implement export logic
-        System.out.println("Exporting training plan: " + trainingPlan);
+        try {
+            // In a real implementation, we would show a file chooser dialog here
+            // and let the user select where to save the PDF file.
+            // For simplicity, we'll just create a temporary file in the user's home directory.
+            java.io.File file = new java.io.File(System.getProperty("user.home"), 
+                    trainingPlan.getName() + ".pdf");
+
+            // Export the training plan to PDF
+            exportService.export(trainingPlan, file);
+            System.out.println("Training plan exported successfully to: " + file.getAbsolutePath());
+        } catch (Exception e) {
+            System.err.println("Error exporting training plan: " + e);
+        }
     }
 
     /**
@@ -168,4 +184,5 @@ public class TrainingPlanEditorController {
             // The training units are updated directly by their controls
         }
     }
+
 }
