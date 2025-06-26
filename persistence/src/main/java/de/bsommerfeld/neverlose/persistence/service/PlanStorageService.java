@@ -189,4 +189,22 @@ public interface PlanStorageService {
    * @return The Path object representing the storage directory.
    */
   Path getStoragePath();
+
+  /**
+   * Finds a training unit template by its name.
+   *
+   * @param name The name of the unit template to find.
+   * @return An Optional containing the UUID of the unit if found, otherwise Optional.empty().
+   * @throws IOException If an error occurs during the search.
+   */
+  Optional<UUID> findUnitIdByName(String name) throws IOException;
+
+  /**
+   * Finds a training exercise template by its name.
+   *
+   * @param name The name of the exercise template to find.
+   * @return An Optional containing the UUID of the exercise if found, otherwise Optional.empty().
+   * @throws IOException If an error occurs during the search.
+   */
+  Optional<UUID> findExerciseIdByName(String name) throws IOException;
 }

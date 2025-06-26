@@ -179,8 +179,8 @@ public class TemplateBrowserController {
 
         // Apply application stylesheet to the dialog
         DialogPane dialogPane = confirmDialog.getDialogPane();
-        if (rootPane.getScene() != null && rootPane.getScene().getRoot() != null) {
-            dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+        if (rootPane.getScene() != null) {
+            dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
         }
 
         // Wait for user response
@@ -239,8 +239,8 @@ public class TemplateBrowserController {
 
         // Apply application stylesheet to the dialog
         DialogPane dialogPane = alert.getDialogPane();
-        if (rootPane.getScene() != null && rootPane.getScene().getRoot() != null) {
-            dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+        if (rootPane.getScene() != null) {
+            dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
         }
 
         alert.showAndWait();

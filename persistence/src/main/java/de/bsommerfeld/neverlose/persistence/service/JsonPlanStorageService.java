@@ -265,6 +265,24 @@ public class JsonPlanStorageService implements PlanStorageService {
     return storageDirectory;
   }
 
+  @Override
+  public Optional<UUID> findUnitIdByName(String name) throws IOException {
+    List<UnitSummary> summaries = loadUnitSummaries();
+    return summaries.stream()
+        .filter(summary -> summary.name().equals(name))
+        .map(UnitSummary::identifier)
+        .findFirst();
+  }
+
+  @Override
+  public Optional<UUID> findExerciseIdByName(String name) throws IOException {
+    List<ExerciseSummary> summaries = loadExerciseSummaries();
+    return summaries.stream()
+        .filter(summary -> summary.name().equals(name))
+        .map(ExerciseSummary::identifier)
+        .findFirst();
+  }
+
   private void ensureStorageDirectoryExists(Path dirPath) {
     try {
       if (!Files.isDirectory(dirPath)) {

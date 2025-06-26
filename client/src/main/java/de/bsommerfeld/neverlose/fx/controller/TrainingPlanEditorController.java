@@ -16,6 +16,7 @@ import de.bsommerfeld.neverlose.plan.components.collection.TrainingExercises;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -129,6 +130,42 @@ public class TrainingPlanEditorController {
    */
   private void saveUnitAsTemplate(TrainingUnit unit) {
     try {
+      // Check if a unit with the same name already exists
+      String unitName = unit.getName();
+      Optional<UUID> existingUnitId = planStorageService.findUnitIdByName(unitName);
+
+      if (existingUnitId.isPresent() && !existingUnitId.get().equals(unit.getId())) {
+        // A unit with this name exists but has a different ID
+        // Show confirmation dialog before overwriting
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Overwrite Template?");
+        confirmDialog.setHeaderText("A Unit template with the name '" + unitName + "' already exists.");
+        confirmDialog.setContentText("Do you really want to overwrite the existing template?");
+
+        // Apply application stylesheet to the dialog
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+
+        // Wait for user response
+        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+
+        // If user confirmed, update the existing unit
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+          log.info("User confirmed overwriting unit template with name '{}'.", unitName);
+          // Use the existing ID for the template unit
+          unit = new TrainingUnit(
+              existingUnitId.get(),
+              unitName,
+              unit.getDescription(),
+              unit.getWeekday(),
+              unit.getTrainingExercises());
+        } else {
+          // User canceled, abort save operation
+          log.info("User canceled overwriting unit template with name '{}'.", unitName);
+          return;
+        }
+      }
+
       // Create a new unit with the same ID to ensure it overwrites any existing template with the same ID
       TrainingUnit templateUnit = new TrainingUnit(
           unit.getId(),
@@ -232,7 +269,7 @@ public class TrainingPlanEditorController {
 
       // Set the scene and show the stage
       Scene scene = new Scene(root, 600, 400);
-      scene.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+      scene.getStylesheets().addAll(rootPane.getScene().getStylesheets());
       templateBrowserStage.setScene(scene);
       templateBrowserStage.showAndWait();
 
@@ -301,7 +338,7 @@ public class TrainingPlanEditorController {
 
         // Apply application stylesheet to the dialog
         DialogPane dialogPane = confirmDialog.getDialogPane();
-        dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+        dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
 
         // Wait for user response
         java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
@@ -439,7 +476,7 @@ public class TrainingPlanEditorController {
     alert.setContentText(contentText);
 
     DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().addAll(rootPane.getScene().getRoot().getStylesheets());
+    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
 
     alert.showAndWait();
   }

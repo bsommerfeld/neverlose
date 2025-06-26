@@ -5,6 +5,8 @@ import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -134,12 +136,54 @@ public class ExerciseControl extends VBox {
 
     /**
      * Handles the action of saving the exercise as a template.
+     * Checks for existing templates with the same name and asks for confirmation before overwriting.
      * Saves the exercise to the storage service and shows a confirmation message.
      */
     private void handleSaveAsTemplate() {
         try {
-            planStorageService.saveExercise(exercise);
-            log.info("Exercise saved as template successfully: {}", exercise.getName());
+            // Check if an exercise with the same name already exists
+            String exerciseName = exercise.getName();
+            Optional<UUID> existingExerciseId = planStorageService.findExerciseIdByName(exerciseName);
+
+            TrainingExercise exerciseToSave = exercise;
+
+            if (existingExerciseId.isPresent() && !existingExerciseId.get().equals(exercise.getId())) {
+                // An exercise with this name exists but has a different ID
+                // Show confirmation dialog before overwriting
+                Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmDialog.setTitle("Overwrite Template?");
+                confirmDialog.setHeaderText("An Exercise template with the name '" + exerciseName + "' already exists.");
+                confirmDialog.setContentText("Do you really want to overwrite the existing template?");
+
+                // Apply application stylesheet to the dialog
+                DialogPane dialogPane = confirmDialog.getDialogPane();
+                if (getScene() != null && getScene().getRoot() != null) {
+                    dialogPane.getStylesheets().addAll(getScene().getStylesheets());
+                }
+
+                // Wait for user response
+                java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+
+                // If user confirmed, create a new exercise with the existing ID
+                if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+                    log.info("User confirmed overwriting exercise template with name '{}'.", exerciseName);
+                    // Create a new exercise with the existing ID
+                    exerciseToSave = new TrainingExercise(
+                        existingExerciseId.get(),
+                        exercise.getName(),
+                        exercise.getDescription(),
+                        exercise.getDuration(),
+                        exercise.getSets(),
+                        exercise.isBallBucket());
+                } else {
+                    // User canceled, abort save operation
+                    log.info("User canceled overwriting exercise template with name '{}'.", exerciseName);
+                    return;
+                }
+            }
+
+            planStorageService.saveExercise(exerciseToSave);
+            log.info("Exercise saved as template successfully: {}", exerciseToSave.getName());
 
             // Show success message
             showAlert(
