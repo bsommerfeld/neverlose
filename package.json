@@ -1,7 +1,7 @@
 {
     "bin": {"neverlose": "jdeploy-bundle/jdeploy.js"},
     "author": "Benjamin Sommerfeld",
-    "description": "A Software To Create Training Plans For Table Tennis.",
+    "description": "A Training Plan Editor For Table Tennis.",
     "main": "index.js",
     "preferGlobal": true,
     "repository": "",
@@ -13,7 +13,7 @@
             "type": "NPM",
             "url": "neverlose"
         }],
-        "javaVersion": "21",
+        "javaVersion": "24",
         "jar": "client/target/neverlose.jar",
         "javafx": true,
         "title": "NeverLose"
@@ -26,7 +26,7 @@
         "shelljs": "^0.8.4"
     },
     "license": "ISC",
-    "name": "neverlose-tp",
+    "name": "bs-neverlose",
     "files": ["jdeploy-bundle"],
     "scripts": {"test": "echo \"Error: no test specified\" && exit 1"}
 }

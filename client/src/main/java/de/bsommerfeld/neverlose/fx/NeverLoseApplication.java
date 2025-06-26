@@ -33,7 +33,7 @@ public class NeverLoseApplication extends Application {
     scene.getStylesheets().add("/de/bsommerfeld/neverlose/fx/css/style.css");
 
     stage.setScene(scene);
-    stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/logo.png"));
+    stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/icon.png"));
     stage.setTitle("NeverLose");
     stage.show();
   }
