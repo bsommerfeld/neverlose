@@ -3,6 +3,7 @@ package de.bsommerfeld.neverlose.export;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
+import de.bsommerfeld.neverlose.theme.Theme;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -23,22 +24,28 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
  */
 public class PdfExportService implements ExportService {
 
+  // PDF Fonts
+  private static final PDFont FONT_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
+  private static final PDFont FONT_REGULAR = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+  private static final PDFont FONT_ITALIC = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+
+  // Styles using the centralized Theme
   private static final PdfStyle STYLE_PREVIEW_TITLE =
-      new PdfStyle(Fonts.BOLD, Fonts.SIZE_PREVIEW_TITLE, Colors.TEXT_DARKEST);
+      new PdfStyle(FONT_BOLD, Theme.Fonts.SIZE_TITLE, Theme.Colors.TEXT_DARKEST);
   private static final PdfStyle STYLE_PREVIEW_DESC =
-      new PdfStyle(Fonts.REGULAR, Fonts.SIZE_PREVIEW_DESC, Colors.TEXT_MEDIUM);
+      new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_SUBTITLE, Theme.Colors.TEXT_MEDIUM);
   private static final PdfStyle STYLE_UNIT_HEADER =
-      new PdfStyle(Fonts.BOLD, Fonts.SIZE_UNIT_HEADER, Colors.TEXT_DARKER);
+      new PdfStyle(FONT_BOLD, Theme.Fonts.SIZE_UNIT_HEADER, Theme.Colors.TEXT_DARKER);
   private static final PdfStyle STYLE_UNIT_DESC =
-      new PdfStyle(Fonts.REGULAR, Fonts.SIZE_UNIT_DESC, Colors.TEXT_LIGHT);
+      new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_UNIT_DESC, Theme.Colors.TEXT_LIGHT);
   private static final PdfStyle STYLE_EXERCISE_NAME =
-      new PdfStyle(Fonts.BOLD, Fonts.SIZE_EXERCISE_NAME, Colors.TEXT_DARK);
+      new PdfStyle(FONT_BOLD, Theme.Fonts.SIZE_EXERCISE_NAME, Theme.Colors.TEXT_DARK);
   private static final PdfStyle STYLE_EXERCISE_DESC =
-      new PdfStyle(Fonts.REGULAR, Fonts.SIZE_EXERCISE_DESC, Colors.TEXT_LIGHT);
+      new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_EXERCISE_DESC, Theme.Colors.TEXT_LIGHT);
   private static final PdfStyle STYLE_EXERCISE_DETAILS =
-      new PdfStyle(Fonts.REGULAR, Fonts.SIZE_EXERCISE_DETAILS, Colors.TEXT_LIGHTER);
+      new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_EXERCISE_DETAILS, Theme.Colors.TEXT_LIGHTER);
   private static final PdfStyle STYLE_PLACEHOLDER =
-      new PdfStyle(Fonts.ITALIC, Fonts.SIZE_PLACEHOLDER, Colors.TEXT_LIGHT);
+      new PdfStyle(FONT_ITALIC, Theme.Fonts.SIZE_PLACEHOLDER, Theme.Colors.TEXT_LIGHT);
   private static final String DEFAULT_PLAN_NAME = "[Unnamed Plan]";
   private static final String DEFAULT_UNIT_NAME = "[Unnamed Unit]";
   private static final String DEFAULT_EXERCISE_NAME = "[Unnamed Exercise]";
@@ -102,7 +109,7 @@ public class PdfExportService implements ExportService {
 
     addSpacing(Layout.SPACING_SEPARATOR / 2);
 
-    contentStream.setStrokingColor(Colors.SEPARATOR);
+    contentStream.setStrokingColor(Theme.Colors.SEPARATOR);
     contentStream.setLineWidth(0.75f);
     contentStream.moveTo(Layout.MARGIN, currentY);
     contentStream.lineTo(Layout.PAGE_WIDTH - Layout.MARGIN, currentY);
@@ -132,7 +139,102 @@ public class PdfExportService implements ExportService {
     }
   }
 
+  /**
+   * Calculates the height needed to render a training unit, including its header, description,
+   * and all exercises.
+   *
+   * @param unit The training unit to measure
+   * @return The total height in points needed to render the unit
+   * @throws IOException If there's an error calculating text dimensions
+   */
+  private float calculateUnitHeight(TrainingUnit unit) throws IOException {
+    float totalHeight = 0;
+
+    // Unit header
+    String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
+    String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
+    String headerText = String.format("%s (%s)", unitName, weekday);
+
+    List<String> headerLines = wrapText(headerText, STYLE_UNIT_HEADER.font(), 
+        STYLE_UNIT_HEADER.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+    totalHeight += headerLines.size() * STYLE_UNIT_HEADER.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    totalHeight += Layout.SPACING_AFTER_UNIT_HEADER;
+
+    // Unit description
+    String description = unit.getDescription();
+    if (description != null && !description.trim().isEmpty()) {
+      List<String> descLines = wrapText(description, STYLE_UNIT_DESC.font(), 
+          STYLE_UNIT_DESC.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+
+      for (String line : descLines) {
+        if (line.isEmpty()) {
+          totalHeight += STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+        } else {
+          totalHeight += STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+        }
+      }
+      totalHeight += Layout.SPACING_AFTER_UNIT_DESC;
+    }
+
+    // Exercises section
+    List<TrainingExercise> exercises =
+        unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
+
+    if (exercises.isEmpty()) {
+      List<String> placeholderLines = wrapText(PLACEHOLDER_NO_EXERCISES, STYLE_PLACEHOLDER.font(),
+          STYLE_PLACEHOLDER.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTAINER);
+      totalHeight += placeholderLines.size() * STYLE_PLACEHOLDER.size() * Layout.BASE_LINE_SPACING_FACTOR;
+      totalHeight += Layout.SPACING_BETWEEN_EXERCISES;
+    } else {
+      totalHeight += Layout.SPACING_BEFORE_EXERCISES;
+
+      boolean firstExercise = true;
+      for (TrainingExercise exercise : exercises) {
+        if (!firstExercise) {
+          totalHeight += Layout.SPACING_BETWEEN_EXERCISES;
+        }
+        totalHeight += calculateExerciseHeight(exercise);
+        firstExercise = false;
+      }
+    }
+
+    // Add padding for the container
+    totalHeight += 2 * Layout.SPACING_AFTER_UNIT_DESC; // Top and bottom padding
+
+    return totalHeight;
+  }
+
+  /**
+   * Writes a training unit to the PDF, including a container background.
+   *
+   * @param unit The training unit to write
+   * @throws IOException If there's an error writing to the PDF
+   */
   private void writeUnit(TrainingUnit unit) throws IOException {
+    // Calculate the height needed for this unit
+    float unitHeight = calculateUnitHeight(unit);
+
+    // Check if we need to start a new page
+    if (currentY - unitHeight < Layout.MARGIN) {
+      startNewPage();
+    }
+
+    // Save the current Y position to draw the container
+    float containerStartY = currentY;
+
+    // Draw the container background
+    drawContainer(
+        Layout.MARGIN, 
+        currentY - unitHeight, 
+        Layout.CONTENT_WIDTH, 
+        unitHeight, 
+        Layout.UNIT_BORDER_RADIUS, 
+        Theme.Colors.TRAINING_UNIT_BG);
+
+    // Add some padding at the top
+    addSpacing(Layout.SPACING_AFTER_UNIT_DESC);
+
+    // Write the unit content
     String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
     String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
     String headerText = String.format("%s (%s)", unitName, weekday);
@@ -173,7 +275,83 @@ public class PdfExportService implements ExportService {
     }
   }
 
+  /**
+   * Calculates the height needed to render a training exercise, including its name, description,
+   * and details.
+   *
+   * @param exercise The training exercise to measure
+   * @return The total height in points needed to render the exercise
+   * @throws IOException If there's an error calculating text dimensions
+   */
+  private float calculateExerciseHeight(TrainingExercise exercise) throws IOException {
+    float totalHeight = 0;
+
+    // Exercise name
+    String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
+    List<String> nameLines = wrapText(exerciseName, STYLE_EXERCISE_NAME.font(), 
+        STYLE_EXERCISE_NAME.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_BLOCK);
+    totalHeight += nameLines.size() * STYLE_EXERCISE_NAME.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    totalHeight += Layout.SPACING_AFTER_EXERCISE_NAME;
+
+    // Exercise description
+    String description = exercise.getDescription();
+    if (description != null && !description.trim().isEmpty()) {
+      List<String> descLines = wrapText(description, STYLE_EXERCISE_DESC.font(), 
+          STYLE_EXERCISE_DESC.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTENT);
+
+      for (String line : descLines) {
+        if (line.isEmpty()) {
+          totalHeight += STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+        } else {
+          totalHeight += STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+        }
+      }
+      totalHeight += Layout.SPACING_AFTER_EXERCISE_DESC;
+    }
+
+    // Exercise details
+    String duration = Objects.toString(exercise.getDuration(), DEFAULT_DURATION);
+    String details = String.format(
+        "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
+        duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
+    List<String> detailLines = wrapText(details, STYLE_EXERCISE_DETAILS.font(), 
+        STYLE_EXERCISE_DETAILS.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTENT);
+    totalHeight += detailLines.size() * STYLE_EXERCISE_DETAILS.size() * Layout.BASE_LINE_SPACING_FACTOR;
+
+    // Add padding for the container
+    totalHeight += 2 * Layout.SPACING_AFTER_EXERCISE_NAME; // Top and bottom padding
+
+    return totalHeight;
+  }
+
+  /**
+   * Writes a training exercise to the PDF, including a container background.
+   *
+   * @param exercise The training exercise to write
+   * @throws IOException If there's an error writing to the PDF
+   */
   private void writeExercise(TrainingExercise exercise) throws IOException {
+    // Calculate the height needed for this exercise
+    float exerciseHeight = calculateExerciseHeight(exercise);
+
+    // Check if we need to start a new page
+    if (currentY - exerciseHeight < Layout.MARGIN) {
+      startNewPage();
+    }
+
+    // Draw the container background
+    drawContainer(
+        Layout.MARGIN + Layout.INDENT_EXERCISE_CONTAINER, 
+        currentY - exerciseHeight, 
+        Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTAINER, 
+        exerciseHeight, 
+        Layout.EXERCISE_BORDER_RADIUS, 
+        Theme.Colors.EXERCISE_BG);
+
+    // Add some padding at the top
+    addSpacing(Layout.SPACING_AFTER_EXERCISE_NAME);
+
+    // Write the exercise content
     String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
     writeStyledWrappedText(exerciseName, Layout.INDENT_EXERCISE_BLOCK, STYLE_EXERCISE_NAME);
     addSpacing(Layout.SPACING_AFTER_EXERCISE_NAME);
@@ -194,6 +372,79 @@ public class PdfExportService implements ExportService {
             "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
             duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
     writeStyledWrappedText(details, Layout.INDENT_EXERCISE_CONTENT, STYLE_EXERCISE_DETAILS);
+  }
+
+  /**
+   * Draws a container with a background color and rounded corners.
+   *
+   * @param x The x-coordinate of the top-left corner
+   * @param y The y-coordinate of the top-left corner
+   * @param width The width of the container
+   * @param height The height of the container
+   * @param borderRadius The radius of the rounded corners
+   * @param backgroundColor The background color of the container
+   * @throws IOException If there's an error drawing to the PDF
+   */
+  private void drawContainer(float x, float y, float width, float height, float borderRadius, Color backgroundColor) 
+      throws IOException {
+    // Save the current graphics state
+    contentStream.saveGraphicsState();
+
+    // Set the fill color to the background color
+    contentStream.setNonStrokingColor(backgroundColor);
+
+    // Set the stroke color and width for the border
+    contentStream.setStrokingColor(Theme.Colors.ACCENT_SILVER);
+    contentStream.setLineWidth(Layout.BORDER_WIDTH);
+
+    // Draw a rounded rectangle
+    // Since PDFBox doesn't have built-in support for rounded rectangles,
+    // we'll approximate it with a series of lines and curves
+
+    // Start a new path
+    contentStream.moveTo(x + borderRadius, y);
+
+    // Top edge
+    contentStream.lineTo(x + width - borderRadius, y);
+
+    // Top-right corner
+    contentStream.curveTo(
+        x + width, y,
+        x + width, y,
+        x + width, y + borderRadius);
+
+    // Right edge
+    contentStream.lineTo(x + width, y + height - borderRadius);
+
+    // Bottom-right corner
+    contentStream.curveTo(
+        x + width, y + height,
+        x + width, y + height,
+        x + width - borderRadius, y + height);
+
+    // Bottom edge
+    contentStream.lineTo(x + borderRadius, y + height);
+
+    // Bottom-left corner
+    contentStream.curveTo(
+        x, y + height,
+        x, y + height,
+        x, y + height - borderRadius);
+
+    // Left edge
+    contentStream.lineTo(x, y + borderRadius);
+
+    // Top-left corner
+    contentStream.curveTo(
+        x, y,
+        x, y,
+        x + borderRadius, y);
+
+    // Fill and stroke the path
+    contentStream.fillAndStroke();
+
+    // Restore the graphics state
+    contentStream.restoreGraphicsState();
   }
 
   private void startNewPage() throws IOException {
@@ -334,68 +585,39 @@ public class PdfExportService implements ExportService {
     return text.length();
   }
 
+  /**
+   * Layout constants for PDF rendering, using values from the centralized Theme.
+   */
   private static class Layout {
-    static final float MARGIN = 50;
+    // Page Layout
+    static final float MARGIN = Theme.Layout.MARGIN;
     static final float PAGE_WIDTH = PDRectangle.A4.getWidth();
     static final float CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
-    static final float BASE_LINE_SPACING_FACTOR = 1.3f;
-    static final float EXTRA_LINE_SPACING = 1.5f; // Additional spacing for description text lines
+    static final float BASE_LINE_SPACING_FACTOR = Theme.Layout.BASE_LINE_SPACING_FACTOR;
+    static final float EXTRA_LINE_SPACING = Theme.Layout.EXTRA_LINE_SPACING;
 
-    static final float INDENT_UNIT_LEVEL = 0;
-    static final float INDENT_EXERCISE_CONTAINER = 15;
-    static final float INDENT_EXERCISE_BLOCK = INDENT_EXERCISE_CONTAINER;
-    static final float INDENT_EXERCISE_CONTENT = INDENT_EXERCISE_CONTAINER;
+    // Indentation
+    static final float INDENT_UNIT_LEVEL = Theme.Layout.INDENT_UNIT_LEVEL;
+    static final float INDENT_EXERCISE_CONTAINER = Theme.Layout.INDENT_EXERCISE_CONTAINER;
+    static final float INDENT_EXERCISE_BLOCK = Theme.Layout.INDENT_EXERCISE_BLOCK;
+    static final float INDENT_EXERCISE_CONTENT = Theme.Layout.INDENT_EXERCISE_CONTENT;
 
-    static final float SPACING_AFTER_TITLE = 8;
-    static final float SPACING_AFTER_PREVIEW_DESC = 12;
-    static final float SPACING_SEPARATOR = 10; // Total space around separator
-    static final float SPACING_BETWEEN_UNITS = 15;
-    static final float SPACING_AFTER_UNIT_HEADER = 6;
-    static final float SPACING_AFTER_UNIT_DESC = 10;
-    static final float SPACING_BEFORE_EXERCISES = 8;
-    static final float SPACING_BETWEEN_EXERCISES = 12;
-    static final float SPACING_AFTER_EXERCISE_NAME = 2;
-    static final float SPACING_AFTER_EXERCISE_DESC = 5;
-  }
+    // Spacing
+    static final float SPACING_AFTER_TITLE = Theme.Layout.SPACING_AFTER_TITLE;
+    static final float SPACING_AFTER_PREVIEW_DESC = Theme.Layout.SPACING_AFTER_PREVIEW_DESC;
+    static final float SPACING_SEPARATOR = Theme.Layout.SPACING_SEPARATOR;
+    static final float SPACING_BETWEEN_UNITS = Theme.Layout.SPACING_BETWEEN_UNITS;
+    static final float SPACING_AFTER_UNIT_HEADER = Theme.Layout.SPACING_AFTER_UNIT_HEADER;
+    static final float SPACING_AFTER_UNIT_DESC = Theme.Layout.SPACING_AFTER_UNIT_DESC;
+    static final float SPACING_BEFORE_EXERCISES = Theme.Layout.SPACING_BEFORE_EXERCISES;
+    static final float SPACING_BETWEEN_EXERCISES = Theme.Layout.SPACING_BETWEEN_EXERCISES;
+    static final float SPACING_AFTER_EXERCISE_NAME = Theme.Layout.SPACING_AFTER_EXERCISE_NAME;
+    static final float SPACING_AFTER_EXERCISE_DESC = Theme.Layout.SPACING_AFTER_EXERCISE_DESC;
 
-  private static class Fonts {
-    static final PDFont BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
-    static final PDFont REGULAR = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-    static final PDFont ITALIC = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
-
-    static final float SIZE_PREVIEW_TITLE = 19;
-    static final float SIZE_PREVIEW_DESC = 11;
-    static final float SIZE_UNIT_HEADER = 15;
-    static final float SIZE_UNIT_DESC = 11;
-    static final float SIZE_EXERCISES_TITLE = 12;
-    static final float SIZE_EXERCISE_NAME = 12;
-    static final float SIZE_EXERCISE_DESC = 10.5f;
-    static final float SIZE_EXERCISE_DETAILS = 10;
-    static final float SIZE_PLACEHOLDER = 10;
-  }
-
-  private static class Colors {
-    static final Color TEXT_DARKEST = hexToColor("#111111");
-    static final Color TEXT_DARKER = hexToColor("#1A1A1A");
-    static final Color TEXT_DARK = hexToColor("#222222");
-    static final Color TEXT_MEDIUM = hexToColor("#555555");
-    static final Color TEXT_LIGHT = hexToColor("#666666");
-    static final Color TEXT_LIGHTER = hexToColor("#777777");
-    static final Color SEPARATOR = hexToColor("#E0E0E0");
-
-    static Color hexToColor(String hex) {
-      hex = hex.replace("#", "");
-      if (hex.length() != 6) return Color.BLACK;
-      try {
-        return new Color(
-            Integer.valueOf(hex.substring(0, 2), 16),
-            Integer.valueOf(hex.substring(2, 4), 16),
-            Integer.valueOf(hex.substring(4, 6), 16));
-      } catch (NumberFormatException e) {
-        System.err.println("Warning: Invalid hex color format '" + hex + "'. Using black.");
-        return Color.BLACK;
-      }
-    }
+    // Component Styling
+    static final float UNIT_BORDER_RADIUS = Theme.Layout.UNIT_BORDER_RADIUS;
+    static final float EXERCISE_BORDER_RADIUS = Theme.Layout.EXERCISE_BORDER_RADIUS;
+    static final float BORDER_WIDTH = Theme.Layout.BORDER_WIDTH;
   }
 
   private record PdfStyle(PDFont font, float size, Color color) {}
