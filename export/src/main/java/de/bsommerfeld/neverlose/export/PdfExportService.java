@@ -188,7 +188,7 @@ public class PdfExportService implements ExportService {
 
     if (exercises.isEmpty()) {
       List<String> placeholderLines = wrapText(PLACEHOLDER_NO_EXERCISES, STYLE_PLACEHOLDER.font(),
-          STYLE_PLACEHOLDER.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTAINER);
+          STYLE_PLACEHOLDER.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTAINER)); // Adjusted width for consistency
       totalHeight += placeholderLines.size() * STYLE_PLACEHOLDER.size() * Layout.BASE_LINE_SPACING_FACTOR;
       totalHeight += Layout.SPACING_BETWEEN_EXERCISES;
     } else {
@@ -297,7 +297,7 @@ public class PdfExportService implements ExportService {
     // Exercise name
     String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
     List<String> nameLines = wrapText(exerciseName, STYLE_EXERCISE_NAME.font(), 
-        STYLE_EXERCISE_NAME.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_BLOCK);
+        STYLE_EXERCISE_NAME.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_BLOCK)); // Adjusted width for consistency
     totalHeight += nameLines.size() * STYLE_EXERCISE_NAME.size() * Layout.BASE_LINE_SPACING_FACTOR;
     totalHeight += Layout.SPACING_AFTER_EXERCISE_NAME;
 
@@ -305,7 +305,7 @@ public class PdfExportService implements ExportService {
     String description = exercise.getDescription();
     if (description != null && !description.trim().isEmpty()) {
       List<String> descLines = wrapText(description, STYLE_EXERCISE_DESC.font(), 
-          STYLE_EXERCISE_DESC.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTENT);
+          STYLE_EXERCISE_DESC.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTENT)); // Adjusted width for consistency
 
       for (String line : descLines) {
         if (line.isEmpty()) {
@@ -323,7 +323,7 @@ public class PdfExportService implements ExportService {
         "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
         duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
     List<String> detailLines = wrapText(details, STYLE_EXERCISE_DETAILS.font(), 
-        STYLE_EXERCISE_DETAILS.size(), Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTENT);
+        STYLE_EXERCISE_DETAILS.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTENT)); // Adjusted width for consistency
     totalHeight += detailLines.size() * STYLE_EXERCISE_DETAILS.size() * Layout.BASE_LINE_SPACING_FACTOR;
 
     // Add padding for the container
@@ -351,7 +351,7 @@ public class PdfExportService implements ExportService {
     drawContainer(
         Layout.MARGIN + Layout.INDENT_EXERCISE_CONTAINER, 
         currentY - exerciseHeight, 
-        Layout.CONTENT_WIDTH - Layout.INDENT_EXERCISE_CONTAINER, 
+        Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTAINER), // Adjusted width to prevent extending outside unit container
         exerciseHeight, 
         Layout.EXERCISE_BORDER_RADIUS, 
         Theme.Colors.EXERCISE_BG);
@@ -520,7 +520,14 @@ public class PdfExportService implements ExportService {
       String text, float indent, PdfStyle style, float extraLeadingPerLine) throws IOException {
     if (text == null || text.trim().isEmpty()) return;
 
-    float availableWidth = Layout.CONTENT_WIDTH - indent;
+    float availableWidth;
+    // Use double indentation for exercise content to be consistent with calculateExerciseHeight
+    if (indent == Layout.INDENT_EXERCISE_BLOCK || indent == Layout.INDENT_EXERCISE_CONTENT) {
+      availableWidth = Layout.CONTENT_WIDTH - (2 * indent);
+    } else {
+      availableWidth = Layout.CONTENT_WIDTH - indent;
+    }
+
     List<String> lines = wrapText(text, style.font(), style.size(), availableWidth);
 
     for (String line : lines) {
