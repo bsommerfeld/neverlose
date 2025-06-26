@@ -93,6 +93,7 @@ public class NeverLoseMetaController {
         viewProvider.requestView(TrainingPlanEditorController.class);
     TrainingPlanEditorController controller = viewWrapper.controller();
     controller.setTrainingPlan(plan);
+    controller.setMetaController(this);
 
     Parent center = viewWrapper.parent();
     setAnchor(center);

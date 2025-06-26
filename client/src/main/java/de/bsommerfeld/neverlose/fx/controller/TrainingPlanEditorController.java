@@ -42,6 +42,7 @@ public class TrainingPlanEditorController {
   @FXML private TextField planDescriptionField;
   @FXML private VBox trainingUnitsContainer;
   private TrainingPlan trainingPlan;
+  private NeverLoseMetaController metaController;
 
   /**
    * Constructor for Guice injection.
@@ -76,6 +77,15 @@ public class TrainingPlanEditorController {
   public void setTrainingPlan(TrainingPlan trainingPlan) {
     this.trainingPlan = trainingPlan;
     updateUIFromModel();
+  }
+
+  /**
+   * Sets the meta controller for navigation.
+   *
+   * @param metaController the meta controller
+   */
+  public void setMetaController(NeverLoseMetaController metaController) {
+    this.metaController = metaController;
   }
 
   /** Updates the UI components with the current state of the training plan model. */
@@ -156,8 +166,29 @@ public class TrainingPlanEditorController {
 
       String identifier = planStorageService.savePlan(trainingPlan);
       log.info("Training plan saved successfully with identifier: {}", identifier);
+
+      // Show success message
+      showStyledAlert(
+          Alert.AlertType.INFORMATION,
+          "Plan Saved",
+          null,
+          "The training plan has been successfully saved.");
+
+      // Navigate back to the plan list view
+      if (metaController != null) {
+        metaController.showPlanListView();
+      } else {
+        log.error("Meta controller not set, cannot navigate back to plan list view");
+      }
     } catch (Exception e) {
       log.error("Error saving training plan", e);
+
+      // Show error message
+      showStyledAlert(
+          Alert.AlertType.ERROR,
+          "Save Error",
+          "The save operation failed.",
+          "An error occurred while saving the plan: " + e.getMessage());
     }
   }
 

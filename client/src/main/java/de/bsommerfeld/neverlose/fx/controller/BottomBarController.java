@@ -3,6 +3,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
+import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -25,13 +26,16 @@ public class BottomBarController {
 
     /**
      * Handles the action of creating a new training plan.
-     * Opens the TrainingPlanEditor view.
+     * Creates a new TrainingPlan object and opens the TrainingPlanEditor view.
      */
     @FXML
     private void handleNewPlan() {
-        // Load the TrainingPlanEditor view into the center content area
+        // Create a new TrainingPlan object
+        TrainingPlan newPlan = new TrainingPlan("New Training Plan", "Description");
+
+        // Show the TrainingPlanEditor with the new plan
         viewProvider.triggerViewChange(NeverLoseMetaController.class, controller -> {
-            controller.loadCenter(TrainingPlanEditorController.class);
+            controller.showTrainingPlanEditor(newPlan);
         });
     }
 }
