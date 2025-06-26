@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 public class PersistenceModule extends AbstractModule {
 
   private static final LogFacade log = LogFacadeFactory.getLogger();
-  private static final String APP_NAME = "TopSpin";
+  private static final String APP_NAME = "NeverLose";
 
   @Override
   protected void configure() {
