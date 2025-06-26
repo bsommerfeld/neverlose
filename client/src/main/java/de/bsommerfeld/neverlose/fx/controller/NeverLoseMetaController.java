@@ -50,7 +50,12 @@ public class NeverLoseMetaController {
     bottomBarPlaceholder.getChildren().add(bottomBar);
   }
 
-  private void loadCenter(Class<?> clazz) {
+  /**
+   * Loads a view into the center content area.
+   *
+   * @param clazz the class of the controller for the view to load
+   */
+  public void loadCenter(Class<?> clazz) {
     Parent center = viewProvider.requestView(clazz).parent();
     setAnchor(center);
     centerContentPlaceholder.getChildren().setAll(center);
