@@ -132,7 +132,7 @@ public class ExerciseControl extends VBox {
         grid.add(ballBucketCheckBox, 1, 4);
 
         // Create a save as template button
-        Button saveAsTemplateButton = new Button("Save As Template");
+        Button saveAsTemplateButton = new Button("Save");
         saveAsTemplateButton.getStyleClass().add("save-as-template-button");
         saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 

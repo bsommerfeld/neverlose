@@ -75,7 +75,7 @@
                                         <Font size="18.0"/>
                                     </font>
                                 </Button>
-                                <Button fx:id="addFromTemplateButton" text="Add From Templates"
+                                <Button fx:id="addFromTemplateButton" text="Load"
                                         onAction="#handleAddFromTemplate"
                                         styleClass="add-from-template-button">
                                     <font>

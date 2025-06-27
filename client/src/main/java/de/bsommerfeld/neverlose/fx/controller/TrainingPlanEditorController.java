@@ -119,7 +119,8 @@ public class TrainingPlanEditorController {
    */
   private void addTrainingUnitToUI(TrainingUnit unit) {
     TrainingUnitControl unitControl =
-        new TrainingUnitControl(unit, planStorageService, this::saveUnitAsTemplate, this::removeTrainingUnit);
+        new TrainingUnitControl(
+            unit, planStorageService, this::saveUnitAsTemplate, this::removeTrainingUnit);
     trainingUnitsContainer.getChildren().add(unitControl);
   }
 
@@ -152,7 +153,8 @@ public class TrainingPlanEditorController {
         // Show confirmation dialog before overwriting
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
         confirmDialog.setTitle("Overwrite Template?");
-        confirmDialog.setHeaderText("A Unit template with the name '" + unitName + "' already exists.");
+        confirmDialog.setHeaderText(
+            "A Unit template with the name '" + unitName + "' already exists.");
         confirmDialog.setContentText("Do you really want to overwrite the existing template?");
 
         // Apply application stylesheet to the dialog
@@ -166,12 +168,13 @@ public class TrainingPlanEditorController {
         if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
           log.info("User confirmed overwriting unit template with name '{}'.", unitName);
           // Use the existing ID for the template unit
-          unit = new TrainingUnit(
-              existingUnitId.get(),
-              unitName,
-              unit.getDescription(),
-              unit.getWeekday(),
-              unit.getTrainingExercises());
+          unit =
+              new TrainingUnit(
+                  existingUnitId.get(),
+                  unitName,
+                  unit.getDescription(),
+                  unit.getWeekday(),
+                  unit.getTrainingExercises());
         } else {
           // User canceled, abort save operation
           log.info("User canceled overwriting unit template with name '{}'.", unitName);
@@ -179,23 +182,26 @@ public class TrainingPlanEditorController {
         }
       }
 
-      // Create a new unit with the same ID to ensure it overwrites any existing template with the same ID
-      TrainingUnit templateUnit = new TrainingUnit(
-          unit.getId(),
-          unit.getName(),
-          unit.getDescription(),
-          unit.getWeekday(),
-          new TrainingExercises());
+      // Create a new unit with the same ID to ensure it overwrites any existing template with the
+      // same ID
+      TrainingUnit templateUnit =
+          new TrainingUnit(
+              unit.getId(),
+              unit.getName(),
+              unit.getDescription(),
+              unit.getWeekday(),
+              new TrainingExercises());
 
       // Copy all exercises from the original unit to the template unit
       for (TrainingExercise exercise : unit.getTrainingExercises().getAll()) {
         // Create a copy of each exercise
-        TrainingExercise templateExercise = new TrainingExercise(
-            exercise.getName(),
-            exercise.getDescription(),
-            exercise.getDuration(),
-            exercise.getSets(),
-            exercise.isBallBucket());
+        TrainingExercise templateExercise =
+            new TrainingExercise(
+                exercise.getName(),
+                exercise.getDescription(),
+                exercise.getDuration(),
+                exercise.getSets(),
+                exercise.isBallBucket());
 
         // Add it to the template unit
         templateUnit.getTrainingExercises().add(templateExercise);
@@ -229,7 +235,7 @@ public class TrainingPlanEditorController {
     addButton.getStyleClass().add("add-unit-button");
     addButton.setOnAction(event -> handleAddUnit());
 
-    Button addFromTemplate = new Button("From Template");
+    Button addFromTemplate = new Button("Load");
     addFromTemplate.getStyleClass().add("add-from-template-button");
     addFromTemplate.setOnAction(event -> handleAddFromTemplate());
 

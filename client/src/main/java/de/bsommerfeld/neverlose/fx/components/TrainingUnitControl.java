@@ -90,7 +90,7 @@ public class TrainingUnitControl extends VBox {
     weekdayComboBox.getStyleClass().add("unit-weekday-selector");
 
     // Save as Template button
-    Button saveAsTemplateButton = new Button("Save As Template");
+    Button saveAsTemplateButton = new Button("Save");
     saveAsTemplateButton.getStyleClass().add("save-as-template-button");
     saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 
@@ -124,7 +124,7 @@ public class TrainingUnitControl extends VBox {
     addExerciseButton.setOnAction(e -> handleAddExercise());
 
     // Add from template button
-    Button addFromTemplateButton = new Button("From Template");
+    Button addFromTemplateButton = new Button("Load");
     addFromTemplateButton.getStyleClass().add("add-from-template-button");
     addFromTemplateButton.setOnAction(e -> handleAddExerciseFromTemplate());
 

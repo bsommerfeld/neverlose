@@ -107,6 +107,7 @@
     -fx-pref-height: 120px; /* Example height */
     /* Transition for hover effect */
     -fx-transition: all 0.2s ease-in-out;
+    -fx-cursor: hand;
 }
 
 .plan-card:hover {
@@ -275,6 +276,7 @@
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
     -fx-padding: 8 15 8 15;
+    -fx-cursor: hand;
 }
 
 .editor-action-button:hover {
