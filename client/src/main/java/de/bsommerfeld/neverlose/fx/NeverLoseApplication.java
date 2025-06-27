@@ -35,7 +35,7 @@ public class NeverLoseApplication extends Application {
 
     stage.setScene(scene);
     stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/icon.png"));
-    stage.setTitle("NeverLose " + Main.getNeverloseVersion());
+    stage.setTitle("Neverlose " + Main.getNeverloseVersion());
     stage.show();
   }
 }
