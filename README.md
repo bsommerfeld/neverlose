@@ -22,8 +22,8 @@ and insights to ensure it truly meets the demands of the sport.
 
 ## Download
 
-You can download the latest platform-specific installer from our [**GitHub Releases page
-**](https://github.com/bsommerfeld/neverlose/releases).
+You can download the latest platform-specific installer from our **[GitHub Releases page
+](https://github.com/bsommerfeld/neverlose/releases)**.
 
 ## Key Features
 
