@@ -250,6 +250,9 @@ public class TrainingPlanEditorController {
   /** Handles the action of adding a new training unit. */
   @FXML
   private void handleAddUnit() {
+    // Save current UI state to model
+    updateModelFromUI();
+
     // Create a new training unit with default values
     TrainingUnit newUnit = new TrainingUnit("New Unit", "Description", Weekday.MONDAY);
 
@@ -308,6 +311,9 @@ public class TrainingPlanEditorController {
    * @param templateUnit the template unit to add
    */
   private void addTemplateToTrainingPlan(TrainingUnit templateUnit) {
+    // Save current UI state to model
+    updateModelFromUI();
+
     // Create a new unit with a new ID
     TrainingUnit newUnit =
         new TrainingUnit(
