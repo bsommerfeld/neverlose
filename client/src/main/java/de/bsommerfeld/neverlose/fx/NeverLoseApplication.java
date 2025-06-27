@@ -2,6 +2,7 @@ package de.bsommerfeld.neverlose.fx;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import de.bsommerfeld.neverlose.Main;
 import de.bsommerfeld.neverlose.bootstrap.NeverLoseModule;
 import de.bsommerfeld.neverlose.fx.controller.NeverLoseMetaController;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
@@ -34,7 +35,7 @@ public class NeverLoseApplication extends Application {
 
     stage.setScene(scene);
     stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/icon.png"));
-    stage.setTitle("NeverLose");
+    stage.setTitle("NeverLose " + Main.getNeverloseVersion());
     stage.show();
   }
 }
