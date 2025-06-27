@@ -101,7 +101,7 @@ jobs:
             echo "" 
             echo "---" 
             echo "" 
-            echo "**App Installers & jDeploy Info (wie von jDeploy generiert):**"
+            echo "**App Installers:**"
             echo "" 
             echo -e "${JDEPLOY_BODY_PART}" 
             echo ""
