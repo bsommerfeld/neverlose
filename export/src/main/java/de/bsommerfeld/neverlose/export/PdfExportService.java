@@ -48,6 +48,8 @@ public class PdfExportService implements ExportService {
       new PdfStyle(FONT_REGULAR, Theme.Fonts.SIZE_EXERCISE_DETAILS, Theme.Colors.TEXT_LIGHTER);
   private static final PdfStyle STYLE_PLACEHOLDER =
       new PdfStyle(FONT_ITALIC, Theme.Fonts.SIZE_PLACEHOLDER, Theme.Colors.TEXT_LIGHT);
+  private static final PdfStyle STYLE_FOOTER =
+      new PdfStyle(FONT_REGULAR, 8f, Theme.Colors.TEXT_LIGHTER);
   private static final String DEFAULT_PLAN_NAME = "[Unnamed Plan]";
   private static final String DEFAULT_UNIT_NAME = "[Unnamed Unit]";
   private static final String DEFAULT_EXERCISE_NAME = "[Unnamed Exercise]";
@@ -463,8 +465,26 @@ public class PdfExportService implements ExportService {
     currentY = currentPage.getMediaBox().getHeight() - Layout.MARGIN;
   }
 
+  private void writeFooter() throws IOException {
+    if (contentStream == null || currentPage == null) return;
+
+    String footerText = "Neverlose";
+    float textWidth = calculateTextWidth(footerText, STYLE_FOOTER.font(), STYLE_FOOTER.size());
+    float pageWidth = currentPage.getMediaBox().getWidth();
+    float x = (pageWidth - textWidth) / 2; // Center horizontally
+    float y = Layout.MARGIN / 2; // Position at bottom of page
+
+    contentStream.beginText();
+    contentStream.setFont(STYLE_FOOTER.font(), STYLE_FOOTER.size());
+    contentStream.setNonStrokingColor(STYLE_FOOTER.color());
+    contentStream.newLineAtOffset(x, y);
+    contentStream.showText(footerText);
+    contentStream.endText();
+  }
+
   private void closeCurrentContentStream() throws IOException {
     if (contentStream != null) {
+      writeFooter();
       contentStream.close();
       contentStream = null;
     }
