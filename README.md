@@ -16,9 +16,14 @@ professional.
 Developed in close collaboration with experienced coaches, this application is built upon valuable, real-world resources
 and insights to ensure it truly meets the demands of the sport.
 
-| Application | PDF |
-| :---: | :---: |
+|                                                                      Application                                                                       |                                                                          PDF                                                                          |
+|:------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------:|
 | <img width="1391" alt="Bildschirmfoto 2025-06-27 um 16 14 21" src="https://github.com/user-attachments/assets/d236ea89-6dc3-419c-8915-a2f5e3e98565" /> | <img width="793" alt="Bildschirmfoto 2025-06-27 um 16 15 52" src="https://github.com/user-attachments/assets/2b07af24-495b-403e-8654-df6a3102be18" /> |
+
+## Download
+
+You can download the latest platform-specific installer from our [**GitHub Releases page
+**](https://github.com/bsommerfeld/neverlose/releases).
 
 ## Key Features
 
@@ -41,5 +46,3 @@ The Neverlose desktop app is in an early stage of development, and your feedback
 - **Connect with the community!**
 
 [**Join our Discord server to contribute and stay up-to-date.**](https://discord.gg/spJkX947)
-
-Download now and help us build the future of table tennis training!
