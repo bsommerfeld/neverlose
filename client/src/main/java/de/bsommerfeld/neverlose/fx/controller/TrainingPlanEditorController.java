@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -242,7 +243,8 @@ public class TrainingPlanEditorController {
     // Create an HBox to center the button
     HBox buttonContainer = new HBox(addButton, addFromTemplate);
     buttonContainer.setSpacing(10);
-    buttonContainer.setAlignment(Pos.CENTER);
+    buttonContainer.setAlignment(Pos.CENTER_LEFT);
+    buttonContainer.setPadding(new Insets(0, 0, 0, 15));
 
     trainingUnitsContainer.getChildren().add(buttonContainer);
   }
