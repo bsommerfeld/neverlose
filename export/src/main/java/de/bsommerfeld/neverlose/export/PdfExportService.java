@@ -27,7 +27,8 @@ public class PdfExportService implements ExportService {
   // PDF Fonts
   private static final PDFont FONT_BOLD = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
   private static final PDFont FONT_REGULAR = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-  private static final PDFont FONT_ITALIC = new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
+  private static final PDFont FONT_ITALIC =
+      new PDType1Font(Standard14Fonts.FontName.HELVETICA_OBLIQUE);
 
   // Styles using the centralized Theme
   private static final PdfStyle STYLE_PREVIEW_TITLE =
@@ -144,8 +145,8 @@ public class PdfExportService implements ExportService {
   }
 
   /**
-   * Calculates the height needed to render a training unit, including its header, description,
-   * and all exercises.
+   * Calculates the height needed to render a training unit, including its header, description, and
+   * all exercises.
    *
    * @param unit The training unit to measure
    * @return The total height in points needed to render the unit
@@ -156,29 +157,44 @@ public class PdfExportService implements ExportService {
 
     // Unit name
     String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
-    List<String> nameLines = wrapText(unitName, STYLE_UNIT_HEADER.font(), 
-        STYLE_UNIT_HEADER.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+    List<String> nameLines =
+        wrapText(
+            unitName,
+            STYLE_UNIT_HEADER.font(),
+            STYLE_UNIT_HEADER.size(),
+            Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
     totalHeight += nameLines.size() * STYLE_UNIT_HEADER.size() * Layout.BASE_LINE_SPACING_FACTOR;
     totalHeight += Layout.SPACING_AFTER_UNIT_HEADER;
 
     // Weekday (on a separate line)
     String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
-    List<String> weekdayLines = wrapText(weekday, STYLE_UNIT_WEEKDAY.font(), 
-        STYLE_UNIT_WEEKDAY.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
-    totalHeight += weekdayLines.size() * STYLE_UNIT_WEEKDAY.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    List<String> weekdayLines =
+        wrapText(
+            weekday,
+            STYLE_UNIT_WEEKDAY.font(),
+            STYLE_UNIT_WEEKDAY.size(),
+            Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+    totalHeight +=
+        weekdayLines.size() * STYLE_UNIT_WEEKDAY.size() * Layout.BASE_LINE_SPACING_FACTOR;
     totalHeight += Layout.SPACING_AFTER_UNIT_WEEKDAY;
 
     // Unit description
     String description = unit.getDescription();
     if (description != null && !description.trim().isEmpty()) {
-      List<String> descLines = wrapText(description, STYLE_UNIT_DESC.font(), 
-          STYLE_UNIT_DESC.size(), Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
+      List<String> descLines =
+          wrapText(
+              description,
+              STYLE_UNIT_DESC.font(),
+              STYLE_UNIT_DESC.size(),
+              Layout.CONTENT_WIDTH - Layout.INDENT_UNIT_LEVEL);
 
       for (String line : descLines) {
         if (line.isEmpty()) {
-          totalHeight += STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+          totalHeight +=
+              STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
         } else {
-          totalHeight += STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+          totalHeight +=
+              STYLE_UNIT_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
         }
       }
       totalHeight += Layout.SPACING_AFTER_UNIT_DESC;
@@ -189,9 +205,17 @@ public class PdfExportService implements ExportService {
         unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
 
     if (exercises.isEmpty()) {
-      List<String> placeholderLines = wrapText(PLACEHOLDER_NO_EXERCISES, STYLE_PLACEHOLDER.font(),
-          STYLE_PLACEHOLDER.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTAINER) - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal padding
-      totalHeight += placeholderLines.size() * STYLE_PLACEHOLDER.size() * Layout.BASE_LINE_SPACING_FACTOR;
+      List<String> placeholderLines =
+          wrapText(
+              PLACEHOLDER_NO_EXERCISES,
+              STYLE_PLACEHOLDER.font(),
+              STYLE_PLACEHOLDER.size(),
+              Layout.CONTENT_WIDTH
+                  - (2 * Layout.INDENT_EXERCISE_CONTAINER)
+                  - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and
+      // internal padding
+      totalHeight +=
+          placeholderLines.size() * STYLE_PLACEHOLDER.size() * Layout.BASE_LINE_SPACING_FACTOR;
       totalHeight += Layout.SPACING_BETWEEN_EXERCISES;
     } else {
       totalHeight += Layout.SPACING_BEFORE_EXERCISES;
@@ -232,11 +256,11 @@ public class PdfExportService implements ExportService {
 
     // Draw the container background
     drawContainer(
-        Layout.MARGIN, 
-        currentY - unitHeight, 
-        Layout.CONTENT_WIDTH, 
-        unitHeight, 
-        Layout.UNIT_BORDER_RADIUS, 
+        Layout.MARGIN,
+        currentY - unitHeight,
+        Layout.CONTENT_WIDTH,
+        unitHeight,
+        Layout.UNIT_BORDER_RADIUS,
         Theme.Colors.TRAINING_UNIT_BG);
 
     // Add some padding at the top
@@ -268,7 +292,9 @@ public class PdfExportService implements ExportService {
 
     if (exercises.isEmpty()) {
       writeStyledWrappedText(
-          PLACEHOLDER_NO_EXERCISES, Layout.INDENT_EXERCISE_CONTAINER + Layout.INDENT_EXERCISE_INTERNAL, STYLE_PLACEHOLDER);
+          PLACEHOLDER_NO_EXERCISES,
+          Layout.INDENT_EXERCISE_CONTAINER + Layout.INDENT_EXERCISE_INTERNAL,
+          STYLE_PLACEHOLDER);
       addSpacing(Layout.SPACING_BETWEEN_EXERCISES);
       return;
     }
@@ -298,22 +324,42 @@ public class PdfExportService implements ExportService {
 
     // Exercise name
     String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
-    List<String> nameLines = wrapText(exerciseName, STYLE_EXERCISE_NAME.font(), 
-        STYLE_EXERCISE_NAME.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_BLOCK) - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal padding
+    List<String> nameLines =
+        wrapText(
+            exerciseName,
+            STYLE_EXERCISE_NAME.font(),
+            STYLE_EXERCISE_NAME.size(),
+            Layout.CONTENT_WIDTH
+                - (2 * Layout.INDENT_EXERCISE_BLOCK)
+                - (2
+                    * Layout
+                        .INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal
+    // padding
     totalHeight += nameLines.size() * STYLE_EXERCISE_NAME.size() * Layout.BASE_LINE_SPACING_FACTOR;
     totalHeight += Layout.SPACING_AFTER_EXERCISE_NAME;
 
     // Exercise description
     String description = exercise.getDescription();
     if (description != null && !description.trim().isEmpty()) {
-      List<String> descLines = wrapText(description, STYLE_EXERCISE_DESC.font(), 
-          STYLE_EXERCISE_DESC.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTENT) - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal padding
+      List<String> descLines =
+          wrapText(
+              description,
+              STYLE_EXERCISE_DESC.font(),
+              STYLE_EXERCISE_DESC.size(),
+              Layout.CONTENT_WIDTH
+                  - (2 * Layout.INDENT_EXERCISE_CONTENT)
+                  - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and
+      // internal padding
 
       for (String line : descLines) {
         if (line.isEmpty()) {
-          totalHeight += STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+          totalHeight +=
+              STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR
+                  + Layout.EXTRA_LINE_SPACING;
         } else {
-          totalHeight += STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR + Layout.EXTRA_LINE_SPACING;
+          totalHeight +=
+              STYLE_EXERCISE_DESC.size() * Layout.BASE_LINE_SPACING_FACTOR
+                  + Layout.EXTRA_LINE_SPACING;
         }
       }
       totalHeight += Layout.SPACING_AFTER_EXERCISE_DESC;
@@ -321,12 +367,23 @@ public class PdfExportService implements ExportService {
 
     // Exercise details
     String duration = Objects.toString(exercise.getDuration(), DEFAULT_DURATION);
-    String details = String.format(
-        "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
-        duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
-    List<String> detailLines = wrapText(details, STYLE_EXERCISE_DETAILS.font(), 
-        STYLE_EXERCISE_DETAILS.size(), Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTENT) - (2 * Layout.INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal padding
-    totalHeight += detailLines.size() * STYLE_EXERCISE_DETAILS.size() * Layout.BASE_LINE_SPACING_FACTOR;
+    String details =
+        String.format(
+            "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
+            duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
+    List<String> detailLines =
+        wrapText(
+            details,
+            STYLE_EXERCISE_DETAILS.font(),
+            STYLE_EXERCISE_DETAILS.size(),
+            Layout.CONTENT_WIDTH
+                - (2 * Layout.INDENT_EXERCISE_CONTENT)
+                - (2
+                    * Layout
+                        .INDENT_EXERCISE_INTERNAL)); // Adjusted width for consistency and internal
+    // padding
+    totalHeight +=
+        detailLines.size() * STYLE_EXERCISE_DETAILS.size() * Layout.BASE_LINE_SPACING_FACTOR;
 
     // Add padding for the container
     totalHeight += 2 * Layout.SPACING_AFTER_EXERCISE_NAME; // Top and bottom padding
@@ -351,11 +408,15 @@ public class PdfExportService implements ExportService {
 
     // Draw the container background
     drawContainer(
-        Layout.MARGIN + Layout.INDENT_EXERCISE_CONTAINER, 
-        currentY - exerciseHeight, 
-        Layout.CONTENT_WIDTH - (2 * Layout.INDENT_EXERCISE_CONTAINER), // Adjusted width to prevent extending outside unit container
-        exerciseHeight, 
-        Layout.EXERCISE_BORDER_RADIUS, 
+        Layout.MARGIN + Layout.INDENT_EXERCISE_CONTAINER,
+        currentY - exerciseHeight,
+        Layout.CONTENT_WIDTH
+            - (2
+                * Layout
+                    .INDENT_EXERCISE_CONTAINER), // Adjusted width to prevent extending outside unit
+        // container
+        exerciseHeight,
+        Layout.EXERCISE_BORDER_RADIUS,
         Theme.Colors.EXERCISE_BG);
 
     // Add some padding at the top
@@ -363,7 +424,10 @@ public class PdfExportService implements ExportService {
 
     // Write the exercise content
     String exerciseName = Objects.toString(exercise.getName(), DEFAULT_EXERCISE_NAME);
-    writeStyledWrappedText(exerciseName, Layout.INDENT_EXERCISE_BLOCK + Layout.INDENT_EXERCISE_INTERNAL, STYLE_EXERCISE_NAME);
+    writeStyledWrappedText(
+        exerciseName,
+        Layout.INDENT_EXERCISE_BLOCK + Layout.INDENT_EXERCISE_INTERNAL,
+        STYLE_EXERCISE_NAME);
     addSpacing(Layout.SPACING_AFTER_EXERCISE_NAME);
 
     String description = exercise.getDescription();
@@ -381,7 +445,10 @@ public class PdfExportService implements ExportService {
         String.format(
             "Duration: %s  •  Sets: %d  •  Ball Bucket: %s",
             duration, exercise.getSets(), (exercise.isBallBucket() ? "Yes" : "No"));
-    writeStyledWrappedText(details, Layout.INDENT_EXERCISE_CONTENT + Layout.INDENT_EXERCISE_INTERNAL, STYLE_EXERCISE_DETAILS);
+    writeStyledWrappedText(
+        details,
+        Layout.INDENT_EXERCISE_CONTENT + Layout.INDENT_EXERCISE_INTERNAL,
+        STYLE_EXERCISE_DETAILS);
   }
 
   /**
@@ -395,7 +462,8 @@ public class PdfExportService implements ExportService {
    * @param backgroundColor The background color of the container
    * @throws IOException If there's an error drawing to the PDF
    */
-  private void drawContainer(float x, float y, float width, float height, float borderRadius, Color backgroundColor) 
+  private void drawContainer(
+      float x, float y, float width, float height, float borderRadius, Color backgroundColor)
       throws IOException {
     // Save the current graphics state
     contentStream.saveGraphicsState();
@@ -428,9 +496,7 @@ public class PdfExportService implements ExportService {
 
     // Bottom-right corner
     contentStream.curveTo(
-        x + width, y + height,
-        x + width, y + height,
-        x + width - borderRadius, y + height);
+        x + width, y + height, x + width, y + height, x + width - borderRadius, y + height);
 
     // Bottom edge
     contentStream.lineTo(x + borderRadius, y + height);
@@ -445,10 +511,7 @@ public class PdfExportService implements ExportService {
     contentStream.lineTo(x, y + borderRadius);
 
     // Top-left corner
-    contentStream.curveTo(
-        x, y,
-        x, y,
-        x + borderRadius, y);
+    contentStream.curveTo(x, y, x, y, x + borderRadius, y);
 
     // Fill and stroke the path
     contentStream.fillAndStroke();
@@ -468,7 +531,7 @@ public class PdfExportService implements ExportService {
   private void writeFooter() throws IOException {
     if (contentStream == null || currentPage == null) return;
 
-    String footerText = "Neverlose";
+    String footerText = "Made with Neverlose";
     float textWidth = calculateTextWidth(footerText, STYLE_FOOTER.font(), STYLE_FOOTER.size());
     float pageWidth = currentPage.getMediaBox().getWidth();
     float x = (pageWidth - textWidth) / 2; // Center horizontally
@@ -544,10 +607,13 @@ public class PdfExportService implements ExportService {
     // Use double indentation for exercise content to be consistent with calculateExerciseHeight
     if (indent == Layout.INDENT_EXERCISE_BLOCK || indent == Layout.INDENT_EXERCISE_CONTENT) {
       availableWidth = Layout.CONTENT_WIDTH - (2 * indent);
-    } else if (indent == Layout.INDENT_EXERCISE_BLOCK + Layout.INDENT_EXERCISE_INTERNAL || 
-               indent == Layout.INDENT_EXERCISE_CONTENT + Layout.INDENT_EXERCISE_INTERNAL) {
+    } else if (indent == Layout.INDENT_EXERCISE_BLOCK + Layout.INDENT_EXERCISE_INTERNAL
+        || indent == Layout.INDENT_EXERCISE_CONTENT + Layout.INDENT_EXERCISE_INTERNAL) {
       // For exercise content with internal padding
-      availableWidth = Layout.CONTENT_WIDTH - (2 * (indent - Layout.INDENT_EXERCISE_INTERNAL)) - (2 * Layout.INDENT_EXERCISE_INTERNAL);
+      availableWidth =
+          Layout.CONTENT_WIDTH
+              - (2 * (indent - Layout.INDENT_EXERCISE_INTERNAL))
+              - (2 * Layout.INDENT_EXERCISE_INTERNAL);
     } else {
       availableWidth = Layout.CONTENT_WIDTH - indent;
     }
@@ -624,9 +690,7 @@ public class PdfExportService implements ExportService {
     return text.length();
   }
 
-  /**
-   * Layout constants for PDF rendering, using values from the centralized Theme.
-   */
+  /** Layout constants for PDF rendering, using values from the centralized Theme. */
   private static class Layout {
     // Page Layout
     static final float MARGIN = Theme.Layout.MARGIN;
