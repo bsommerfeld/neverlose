@@ -8,9 +8,11 @@ import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -38,6 +40,9 @@ public class TrainingUnitControl extends VBox {
   private final PlanStorageService planStorageService;
   private Consumer<TrainingUnit> saveAsTemplateCallback;
   private Consumer<TrainingUnit> onRemoveCallback;
+
+  private boolean showAllExercises = false;
+  private Button showMoreButton;
 
   /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit.
@@ -113,6 +118,15 @@ public class TrainingUnitControl extends VBox {
     exercisesContainer = new VBox(10);
     exercisesContainer.getStyleClass().add("exercises-container");
 
+    // Create the "Show more" button
+    showMoreButton = new Button("Show more");
+    showMoreButton.getStyleClass().add("show-more-button");
+    showMoreButton.setMaxWidth(Double.MAX_VALUE); // Make button span full width
+    showMoreButton.setOnAction(e -> {
+      showAllExercises = true;
+      updateExercisesVisibility();
+    });
+
     // Add existing exercises
     for (TrainingExercise exercise : trainingUnit.getTrainingExercises().getAll()) {
       addExerciseToUI(exercise);
@@ -132,7 +146,10 @@ public class TrainingUnitControl extends VBox {
     addExerciseContainer.setAlignment(Pos.CENTER);
 
     // Add all components to the VBox
-    getChildren().addAll(header, descriptionField, exercisesContainer, addExerciseContainer);
+    getChildren().addAll(header, descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
+
+    // Initialize visibility of exercises
+    updateExercisesVisibility();
   }
 
   /**
@@ -143,6 +160,71 @@ public class TrainingUnitControl extends VBox {
   private void addExerciseToUI(TrainingExercise exercise) {
     ExerciseControl exerciseControl = new ExerciseControl(exercise, planStorageService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
+    updateExercisesVisibility();
+  }
+
+  /**
+   * Updates the visibility of exercises based on the showAllExercises flag.
+   * Shows only the first three exercises if showAllExercises is false,
+   * or all exercises if showAllExercises is true.
+   */
+  private void updateExercisesVisibility() {
+    List<Node> exercises = exercisesContainer.getChildren();
+    int exerciseCount = exercises.size();
+
+    // If we have 3 or fewer exercises, show all and hide the button
+    if (exerciseCount <= 3) {
+      // Show all exercises
+      for (Node exercise : exercises) {
+        exercise.setVisible(true);
+        exercise.setManaged(true);
+
+        // Remove fade-out effect from all exercises
+        exercise.getStyleClass().remove("exercise-fade-out");
+      }
+
+      // Hide the show more button if it exists
+      if (showMoreButton != null) {
+        showMoreButton.setVisible(false);
+        showMoreButton.setManaged(false);
+      }
+      return;
+    }
+
+    // We have more than 3 exercises
+    if (showAllExercises) {
+      // Show all exercises
+      for (Node exercise : exercises) {
+        exercise.setVisible(true);
+        exercise.setManaged(true);
+
+        // Remove fade-out effect from all exercises
+        exercise.getStyleClass().remove("exercise-fade-out");
+      }
+
+      // Hide the show more button
+      showMoreButton.setVisible(false);
+      showMoreButton.setManaged(false);
+    } else {
+      // Show only the first 3 exercises
+      for (int i = 0; i < exerciseCount; i++) {
+        Node exercise = exercises.get(i);
+        boolean visible = i < 3;
+        exercise.setVisible(visible);
+        exercise.setManaged(visible);
+
+        // Add fade-out effect to the third exercise
+        if (i == 2) {
+          exercise.getStyleClass().add("exercise-fade-out");
+        } else {
+          exercise.getStyleClass().remove("exercise-fade-out");
+        }
+      }
+
+      // Show the show more button
+      showMoreButton.setVisible(true);
+      showMoreButton.setManaged(true);
+    }
   }
 
   /**
@@ -159,6 +241,9 @@ public class TrainingUnitControl extends VBox {
     for (TrainingExercise ex : trainingUnit.getTrainingExercises().getAll()) {
       addExerciseToUI(ex);
     }
+
+    // Update visibility of exercises
+    updateExercisesVisibility();
   }
 
   /** Handles the action of adding a new exercise. */
