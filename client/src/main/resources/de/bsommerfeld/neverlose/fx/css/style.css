@@ -145,6 +145,16 @@
     /* e.g., by setting prefWidth/prefHeight to the size of the FlowPane */
 }
 
+/* Placeholder text when no exercises exist in a training unit */
+.placeholder-label {
+    -fx-font-style: italic;
+    -fx-text-fill: -text-secondary;
+    -fx-opacity: 75%;
+    -fx-alignment: center;
+    -fx-max-width: infinity;
+    -fx-padding: 20 0 20 0;
+}
+
 /* --- General Styles --- */
 .button { /* Standard button styling */
     -fx-background-color: -accent-silver; /* Silver for interactive elements */

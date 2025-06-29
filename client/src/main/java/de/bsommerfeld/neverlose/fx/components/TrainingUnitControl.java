@@ -45,6 +45,9 @@ public class TrainingUnitControl extends VBox {
   private boolean showAllExercises = false;
   private Button showMoreButton;
 
+  // Placeholder for empty exercises list
+  private Label placeholderLabel;
+
   // Toggle elements for collapsible functionality
   private Label toggleArrow;
   private VBox contentContainer; // Container for all collapsible elements
@@ -129,6 +132,13 @@ public class TrainingUnitControl extends VBox {
     exercisesContainer = new VBox(10);
     exercisesContainer.getStyleClass().add("exercises-container");
 
+    // Create placeholder for empty exercises list
+    placeholderLabel = new Label("No exercises yet. Click '+' to add one.");
+    placeholderLabel.getStyleClass().add("placeholder-label");
+    placeholderLabel.setAlignment(Pos.CENTER);
+    placeholderLabel.setMaxWidth(Double.MAX_VALUE);
+    placeholderLabel.setPadding(new Insets(20, 0, 20, 0));
+
     // Create the "Show more" button
     showMoreButton = new Button("Show more");
     showMoreButton.getStyleClass().add("show-more-button");
@@ -137,6 +147,9 @@ public class TrainingUnitControl extends VBox {
       showAllExercises = true;
       updateExercisesVisibility();
     });
+
+    // Add placeholder to exercises container
+    exercisesContainer.getChildren().add(placeholderLabel);
 
     // Add existing exercises
     for (TrainingExercise exercise : trainingUnit.getTrainingExercises().getAll()) {
@@ -208,12 +221,34 @@ public class TrainingUnitControl extends VBox {
    */
   private void updateExercisesVisibility() {
     List<Node> exercises = exercisesContainer.getChildren();
-    int exerciseCount = exercises.size();
+    // Count actual exercises (excluding the placeholder)
+    int exerciseCount = (int) exercises.stream()
+        .filter(node -> !(node == placeholderLabel))
+        .count();
+
+    // Show placeholder if there are no exercises, hide it otherwise
+    if (exerciseCount == 0) {
+      placeholderLabel.setVisible(true);
+      placeholderLabel.setManaged(true);
+
+      // Hide the show more button if it exists
+      if (showMoreButton != null) {
+        showMoreButton.setVisible(false);
+        showMoreButton.setManaged(false);
+      }
+      return;
+    } else {
+      placeholderLabel.setVisible(false);
+      placeholderLabel.setManaged(false);
+    }
 
     // If we have 3 or fewer exercises, show all and hide the button
     if (exerciseCount <= 3) {
       // Show all exercises
       for (Node exercise : exercises) {
+        // Skip the placeholder
+        if (exercise == placeholderLabel) continue;
+
         exercise.setVisible(true);
         exercise.setManaged(true);
 
@@ -233,6 +268,9 @@ public class TrainingUnitControl extends VBox {
     if (showAllExercises) {
       // Show all exercises
       for (Node exercise : exercises) {
+        // Skip the placeholder
+        if (exercise == placeholderLabel) continue;
+
         exercise.setVisible(true);
         exercise.setManaged(true);
 
@@ -245,18 +283,25 @@ public class TrainingUnitControl extends VBox {
       showMoreButton.setManaged(false);
     } else {
       // Show only the first 3 exercises
-      for (int i = 0; i < exerciseCount; i++) {
+      int visibleCount = 0;
+      for (int i = 0; i < exercises.size(); i++) {
         Node exercise = exercises.get(i);
-        boolean visible = i < 3;
+
+        // Skip the placeholder
+        if (exercise == placeholderLabel) continue;
+
+        boolean visible = visibleCount < 3;
         exercise.setVisible(visible);
         exercise.setManaged(visible);
 
         // Add fade-out effect to the third exercise
-        if (i == 2) {
+        if (visibleCount == 2) {
           exercise.getStyleClass().add("exercise-fade-out");
         } else {
           exercise.getStyleClass().remove("exercise-fade-out");
         }
+
+        visibleCount++;
       }
 
       // Show the show more button
@@ -276,6 +321,8 @@ public class TrainingUnitControl extends VBox {
 
     // Update the UI
     exercisesContainer.getChildren().clear();
+    // Add placeholder back after clearing
+    exercisesContainer.getChildren().add(placeholderLabel);
     for (TrainingExercise ex : trainingUnit.getTrainingExercises().getAll()) {
       addExerciseToUI(ex);
     }
