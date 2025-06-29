@@ -17,6 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -43,6 +44,11 @@ public class TrainingUnitControl extends VBox {
 
   private boolean showAllExercises = false;
   private Button showMoreButton;
+
+  // Toggle elements for collapsible functionality
+  private Label toggleArrow;
+  private VBox contentContainer; // Container for all collapsible elements
+  private boolean isExpanded = true; // Default state is expanded
 
   /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit.
@@ -77,9 +83,14 @@ public class TrainingUnitControl extends VBox {
     setPadding(new Insets(15));
     getStyleClass().add("training-unit-control");
 
-    // Create the header with name field and weekday selector
+    // Create the header with toggle arrow, name field and weekday selector
     HBox header = new HBox(10);
     header.setAlignment(Pos.CENTER_LEFT);
+
+    // Toggle arrow for collapsible functionality
+    toggleArrow = new Label("▼"); // Down arrow for expanded state
+    toggleArrow.getStyleClass().add("toggle-arrow");
+    toggleArrow.setStyle("-fx-cursor: hand;"); // Hand cursor to indicate it's clickable
 
     // Name field
     nameField = new TextField(trainingUnit.getName());
@@ -105,7 +116,7 @@ public class TrainingUnitControl extends VBox {
     removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
     removeButton.setOnAction(e -> handleRemove());
 
-    header.getChildren().addAll(nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
+    header.getChildren().addAll(toggleArrow, nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
 
     // Description field
     descriptionField = new TextField(trainingUnit.getDescription());
@@ -145,8 +156,15 @@ public class TrainingUnitControl extends VBox {
     HBox addExerciseContainer = new HBox(10, addExerciseButton, addFromTemplateButton);
     addExerciseContainer.setAlignment(Pos.CENTER);
 
+    // Create a container for all collapsible content
+    contentContainer = new VBox(10);
+    contentContainer.getChildren().addAll(descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
+
+    // Set up toggle functionality
+    toggleArrow.setOnMouseClicked(e -> toggleContentVisibility());
+
     // Add all components to the VBox
-    getChildren().addAll(header, descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
+    getChildren().addAll(header, contentContainer);
 
     // Initialize visibility of exercises
     updateExercisesVisibility();
@@ -161,6 +179,26 @@ public class TrainingUnitControl extends VBox {
     ExerciseControl exerciseControl = new ExerciseControl(exercise, planStorageService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
     updateExercisesVisibility();
+  }
+
+  /**
+   * Toggles the visibility of the content container.
+   * When collapsed, only the header is visible.
+   * When expanded, all content is visible.
+   */
+  private void toggleContentVisibility() {
+    isExpanded = !isExpanded;
+
+    // Update the arrow icon based on the current state
+    if (isExpanded) {
+      toggleArrow.setText("▼"); // Down arrow for expanded state
+    } else {
+      toggleArrow.setText("▶"); // Right arrow for collapsed state
+    }
+
+    // Update the visibility of the content container
+    contentContainer.setVisible(isExpanded);
+    contentContainer.setManaged(isExpanded);
   }
 
   /**

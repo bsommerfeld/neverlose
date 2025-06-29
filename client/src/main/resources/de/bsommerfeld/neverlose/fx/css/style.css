@@ -383,6 +383,14 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 3, 0, 0, 1);
 }
 
+.toggle-arrow {
+    -fx-font-size: 14px;
+    -fx-text-fill: -never-blue;
+    -fx-font-weight: bold;
+    -fx-padding: 0 5 0 0;
+    -fx-cursor: hand;
+}
+
 .unit-name-field {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
