@@ -13,4 +13,6 @@
 
 ### Fixed
 
+- Fixed padding for Editor Title, now being aligned with Description
+
 ### Removed
