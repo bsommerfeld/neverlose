@@ -38,6 +38,10 @@ public class ExerciseControl extends VBox {
   private final PlanStorageService planStorageService;
   private Consumer<TrainingExercise> onRemoveCallback;
 
+  // UI components for action buttons
+  private HBox actionButtonsContainer;
+  private HBox moreButtonContainer;
+
   /**
    * Creates a new ExerciseControl for the specified TrainingExercise.
    *
@@ -144,9 +148,46 @@ public class ExerciseControl extends VBox {
     removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
     removeButton.setOnAction(e -> handleRemove());
 
-    HBox buttonContainer = new HBox(10, saveAsTemplateButton, removeButton);
+    // Create a more button for touch devices
+    Button moreButton = new Button("⋮");
+    moreButton.getStyleClass().add("more-button");
+    moreButton.setOnAction(e -> toggleActionButtons());
+
+    // Create container for action buttons (initially hidden)
+    this.actionButtonsContainer = new HBox(10, saveAsTemplateButton, removeButton);
+    this.actionButtonsContainer.setAlignment(Pos.CENTER_RIGHT);
+    this.actionButtonsContainer.getStyleClass().add("action-buttons-container");
+    this.actionButtonsContainer.setVisible(false);
+    this.actionButtonsContainer.setManaged(false);
+
+    // Create container for the more button
+    this.moreButtonContainer = new HBox(moreButton);
+    this.moreButtonContainer.setAlignment(Pos.CENTER_RIGHT);
+    this.moreButtonContainer.getStyleClass().add("more-button-container");
+
+    // Main button container that holds both the action buttons and more button
+    HBox buttonContainer = new HBox(10);
+    buttonContainer.getChildren().addAll(actionButtonsContainer, moreButtonContainer);
     buttonContainer.setAlignment(Pos.CENTER_RIGHT);
     buttonContainer.setPadding(new Insets(5, 0, 0, 0));
+    buttonContainer.getStyleClass().add("button-container");
+
+    // Add hover effect to show action buttons on desktop
+    this.setOnMouseEntered(e -> {
+        actionButtonsContainer.setVisible(true);
+        actionButtonsContainer.setManaged(true);
+        moreButtonContainer.setVisible(false);
+        moreButtonContainer.setManaged(false);
+    });
+
+    this.setOnMouseExited(e -> {
+        if (!actionButtonsContainer.isHover()) {
+            actionButtonsContainer.setVisible(false);
+            actionButtonsContainer.setManaged(false);
+            moreButtonContainer.setVisible(true);
+            moreButtonContainer.setManaged(true);
+        }
+    });
 
     // Add the grid and button to the VBox
     getChildren().addAll(grid, buttonContainer);
@@ -281,5 +322,17 @@ public class ExerciseControl extends VBox {
     }
 
     alert.showAndWait();
+  }
+
+  /**
+   * Toggles the visibility of the action buttons when the "More" button is clicked.
+   * This is primarily for touch devices where hover is not available.
+   */
+  private void toggleActionButtons() {
+    boolean isVisible = actionButtonsContainer.isVisible();
+    actionButtonsContainer.setVisible(!isVisible);
+    actionButtonsContainer.setManaged(!isVisible);
+    moreButtonContainer.setVisible(isVisible);
+    moreButtonContainer.setManaged(isVisible);
   }
 }

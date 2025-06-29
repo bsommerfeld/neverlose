@@ -588,6 +588,32 @@
     -fx-border-radius: 3px;
     -fx-border-color: -accent-silver;
     -fx-border-width: 1px;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+/* More button for touch devices */
+.more-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-secondary;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 8 2 8;
+    -fx-cursor: hand;
+}
+
+.more-button:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: -never-blue;
+}
+
+/* Container for action buttons */
+.action-buttons-container {
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+/* Button container */
+.button-container {
+    -fx-transition: all 0.2s ease-in-out;
 }
 
 .exercise-name-field, .exercise-description-field, .exercise-duration-field {
