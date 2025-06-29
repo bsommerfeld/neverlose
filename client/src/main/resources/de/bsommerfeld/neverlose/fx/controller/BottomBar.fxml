@@ -6,14 +6,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" styleClass="footer-bar" spacing="10"
+<HBox xmlns:fx="http://javafx.com/fxml/1" styleClass="footer-bar"
       stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
       HBox.hgrow="ALWAYS"
       fx:controller="de.bsommerfeld.neverlose.fx.controller.BottomBarController"
       xmlns="http://javafx.com/javafx/17.0.12">
-    <padding>
-        <Insets top="5" right="10" bottom="5" left="10"/>
-    </padding>
 
     <Label text="Neverlose" styleClass="footer-label"/>
 

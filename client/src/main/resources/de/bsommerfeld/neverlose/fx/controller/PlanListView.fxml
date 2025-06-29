@@ -6,13 +6,9 @@
 <?import javafx.scene.layout.StackPane?>
 
 <StackPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-           styleClass="plan-list-view-background"
+           styleClass="plan-list-view-background" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
            fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanListViewController">
-    <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" styleClass="plan-list-scroll-pane">
-        <FlowPane fx:id="flowPane" hgap="15" vgap="15" styleClass="plan-list-flow-pane">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-        </FlowPane>
+    <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane">
+        <FlowPane fx:id="flowPane" styleClass="plan-list-flow-pane"/>
     </ScrollPane>
 </StackPane>

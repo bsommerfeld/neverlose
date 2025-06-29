@@ -6,21 +6,13 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/17"
-            styleClass="template-browser">
+            styleClass="template-browser" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css">
     <top>
-        <Label text="Training Unit Templates" styleClass="template-browser-title">
-            <padding>
-                <Insets top="15" right="15" bottom="15" left="15"/>
-            </padding>
-        </Label>
+        <Label text="Training Unit Templates" styleClass="template-browser-title"/>
     </top>
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <FlowPane fx:id="templatesContainer" hgap="10" vgap="10">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
-                </padding>
-            </FlowPane>
+        <ScrollPane styleClass="template-browser-scroll-pane">
+            <FlowPane fx:id="templatesContainer" styleClass="template-browser-flow-pane"/>
         </ScrollPane>
     </center>
 </BorderPane>

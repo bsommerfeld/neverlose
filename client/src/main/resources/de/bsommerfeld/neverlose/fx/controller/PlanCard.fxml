@@ -9,21 +9,18 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-      styleClass="plan-card" alignment="CENTER" spacing="10"
+      styleClass="plan-card" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
       fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanCardController">
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15"/>
-    </padding>
 
     <StackPane>
-        <ImageView fx:id="planIcon" fitWidth="48" fitHeight="48" preserveRatio="true">
+        <ImageView fx:id="planIcon" styleClass="plan-icon">
             <Image url="/icons/plan-icon.jpg"/>
         </ImageView>
     </StackPane>
 
-    <Label fx:id="planNameLabel" styleClass="plan-card-title" wrapText="true" textAlignment="CENTER"/>
+    <Label fx:id="planNameLabel" styleClass="plan-card-title"/>
 
-    <HBox alignment="CENTER">
+    <HBox styleClass="plan-card-button-container">
         <Button fx:id="deleteButton" text="Delete" styleClass="delete-button"
                 onAction="#handleDeleteButtonAction"/>
     </HBox>

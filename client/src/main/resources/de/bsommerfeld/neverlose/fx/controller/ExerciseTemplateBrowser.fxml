@@ -9,19 +9,11 @@
             fx:controller="de.bsommerfeld.neverlose.fx.controller.ExerciseTemplateBrowserController"
             styleClass="template-browser">
     <top>
-        <Label text="Exercise Templates" styleClass="template-browser-title">
-            <padding>
-                <Insets top="15" right="15" bottom="15" left="15"/>
-            </padding>
-        </Label>
+        <Label text="Exercise Templates" styleClass="template-browser-title"/>
     </top>
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true">
-            <FlowPane fx:id="templatesContainer" hgap="10" vgap="10">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
-                </padding>
-            </FlowPane>
+        <ScrollPane styleClass="template-browser-scroll-pane">
+            <FlowPane fx:id="templatesContainer" styleClass="template-browser-flow-pane"/>
         </ScrollPane>
     </center>
 </BorderPane>

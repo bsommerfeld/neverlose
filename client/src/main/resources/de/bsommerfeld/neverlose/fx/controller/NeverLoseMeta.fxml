@@ -4,17 +4,18 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/17.0.12"
+            styleClass="never-lose-meta" xmlns="http://javafx.com/javafx/17.0.12"
+            stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
             fx:controller="de.bsommerfeld.neverlose.fx.controller.NeverLoseMetaController">
     <top>
-        <HBox fx:id="topBarPlaceholder" prefHeight="40.0" HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="topBarPlaceholder" styleClass="top-bar-placeholder"/>
     </top>
 
     <center>
-        <AnchorPane fx:id="centerContentPlaceholder" BorderPane.alignment="CENTER"/>
+        <AnchorPane fx:id="centerContentPlaceholder" styleClass="center-content-placeholder"/>
     </center>
 
     <bottom>
-        <HBox fx:id="bottomBarPlaceholder" HBox.hgrow="ALWAYS"/>
+        <HBox fx:id="bottomBarPlaceholder" styleClass="bottom-bar-placeholder"/>
     </bottom>
 </BorderPane>

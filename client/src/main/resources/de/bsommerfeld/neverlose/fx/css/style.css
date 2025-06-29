@@ -27,6 +27,9 @@
     -fx-border-width: 0 0 1 0; /* Bottom line only */
     -fx-padding: 5 10 5 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+    -fx-pref-height: 40.0;
 }
 
 .search-field {
@@ -51,6 +54,8 @@
     -fx-border-width: 1 0 0 0; /* Top line only */
     -fx-padding: 5 10 5 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 3, 0, 0, -1);
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
 }
 
 .footer-label {
@@ -87,17 +92,21 @@
 .plan-list-scroll-pane {
     -fx-background-color: transparent; /* Transparent ScrollPane */
     -fx-border-color: transparent; /* No borders */
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: true;
 }
 
 .plan-list-flow-pane {
-    /* Spacing set in FXML (hgap, vgap, padding) */
     -fx-background-color: transparent;
+    -fx-hgap: 15;
+    -fx-vgap: 15;
+    -fx-padding: 20 20 20 20;
 }
 
 /* Card for each individual plan */
 .plan-card {
     -fx-background-color: white;
-    -fx-padding: 15px;
+    -fx-padding: 15 15 15 15;
     -fx-background-radius: 8px; /* Rounded corners */
     -fx-border-radius: 8px;
     -fx-border-color: derive(-accent-silver, 20%); /* Very subtle border */
@@ -108,6 +117,8 @@
     /* Transition for hover effect */
     -fx-transition: all 0.2s ease-in-out;
     -fx-cursor: hand;
+    -fx-alignment: CENTER;
+    -fx-spacing: 10;
 }
 
 .plan-card:hover {
@@ -125,6 +136,8 @@
     -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif"; /* Serif font for headlines */
     -fx-text-fill: -never-blue; /* Royal blue for "Never" branding */
     -fx-padding: 0 0 5 0; /* Bottom padding */
+    -fx-wrap-text: true;
+    -fx-text-alignment: CENTER;
 }
 
 /* Subtitle (Plan ID) within the card */
@@ -132,6 +145,13 @@
     -fx-font-size: 11px;
     -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
     -fx-text-fill: -lose-orange; /* Orange for "Lose" elements */
+}
+
+/* Plan icon in the plan card */
+.plan-icon {
+    -fx-fit-width: 48;
+    -fx-fit-height: 48;
+    -fx-preserve-ratio: true;
 }
 
 /* Placeholder text when no plans are found */
@@ -212,11 +232,26 @@
     -fx-font-weight: bold;
     -fx-text-fill: -never-blue;
     -fx-alignment: center;
+    -fx-padding: 15 15 15 15;
+}
+
+.template-browser-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-fit-to-width: true;
+    -fx-fit-to-height: true;
+}
+
+.template-browser-flow-pane {
+    -fx-background-color: transparent;
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+    -fx-padding: 10 10 10 10;
 }
 
 .template-card {
     -fx-background-color: white;
-    -fx-padding: 10px;
+    -fx-padding: 10 10 10 10;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     -fx-border-color: derive(-accent-silver, 20%);
@@ -242,6 +277,7 @@
     -fx-text-fill: -never-blue;
     -fx-padding: 5 0 0 0;
     -fx-alignment: center;
+    -fx-wrap-text: true;
 }
 
 .delete-template-button {
@@ -257,6 +293,10 @@
 .delete-template-button:hover {
     -fx-background-color: derive(#e74c3c, -10%);
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+.template-card-header {
+    -fx-alignment: CENTER_RIGHT;
 }
 
 .no-templates-message {
@@ -276,8 +316,10 @@
     -fx-background-color: -bg-light;
     -fx-border-color: -accent-silver;
     -fx-border-width: 0 0 1 0; /* Bottom line only */
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 10 10 10 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+    -fx-alignment: CENTER_RIGHT;
+    -fx-spacing: 10;
 }
 
 .editor-action-button {
@@ -302,6 +344,11 @@
     -fx-background-color: transparent;
     -fx-background: transparent;
     -fx-border-color: transparent;
+    -fx-fit-to-width: true;
+    -fx-anchor-top: 0.0;
+    -fx-anchor-left: 0.0;
+    -fx-anchor-right: 0.0;
+    -fx-anchor-bottom: 0.0;
 }
 
 .editor-scroll-pane > .viewport {
@@ -315,11 +362,15 @@
     -fx-border-color: -accent-silver;
     -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+    -fx-max-width: 800;
+    -fx-pref-width: 800;
 }
 
 .editor-header {
     -fx-border-color: -accent-silver;
     -fx-border-width: 0 0 1 0; /* Bottom line only */
+    -fx-spacing: 10;
+    -fx-padding: 20 20 20 20;
 }
 
 .editor-title-field {
@@ -357,6 +408,13 @@
 
 .training-units-container {
     -fx-background-color: transparent;
+    -fx-spacing: 20;
+    -fx-padding: 20 20 20 20;
+}
+
+.unit-buttons-container {
+    -fx-alignment: CENTER;
+    -fx-spacing: 10;
 }
 
 .add-unit-button {
@@ -367,6 +425,7 @@
     -fx-min-height: 40px;
     -fx-background-radius: 20px;
     -fx-cursor: hand;
+    -fx-font-size: 18.0;
 }
 
 .add-unit-button:hover {
@@ -380,6 +439,7 @@
     -fx-font-weight: bold;
     -fx-background-radius: 5px;
     -fx-cursor: hand;
+    -fx-font-size: 14.0;
 }
 
 .add-from-template-button:hover {
@@ -542,6 +602,11 @@
     -fx-font-family: "Lato, 'Segoe UI', System";
 }
 
+/* Plan card button container */
+.plan-card-button-container {
+    -fx-alignment: CENTER;
+}
+
 /* Delete button for plan cards */
 .delete-button {
     -fx-background-color: #e74c3c; /* Red color for delete action */
@@ -562,4 +627,23 @@
 
 .delete-button:pressed {
     -fx-background-color: derive(#e74c3c, -20%); /* Even darker when pressed */
+}
+
+/* --- NeverLoseMeta Styles --- */
+.never-lose-meta {
+    -fx-pref-height: 700.0;
+    -fx-pref-width: 1000.0;
+}
+
+.top-bar-placeholder {
+    -fx-pref-height: 40.0;
+    -fx-hgrow: ALWAYS;
+}
+
+.center-content-placeholder {
+    -fx-alignment: CENTER;
+}
+
+.bottom-bar-placeholder {
+    -fx-hgrow: ALWAYS;
 }

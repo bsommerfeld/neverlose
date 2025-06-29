@@ -9,14 +9,11 @@
 <VBox fx:id="rootPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
      fx:controller="de.bsommerfeld.neverlose.fx.controller.ExerciseCardController"
      styleClass="template-card" onMouseClicked="#handleCardClick">
-    <padding>
-        <Insets top="10" right="10" bottom="10" left="10" />
-    </padding>
-    
-    <HBox alignment="CENTER_RIGHT">
+
+    <HBox styleClass="template-card-header">
         <Button fx:id="deleteButton" text="-" styleClass="delete-template-button" 
                 onAction="#handleDeleteButtonClick" />
     </HBox>
-    
-    <Label fx:id="templateNameLabel" styleClass="template-name" wrapText="true" />
+
+    <Label fx:id="templateNameLabel" styleClass="template-name" />
 </VBox>
