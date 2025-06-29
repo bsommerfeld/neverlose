@@ -106,9 +106,16 @@ public class TrainingPlanEditorController {
       // Clear existing units
       trainingUnitsContainer.getChildren().clear();
 
-      // Add each training unit to the container
-      for (TrainingUnit unit : trainingPlan.getTrainingUnits().getAll()) {
-        addTrainingUnitToUI(unit);
+      // Check if there are any training units
+      List<TrainingUnit> units = trainingPlan.getTrainingUnits().getAll();
+      if (units.isEmpty()) {
+        // Add placeholder when there are no units
+        addEmptyPlaceholder();
+      } else {
+        // Add each training unit to the container
+        for (TrainingUnit unit : units) {
+          addTrainingUnitToUI(unit);
+        }
       }
 
       // Add the "Add Unit" button at the end
@@ -231,6 +238,23 @@ public class TrainingPlanEditorController {
           "Saving the template has failed.",
           "An error occurred: " + e.getMessage());
     }
+  }
+
+  /**
+   * Adds a placeholder to the training units container when there are no units.
+   */
+  private void addEmptyPlaceholder() {
+    VBox placeholder = new VBox();
+    placeholder.setAlignment(Pos.CENTER);
+    placeholder.setSpacing(10);
+    placeholder.setPadding(new Insets(20));
+    placeholder.getStyleClass().add("empty-placeholder");
+
+    Text message = new Text("No training units added yet");
+    message.getStyleClass().add("placeholder-text");
+
+    placeholder.getChildren().add(message);
+    trainingUnitsContainer.getChildren().add(placeholder);
   }
 
   /** Adds the "Add Unit" button to the container. */

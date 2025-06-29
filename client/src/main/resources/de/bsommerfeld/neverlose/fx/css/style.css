@@ -175,6 +175,26 @@
     -fx-padding: 20 0 20 0;
 }
 
+/* Placeholder for empty training plan */
+.empty-placeholder {
+    -fx-background-color: #f9f9f9;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: -accent-silver;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 3, 0, 0, 1);
+    -fx-padding: 30 20 30 20;
+    -fx-alignment: center;
+}
+
+.placeholder-text {
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-font-size: 16px;
+    -fx-text-fill: -text-secondary;
+    -fx-font-style: italic;
+    -fx-opacity: 80%;
+}
+
 /* --- General Styles --- */
 .button { /* Standard button styling */
     -fx-background-color: -accent-silver; /* Silver for interactive elements */
