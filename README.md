@@ -1,20 +1,26 @@
-# Neverlose
-
-**The Modern Way to Create Your Table Tennis Training Plans.**
+# Neverlose - Training Plan Software For Table Tennis
 
 ## The Problem
 
-We've all been there: handwritten training plans that are hard to read, impossible to change, and always end up as a
-crumpled mess in our sports bags. Planning your training shouldn't be more exhausting than the training itself.
+In my club, training plans were a rare and precious resource. Our coach would painstakingly write them by hand and then
+photocopy them for everyone. This whole process was a huge hurdle. If you missed the initial handout, you had to hunt
+down someone else's copy to make your own. Often, the handwriting was hard to decipher, and the exercises were too
+generic because creating individualized, handwritten plans for each player would have taken an eternity.
+
+Things came to a head when I joined a competitive team. We were dedicated and wanted to improve, so our team captain
+decided we should take charge of our own training. That's when I decided to build a solution.
 
 ## The Solution: A Dedicated Plan Editor
 
-**Neverlose** is a desktop application designed specifically for table tennis players and coaches to create, manage, and
-share training plans with ease. It's not a coach, but a powerful tool to make your planning more efficient and
-professional.
+I started developing a simple tool to digitize our training plans. The core idea was to create clean, readable plans
+that we could easily export as PDFs. This way, we could share them with each other and always have them on our phones.
 
-Developed in close collaboration with experienced coaches, this application is built upon valuable, real-world resources
-and insights to ensure it truly meets the demands of the sport.
+But as I worked on it, I realized this problem was much bigger than just my team. I wanted to create something that
+could help any player or coach facing the same frustrations. That’s how **Neverlose** was born. It's a desktop
+application designed specifically for table tennis players and coaches to create, manage, and share training plans with
+ease. It’s not a digital coach, but a powerful tool to make planning more efficient and professional. To make sure it
+meets the real-world demands of the sport, I developed it in close collaboration with experienced coaches, building on
+their valuable insights.
 
 |                                                                      Application                                                                       |                                                                          PDF                                                                          |
 |:------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------:|
