@@ -16,7 +16,9 @@ import de.bsommerfeld.neverlose.plan.components.collection.TrainingExercises;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javafx.fxml.FXML;
@@ -52,6 +54,9 @@ public class TrainingPlanEditorController {
   @FXML private VBox trainingUnitsContainer;
   private TrainingPlan trainingPlan;
   private NeverLoseMetaController metaController;
+
+  // Map to store the expanded state of each unit, keyed by the unit's ID
+  private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
 
   /**
    * Constructor for Guice injection.
@@ -103,6 +108,16 @@ public class TrainingPlanEditorController {
       planNameField.setText(trainingPlan.getName());
       planDescriptionField.setText(trainingPlan.getDescription());
 
+      // Store the expanded state of each unit before clearing
+      for (javafx.scene.Node node : trainingUnitsContainer.getChildren()) {
+        if (node instanceof TrainingUnitControl) {
+          TrainingUnitControl unitControl = (TrainingUnitControl) node;
+          TrainingUnit unit = unitControl.getTrainingUnit();
+          // Store whether this unit is expanded or collapsed
+          unitExpandedStates.put(unit.getId(), unitControl.isExpanded());
+        }
+      }
+
       // Clear existing units
       trainingUnitsContainer.getChildren().clear();
 
@@ -132,6 +147,13 @@ public class TrainingPlanEditorController {
     TrainingUnitControl unitControl =
         new TrainingUnitControl(
             unit, planStorageService, this::saveUnitAsTemplate, this::removeTrainingUnit);
+
+    // Apply the stored expanded state if available
+    Boolean expandedState = unitExpandedStates.get(unit.getId());
+    if (expandedState != null) {
+      unitControl.setExpanded(expandedState);
+    }
+
     trainingUnitsContainer.getChildren().add(unitControl);
   }
 

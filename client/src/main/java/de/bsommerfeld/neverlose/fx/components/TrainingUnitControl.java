@@ -54,6 +54,37 @@ public class TrainingUnitControl extends VBox {
   private boolean isExpanded = true; // Default state is expanded
 
   /**
+   * Returns whether this unit is currently expanded.
+   *
+   * @return true if expanded, false if collapsed
+   */
+  public boolean isExpanded() {
+    return isExpanded;
+  }
+
+  /**
+   * Sets the expanded state of this unit.
+   *
+   * @param expanded true to expand, false to collapse
+   */
+  public void setExpanded(boolean expanded) {
+    if (this.isExpanded != expanded) {
+      this.isExpanded = expanded;
+
+      // Update the arrow icon based on the current state
+      if (isExpanded) {
+        toggleArrow.setText("▼"); // Down arrow for expanded state
+      } else {
+        toggleArrow.setText("▶"); // Right arrow for collapsed state
+      }
+
+      // Update the visibility of the content container
+      contentContainer.setVisible(isExpanded);
+      contentContainer.setManaged(isExpanded);
+    }
+  }
+
+  /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit.
    *
    * @param trainingUnit the TrainingUnit to represent
