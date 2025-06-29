@@ -13,6 +13,7 @@ import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
 import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import de.bsommerfeld.neverlose.plan.components.collection.TrainingExercises;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -25,10 +26,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -457,11 +460,13 @@ public class TrainingPlanEditorController {
         exportService.export(trainingPlan, file);
         log.info("Training plan successfully exported to: {}", file.getAbsolutePath());
 
-        showStyledAlert(
+        showStyledAlertWithLink(
             Alert.AlertType.INFORMATION,
             "Export Successful",
             null,
-            "The training plan has been successfully saved as a PDF.");
+            "The training plan has been successfully saved as a PDF.",
+            "Open file",
+            file);
 
       } catch (Exception e) {
         log.error("Error exporting training plan", e);
@@ -501,6 +506,53 @@ public class TrainingPlanEditorController {
     alert.setTitle(title);
     alert.setHeaderText(headerText);
     alert.setContentText(contentText);
+
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+
+    alert.showAndWait();
+  }
+
+  /**
+   * Creates and shows an Alert with a hyperlink and the application's stylesheet applied.
+   *
+   * @param alertType the type of the alert
+   * @param title the title of the alert
+   * @param headerText the header text (can be null)
+   * @param contentText the content text to display above the hyperlink
+   * @param linkText the text to display for the hyperlink
+   * @param file the file to open when the hyperlink is clicked
+   */
+  private void showStyledAlertWithLink(
+      Alert.AlertType alertType, String title, String headerText, String contentText,
+      String linkText, File file) {
+    Alert alert = new Alert(alertType);
+    alert.setTitle(title);
+    alert.setHeaderText(headerText);
+
+    // Create a VBox to hold the content text and hyperlink
+    VBox content = new VBox(10); // 10px spacing between elements
+    content.getChildren().add(new Text(contentText));
+
+    // Create hyperlink
+    Hyperlink hyperlink = new Hyperlink(linkText);
+    hyperlink.setOnAction(e -> {
+      try {
+        Desktop.getDesktop().open(file);
+      } catch (IOException ex) {
+        log.error("Error opening file: {}", file.getAbsolutePath(), ex);
+        showStyledAlert(
+            Alert.AlertType.ERROR,
+            "Error Opening File",
+            null,
+            "Could not open the file: " + ex.getMessage());
+      }
+    });
+
+    content.getChildren().add(hyperlink);
+
+    // Set the custom content
+    alert.getDialogPane().setContent(content);
 
     DialogPane dialogPane = alert.getDialogPane();
     dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
