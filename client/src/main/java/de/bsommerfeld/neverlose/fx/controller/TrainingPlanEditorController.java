@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -33,6 +37,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -41,6 +46,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Controller for the TrainingPlan WYSIWYG editor view. This controller manages the editing of a
@@ -55,12 +61,17 @@ public class TrainingPlanEditorController {
   private final ExportService exportService;
   // Map to store the expanded state of each unit, keyed by the unit's ID
   private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
+  // Timeline for throttling scroll events to improve performance
+  private final Timeline scrollThrottleTimeline = new Timeline();
+  // Flag to track if a scroll update is pending
+  private final AtomicBoolean scrollUpdatePending = new AtomicBoolean(false);
   @FXML private BorderPane rootPane;
   @FXML private TextField planNameField;
   @FXML private TextField planDescriptionField;
   @FXML private VBox trainingUnitsContainer;
   private TrainingPlan trainingPlan;
   private NeverLoseMetaController metaController;
+  private ScrollPane editorScrollPane;
 
   /**
    * Constructor for Guice injection.
@@ -83,8 +94,80 @@ public class TrainingPlanEditorController {
       trainingPlan = new TrainingPlan("New Training Plan", "Description");
     }
 
+    // Set up scroll throttling
+    setupScrollThrottling();
+
     // Bind the training plan properties to the UI
     updateUIFromModel();
+  }
+
+  /**
+   * Sets up scroll event throttling to improve performance.
+   * This reduces layout updates to 60 FPS (16ms interval) during scrolling.
+   */
+  private void setupScrollThrottling() {
+    // Configure the timeline for throttling (60 FPS = 16ms interval)
+    scrollThrottleTimeline.getKeyFrames().add(
+        new KeyFrame(Duration.millis(16), event -> {
+          // Only update if there's a pending update
+          if (scrollUpdatePending.getAndSet(false)) {
+            // Apply any pending layout updates
+            rootPane.layout();
+            log.debug("Applied throttled layout update during scroll");
+          }
+        })
+    );
+    scrollThrottleTimeline.setCycleCount(Timeline.INDEFINITE);
+
+    // Find the ScrollPane in the scene graph after the scene is fully initialized
+    rootPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+      if (newScene != null) {
+        // Use Platform.runLater to ensure the scene is fully initialized
+        Platform.runLater(() -> findScrollPane(rootPane));
+      }
+    });
+  }
+
+  /**
+   * Recursively searches for the ScrollPane in the scene graph.
+   *
+   * @param node the starting node for the search
+   */
+  private void findScrollPane(Node node) {
+    if (node instanceof ScrollPane) {
+      editorScrollPane = (ScrollPane) node;
+      setupScrollListener(editorScrollPane);
+      log.debug("Found and configured ScrollPane for throttling");
+      return;
+    }
+
+    if (node instanceof Parent) {
+      Parent parent = (Parent) node;
+      for (Node child : parent.getChildrenUnmodifiable()) {
+        findScrollPane(child);
+        if (editorScrollPane != null) {
+          return; // ScrollPane found, stop searching
+        }
+      }
+    }
+  }
+
+  /**
+   * Sets up the scroll event listener on the ScrollPane.
+   *
+   * @param scrollPane the ScrollPane to add the listener to
+   */
+  private void setupScrollListener(ScrollPane scrollPane) {
+    scrollPane.setOnScroll(event -> {
+      // Mark that an update is pending
+      if (!scrollUpdatePending.getAndSet(true)) {
+        // Start the timeline if it's not already running
+        if (!scrollThrottleTimeline.getStatus().equals(Timeline.Status.RUNNING)) {
+          scrollThrottleTimeline.play();
+        }
+      }
+      // Don't consume the event to allow normal scrolling
+    });
   }
 
   /**

@@ -360,12 +360,28 @@ public class TrainingUnitControl extends VBox {
     // Remove the exercise from the training unit
     trainingUnit.getTrainingExercises().remove(exercise);
 
-    // Update the UI
-    exercisesContainer.getChildren().clear();
-    // Add placeholder back after clearing
-    exercisesContainer.getChildren().add(placeholderLabel);
-    for (TrainingExercise ex : trainingUnit.getTrainingExercises().getAll()) {
-      addExerciseToUI(ex);
+    // Find and remove the corresponding ExerciseControl
+    ExerciseControl controlToRemove = null;
+    for (Node node : exercisesContainer.getChildren()) {
+      if (node instanceof ExerciseControl) {
+        ExerciseControl control = (ExerciseControl) node;
+        if (control.getExercise().getId().equals(exercise.getId())) {
+          controlToRemove = control;
+          break;
+        }
+      }
+    }
+
+    if (controlToRemove != null) {
+      // Clean up listeners before removing
+      controlToRemove.cleanup();
+      exercisesContainer.getChildren().remove(controlToRemove);
+    }
+
+    // Check if we need to show the placeholder
+    if (trainingUnit.getTrainingExercises().getAll().isEmpty()) {
+      placeholderLabel.setVisible(true);
+      placeholderLabel.setManaged(true);
     }
 
     // Update visibility of exercises

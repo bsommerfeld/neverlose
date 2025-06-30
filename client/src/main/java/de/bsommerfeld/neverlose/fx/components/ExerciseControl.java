@@ -8,8 +8,12 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import javafx.beans.value.ChangeListener;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -18,6 +22,7 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -42,6 +47,12 @@ public class ExerciseControl extends VBox {
   // UI components for action buttons
   private HBox actionButtonsContainer;
   private HBox moreButtonContainer;
+
+  // Event handlers for mouse events
+  private EventHandler<MouseEvent> mouseEnteredHandler;
+  private EventHandler<MouseEvent> mouseExitedHandler;
+  private ChangeListener<Boolean> visibilityListener;
+  private boolean listenersActive = false;
 
   /**
    * Creates a new ExerciseControl for the specified TrainingExercise.
@@ -173,27 +184,17 @@ public class ExerciseControl extends VBox {
     buttonContainer.setPadding(new Insets(5, 0, 0, 0));
     buttonContainer.getStyleClass().add("button-container");
 
-    // Add hover effect to show action buttons on desktop
-    this.setOnMouseEntered(
-        e -> {
-          actionButtonsContainer.setVisible(true);
-          actionButtonsContainer.setManaged(true);
-          moreButtonContainer.setVisible(false);
-          moreButtonContainer.setManaged(false);
-        });
-
-    this.setOnMouseExited(
-        e -> {
-          if (!actionButtonsContainer.isHover()) {
-            actionButtonsContainer.setVisible(false);
-            actionButtonsContainer.setManaged(false);
-            moreButtonContainer.setVisible(true);
-            moreButtonContainer.setManaged(true);
-          }
-        });
+    // Initialize event handlers and set up visibility-based activation
+    initializeEventHandlers();
 
     // Add the grid and button to the VBox
     getChildren().addAll(grid, buttonContainer);
+
+    // Set up visibility listener to activate/deactivate mouse listeners
+    setupVisibilityListener();
+
+    // Apply caching for better performance
+    applyLayoutCaching();
   }
 
   /**
@@ -337,5 +338,117 @@ public class ExerciseControl extends VBox {
     actionButtonsContainer.setManaged(!isVisible);
     moreButtonContainer.setVisible(isVisible);
     moreButtonContainer.setManaged(isVisible);
+  }
+
+  /**
+   * Initializes the event handlers for mouse events but does not attach them.
+   * This allows for on-demand activation of listeners.
+   */
+  private void initializeEventHandlers() {
+    // Create mouse entered handler
+    mouseEnteredHandler = e -> {
+      actionButtonsContainer.setVisible(true);
+      actionButtonsContainer.setManaged(true);
+      moreButtonContainer.setVisible(false);
+      moreButtonContainer.setManaged(false);
+    };
+
+    // Create mouse exited handler
+    mouseExitedHandler = e -> {
+      if (!actionButtonsContainer.isHover()) {
+        actionButtonsContainer.setVisible(false);
+        actionButtonsContainer.setManaged(false);
+        moreButtonContainer.setVisible(true);
+        moreButtonContainer.setManaged(true);
+      }
+    };
+
+    // Create visibility change listener
+    visibilityListener = (obs, oldValue, newValue) -> {
+      if (newValue) {
+        // Component became visible, activate listeners if not already active
+        activateListeners();
+      } else {
+        // Component became invisible, deactivate listeners
+        deactivateListeners();
+      }
+    };
+  }
+
+  /**
+   * Sets up a listener to monitor visibility changes and activate/deactivate
+   * mouse listeners accordingly.
+   */
+  private void setupVisibilityListener() {
+    // Listen for visibility changes
+    visibleProperty().addListener(visibilityListener);
+
+    // Initial activation based on current visibility
+    if (isVisible()) {
+      activateListeners();
+    }
+  }
+
+  /**
+   * Activates the mouse event listeners if they're not already active.
+   */
+  private void activateListeners() {
+    if (!listenersActive) {
+      setOnMouseEntered(mouseEnteredHandler);
+      setOnMouseExited(mouseExitedHandler);
+      listenersActive = true;
+      log.debug("Activated mouse listeners for ExerciseControl: {}", exercise.getName());
+    }
+  }
+
+  /**
+   * Deactivates the mouse event listeners if they're active.
+   */
+  private void deactivateListeners() {
+    if (listenersActive) {
+      setOnMouseEntered(null);
+      setOnMouseExited(null);
+      listenersActive = false;
+      log.debug("Deactivated mouse listeners for ExerciseControl: {}", exercise.getName());
+    }
+  }
+
+  /**
+   * Cleans up all listeners to prevent memory leaks.
+   * This should be called when the control is no longer needed.
+   */
+  public void cleanup() {
+    // Remove all listeners
+    deactivateListeners();
+    visibleProperty().removeListener(visibilityListener);
+    log.debug("Cleaned up all listeners for ExerciseControl: {}", exercise.getName());
+  }
+
+  /**
+   * Applies caching hints to improve layout performance.
+   * This reduces the need for frequent layout calculations.
+   */
+  private void applyLayoutCaching() {
+    // Set cache hint to SPEED for the entire control
+    setCache(true);
+    setCacheHint(CacheHint.SPEED);
+
+    // Cache the bounds to avoid recalculating layout
+    setSnapToPixel(true);
+
+    // Apply caching to child nodes that don't change frequently
+    for (Node child : getChildren()) {
+      if (child instanceof GridPane) {
+        GridPane grid = (GridPane) child;
+        grid.setCache(true);
+        grid.setCacheHint(CacheHint.SPEED);
+      } else if (child instanceof HBox) {
+        HBox box = (HBox) child;
+        box.setCache(true);
+        box.setCacheHint(CacheHint.SPEED);
+      }
+    }
+
+    log.debug("Applied layout caching to ExerciseControl: {}", exercise.getName());
   }
 }
