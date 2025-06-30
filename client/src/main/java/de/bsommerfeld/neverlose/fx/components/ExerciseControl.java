@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -173,21 +174,23 @@ public class ExerciseControl extends VBox {
     buttonContainer.getStyleClass().add("button-container");
 
     // Add hover effect to show action buttons on desktop
-    this.setOnMouseEntered(e -> {
-        actionButtonsContainer.setVisible(true);
-        actionButtonsContainer.setManaged(true);
-        moreButtonContainer.setVisible(false);
-        moreButtonContainer.setManaged(false);
-    });
+    this.setOnMouseEntered(
+        e -> {
+          actionButtonsContainer.setVisible(true);
+          actionButtonsContainer.setManaged(true);
+          moreButtonContainer.setVisible(false);
+          moreButtonContainer.setManaged(false);
+        });
 
-    this.setOnMouseExited(e -> {
-        if (!actionButtonsContainer.isHover()) {
+    this.setOnMouseExited(
+        e -> {
+          if (!actionButtonsContainer.isHover()) {
             actionButtonsContainer.setVisible(false);
             actionButtonsContainer.setManaged(false);
             moreButtonContainer.setVisible(true);
             moreButtonContainer.setManaged(true);
-        }
-    });
+          }
+        });
 
     // Add the grid and button to the VBox
     getChildren().addAll(grid, buttonContainer);
@@ -231,10 +234,10 @@ public class ExerciseControl extends VBox {
         }
 
         // Wait for user response
-        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+        Optional<ButtonType> result = confirmDialog.showAndWait();
 
         // If user confirmed, create a new exercise with the existing ID
-        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
           log.info("User confirmed overwriting exercise template with name '{}'.", exerciseName);
           // Create a new exercise with the existing ID
           exerciseToSave =
@@ -291,10 +294,10 @@ public class ExerciseControl extends VBox {
     }
 
     // Wait for user response
-    java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+    Optional<ButtonType> result = confirmDialog.showAndWait();
 
     // If user confirmed, call the callback
-    if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+    if (result.isPresent() && result.get() == ButtonType.OK) {
       if (onRemoveCallback != null) {
         onRemoveCallback.accept(exercise);
       }
@@ -325,8 +328,8 @@ public class ExerciseControl extends VBox {
   }
 
   /**
-   * Toggles the visibility of the action buttons when the "More" button is clicked.
-   * This is primarily for touch devices where hover is not available.
+   * Toggles the visibility of the action buttons when the "More" button is clicked. This is
+   * primarily for touch devices where hover is not available.
    */
   private void toggleActionButtons() {
     boolean isVisible = actionButtonsContainer.isVisible();

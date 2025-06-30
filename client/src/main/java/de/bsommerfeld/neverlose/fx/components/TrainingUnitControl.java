@@ -9,12 +9,17 @@ import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -54,37 +59,6 @@ public class TrainingUnitControl extends VBox {
   private boolean isExpanded = true; // Default state is expanded
 
   /**
-   * Returns whether this unit is currently expanded.
-   *
-   * @return true if expanded, false if collapsed
-   */
-  public boolean isExpanded() {
-    return isExpanded;
-  }
-
-  /**
-   * Sets the expanded state of this unit.
-   *
-   * @param expanded true to expand, false to collapse
-   */
-  public void setExpanded(boolean expanded) {
-    if (this.isExpanded != expanded) {
-      this.isExpanded = expanded;
-
-      // Update the arrow icon based on the current state
-      if (isExpanded) {
-        toggleArrow.setText("▼"); // Down arrow for expanded state
-      } else {
-        toggleArrow.setText("▶"); // Right arrow for collapsed state
-      }
-
-      // Update the visibility of the content container
-      contentContainer.setVisible(isExpanded);
-      contentContainer.setManaged(isExpanded);
-    }
-  }
-
-  /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit.
    *
    * @param trainingUnit the TrainingUnit to represent
@@ -105,8 +79,10 @@ public class TrainingUnitControl extends VBox {
    * @param onRemoveCallback callback to be called when the "Remove" button is clicked
    */
   public TrainingUnitControl(
-      TrainingUnit trainingUnit, PlanStorageService planStorageService, 
-      Consumer<TrainingUnit> saveAsTemplateCallback, Consumer<TrainingUnit> onRemoveCallback) {
+      TrainingUnit trainingUnit,
+      PlanStorageService planStorageService,
+      Consumer<TrainingUnit> saveAsTemplateCallback,
+      Consumer<TrainingUnit> onRemoveCallback) {
     this.trainingUnit = trainingUnit;
     this.planStorageService = planStorageService;
     this.saveAsTemplateCallback = saveAsTemplateCallback;
@@ -150,7 +126,9 @@ public class TrainingUnitControl extends VBox {
     removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
     removeButton.setOnAction(e -> handleRemove());
 
-    header.getChildren().addAll(toggleArrow, nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
+    header
+        .getChildren()
+        .addAll(toggleArrow, nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
 
     // Description field
     descriptionField = new TextField(trainingUnit.getDescription());
@@ -174,10 +152,11 @@ public class TrainingUnitControl extends VBox {
     showMoreButton = new Button("Show more");
     showMoreButton.getStyleClass().add("show-more-button");
     showMoreButton.setMaxWidth(Double.MAX_VALUE); // Make button span full width
-    showMoreButton.setOnAction(e -> {
-      showAllExercises = true;
-      updateExercisesVisibility();
-    });
+    showMoreButton.setOnAction(
+        e -> {
+          showAllExercises = true;
+          updateExercisesVisibility();
+        });
 
     // Add placeholder to exercises container
     exercisesContainer.getChildren().add(placeholderLabel);
@@ -202,7 +181,9 @@ public class TrainingUnitControl extends VBox {
 
     // Create a container for all collapsible content
     contentContainer = new VBox(10);
-    contentContainer.getChildren().addAll(descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
+    contentContainer
+        .getChildren()
+        .addAll(descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
 
     // Set up toggle functionality
     toggleArrow.setOnMouseClicked(e -> toggleContentVisibility());
@@ -215,19 +196,50 @@ public class TrainingUnitControl extends VBox {
   }
 
   /**
+   * Returns whether this unit is currently expanded.
+   *
+   * @return true if expanded, false if collapsed
+   */
+  public boolean isExpanded() {
+    return isExpanded;
+  }
+
+  /**
+   * Sets the expanded state of this unit.
+   *
+   * @param expanded true to expand, false to collapse
+   */
+  public void setExpanded(boolean expanded) {
+    if (this.isExpanded != expanded) {
+      this.isExpanded = expanded;
+
+      // Update the arrow icon based on the current state
+      if (isExpanded) {
+        toggleArrow.setText("▼"); // Down arrow for expanded state
+      } else {
+        toggleArrow.setText("▶"); // Right arrow for collapsed state
+      }
+
+      // Update the visibility of the content container
+      contentContainer.setVisible(isExpanded);
+      contentContainer.setManaged(isExpanded);
+    }
+  }
+
+  /**
    * Adds an exercise to the UI.
    *
    * @param exercise the exercise to add
    */
   private void addExerciseToUI(TrainingExercise exercise) {
-    ExerciseControl exerciseControl = new ExerciseControl(exercise, planStorageService, this::removeExercise);
+    ExerciseControl exerciseControl =
+        new ExerciseControl(exercise, planStorageService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
     updateExercisesVisibility();
   }
 
   /**
-   * Toggles the visibility of the content container.
-   * When collapsed, only the header is visible.
+   * Toggles the visibility of the content container. When collapsed, only the header is visible.
    * When expanded, all content is visible.
    */
   private void toggleContentVisibility() {
@@ -246,16 +258,14 @@ public class TrainingUnitControl extends VBox {
   }
 
   /**
-   * Updates the visibility of exercises based on the showAllExercises flag.
-   * Shows only the first three exercises if showAllExercises is false,
-   * or all exercises if showAllExercises is true.
+   * Updates the visibility of exercises based on the showAllExercises flag. Shows only the first
+   * three exercises if showAllExercises is false, or all exercises if showAllExercises is true.
    */
   private void updateExercisesVisibility() {
     List<Node> exercises = exercisesContainer.getChildren();
     // Count actual exercises (excluding the placeholder)
-    int exerciseCount = (int) exercises.stream()
-        .filter(node -> !(node == placeholderLabel))
-        .count();
+    int exerciseCount =
+        (int) exercises.stream().filter(node -> !(node == placeholderLabel)).count();
 
     // Show placeholder if there are no exercises, hide it otherwise
     if (exerciseCount == 0) {
@@ -395,8 +405,8 @@ public class TrainingUnitControl extends VBox {
   }
 
   /**
-   * Handles the action of removing the training unit. If a callback is set, it will be
-   * called with the training unit after confirmation.
+   * Handles the action of removing the training unit. If a callback is set, it will be called with
+   * the training unit after confirmation.
    */
   private void handleRemove() {
     // Show confirmation dialog
@@ -408,32 +418,36 @@ public class TrainingUnitControl extends VBox {
     // Apply application stylesheet to the dialog
     DialogPane dialogPane = confirmDialog.getDialogPane();
     if (getScene() != null && getScene().getRoot() != null) {
-        dialogPane.getStylesheets().addAll(getScene().getStylesheets());
+      dialogPane.getStylesheets().addAll(getScene().getStylesheets());
     }
 
     // Wait for user response
-    java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+    Optional<ButtonType> result = confirmDialog.showAndWait();
 
     // If user confirmed, call the callback
-    if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
-        if (onRemoveCallback != null) {
-            onRemoveCallback.accept(trainingUnit);
-        }
+    if (result.isPresent() && result.get() == ButtonType.OK) {
+      if (onRemoveCallback != null) {
+        onRemoveCallback.accept(trainingUnit);
+      }
     }
   }
 
   /**
-   * Handles the action of adding an exercise from a template.
-   * Opens the ExerciseTemplateBrowser and adds the selected exercise to the training unit.
+   * Handles the action of adding an exercise from a template. Opens the ExerciseTemplateBrowser and
+   * adds the selected exercise to the training unit.
    */
   private void handleAddExerciseFromTemplate() {
     try {
       // Load the exercise template browser view
-      javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-          getClass().getResource("/de/bsommerfeld/neverlose/fx/controller/ExerciseTemplateBrowser.fxml"));
+      FXMLLoader loader =
+          new FXMLLoader(
+              getClass()
+                  .getResource(
+                      "/de/bsommerfeld/neverlose/fx/controller/ExerciseTemplateBrowser.fxml"));
       // Set the controller factory to create the controller with the PlanStorageService
-      loader.setControllerFactory(param -> new ExerciseTemplateBrowserController(planStorageService));
-      javafx.scene.Parent root = loader.load();
+      loader.setControllerFactory(
+          param -> new ExerciseTemplateBrowserController(planStorageService));
+      Parent root = loader.load();
 
       // Get the controller and set the callback
       ExerciseTemplateBrowserController controller = loader.getController();
@@ -446,7 +460,7 @@ public class TrainingUnitControl extends VBox {
       templateBrowserStage.initOwner(getScene().getWindow());
 
       // Set the scene and show the stage
-      javafx.scene.Scene scene = new javafx.scene.Scene(root, 600, 400);
+      Scene scene = new Scene(root, 600, 400);
       scene.getStylesheets().addAll(getScene().getStylesheets());
       templateBrowserStage.setScene(scene);
       templateBrowserStage.showAndWait();
@@ -468,12 +482,13 @@ public class TrainingUnitControl extends VBox {
    */
   private void addExerciseFromTemplate(TrainingExercise templateExercise) {
     // Create a new exercise with a new ID
-    TrainingExercise newExercise = new TrainingExercise(
-        templateExercise.getName(),
-        templateExercise.getDescription(),
-        templateExercise.getDuration(),
-        templateExercise.getSets(),
-        templateExercise.isBallBucket());
+    TrainingExercise newExercise =
+        new TrainingExercise(
+            templateExercise.getName(),
+            templateExercise.getDescription(),
+            templateExercise.getDuration(),
+            templateExercise.getSets(),
+            templateExercise.isBallBucket());
 
     // Add it to the training unit
     trainingUnit.getTrainingExercises().add(newExercise);

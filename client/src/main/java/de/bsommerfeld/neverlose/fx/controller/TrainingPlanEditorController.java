@@ -22,11 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
@@ -35,6 +39,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -48,15 +53,14 @@ public class TrainingPlanEditorController {
 
   private final PlanStorageService planStorageService;
   private final ExportService exportService;
+  // Map to store the expanded state of each unit, keyed by the unit's ID
+  private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
   @FXML private BorderPane rootPane;
   @FXML private TextField planNameField;
   @FXML private TextField planDescriptionField;
   @FXML private VBox trainingUnitsContainer;
   private TrainingPlan trainingPlan;
   private NeverLoseMetaController metaController;
-
-  // Map to store the expanded state of each unit, keyed by the unit's ID
-  private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
 
   /**
    * Constructor for Guice injection.
@@ -109,7 +113,7 @@ public class TrainingPlanEditorController {
       planDescriptionField.setText(trainingPlan.getDescription());
 
       // Store the expanded state of each unit before clearing
-      for (javafx.scene.Node node : trainingUnitsContainer.getChildren()) {
+      for (Node node : trainingUnitsContainer.getChildren()) {
         if (node instanceof TrainingUnitControl) {
           TrainingUnitControl unitControl = (TrainingUnitControl) node;
           TrainingUnit unit = unitControl.getTrainingUnit();
@@ -195,10 +199,10 @@ public class TrainingPlanEditorController {
         dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
 
         // Wait for user response
-        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+        Optional<ButtonType> result = confirmDialog.showAndWait();
 
         // If user confirmed, update the existing unit
-        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
           log.info("User confirmed overwriting unit template with name '{}'.", unitName);
           // Use the existing ID for the template unit
           unit =
@@ -262,9 +266,7 @@ public class TrainingPlanEditorController {
     }
   }
 
-  /**
-   * Adds a placeholder to the training units container when there are no units.
-   */
+  /** Adds a placeholder to the training units container when there are no units. */
   private void addEmptyPlaceholder() {
     VBox placeholder = new VBox();
     placeholder.setAlignment(Pos.CENTER);
@@ -322,14 +324,14 @@ public class TrainingPlanEditorController {
       TemplateBrowserController controller = new TemplateBrowserController(planStorageService);
 
       // Load the template browser view
-      javafx.fxml.FXMLLoader loader =
-          new javafx.fxml.FXMLLoader(
+      FXMLLoader loader =
+          new FXMLLoader(
               getClass()
                   .getResource("/de/bsommerfeld/neverlose/fx/controller/TemplateBrowser.fxml"));
 
       // Set the controller before loading
       loader.setController(controller);
-      javafx.scene.Parent root = loader.load();
+      Parent root = loader.load();
 
       // Set the callback
       controller.setTemplateSelectedCallback(this::addTemplateToTrainingPlan);
@@ -337,7 +339,7 @@ public class TrainingPlanEditorController {
       // Create a new stage for the template browser
       Stage templateBrowserStage = new Stage();
       templateBrowserStage.setTitle("Training Unit Templates");
-      templateBrowserStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+      templateBrowserStage.initModality(Modality.APPLICATION_MODAL);
       templateBrowserStage.initOwner(rootPane.getScene().getWindow());
 
       // Set the scene and show the stage
@@ -417,10 +419,10 @@ public class TrainingPlanEditorController {
         dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
 
         // Wait for user response
-        java.util.Optional<javafx.scene.control.ButtonType> result = confirmDialog.showAndWait();
+        Optional<ButtonType> result = confirmDialog.showAndWait();
 
         // If user confirmed, update the existing plan
-        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
           log.info("User confirmed overwriting plan with name '{}'.", planName);
           trainingPlan =
               new TrainingPlan(
@@ -474,7 +476,7 @@ public class TrainingPlanEditorController {
       List<PlanSummary> summaries = planStorageService.loadPlanSummaries();
       return summaries.stream()
           .filter(summary -> summary.name().equals(name))
-          .map(summary -> summary.identifier())
+          .map(PlanSummary::identifier)
           .findFirst()
           .orElse(null);
     } catch (IOException e) {
@@ -570,8 +572,12 @@ public class TrainingPlanEditorController {
    * @param file the file to open when the hyperlink is clicked
    */
   private void showStyledAlertWithLink(
-      Alert.AlertType alertType, String title, String headerText, String contentText,
-      String linkText, File file) {
+      Alert.AlertType alertType,
+      String title,
+      String headerText,
+      String contentText,
+      String linkText,
+      File file) {
     Alert alert = new Alert(alertType);
     alert.setTitle(title);
     alert.setHeaderText(headerText);
@@ -582,18 +588,19 @@ public class TrainingPlanEditorController {
 
     // Create hyperlink
     Hyperlink hyperlink = new Hyperlink(linkText);
-    hyperlink.setOnAction(e -> {
-      try {
-        Desktop.getDesktop().open(file);
-      } catch (IOException ex) {
-        log.error("Error opening file: {}", file.getAbsolutePath(), ex);
-        showStyledAlert(
-            Alert.AlertType.ERROR,
-            "Error Opening File",
-            null,
-            "Could not open the file: " + ex.getMessage());
-      }
-    });
+    hyperlink.setOnAction(
+        e -> {
+          try {
+            Desktop.getDesktop().open(file);
+          } catch (IOException ex) {
+            log.error("Error opening file: {}", file.getAbsolutePath(), ex);
+            showStyledAlert(
+                Alert.AlertType.ERROR,
+                "Error Opening File",
+                null,
+                "Could not open the file: " + ex.getMessage());
+          }
+        });
 
     content.getChildren().add(hyperlink);
 
