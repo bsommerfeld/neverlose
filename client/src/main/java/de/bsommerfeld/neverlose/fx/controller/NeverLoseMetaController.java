@@ -59,18 +59,23 @@ public class NeverLoseMetaController {
    * Loads a view into the center content area.
    *
    * @param clazz the class of the controller for the view to load
+   * @param <T> the type of the controller
+   * @return the controller instance
    */
-  public void loadCenter(Class<?> clazz) {
-    Parent center = viewProvider.requestView(clazz).parent();
+  public <T> T loadCenter(Class<T> clazz) {
+    ViewWrapper<T> viewWrapper = viewProvider.requestView(clazz);
+    T controller = viewWrapper.controller();
+
+    Parent center = viewWrapper.parent();
     setAnchor(center);
     centerContentPlaceholder.getChildren().setAll(center);
+
+    return controller;
   }
 
   /** Shows the plan list view in the center content area. */
   public void showPlanListView() {
-    ViewWrapper<PlanListViewController> viewWrapper =
-        viewProvider.requestView(PlanListViewController.class);
-    PlanListViewController controller = viewWrapper.controller();
+    PlanListViewController controller = loadCenter(PlanListViewController.class);
     controller.setMetaController(this);
 
     // Connect the TopBarController with the PlanListViewController for search functionality
@@ -80,10 +85,6 @@ public class NeverLoseMetaController {
 
     // Refresh the plan list to ensure it's up-to-date
     controller.refreshPlans();
-
-    Parent center = viewWrapper.parent();
-    setAnchor(center);
-    centerContentPlaceholder.getChildren().setAll(center);
   }
 
   /**
@@ -92,14 +93,8 @@ public class NeverLoseMetaController {
    * @param plan the plan to edit
    */
   public void showTrainingPlanEditor(TrainingPlan plan) {
-    ViewWrapper<TrainingPlanEditorController> viewWrapper =
-        viewProvider.requestView(TrainingPlanEditorController.class);
-    TrainingPlanEditorController controller = viewWrapper.controller();
+    TrainingPlanEditorController controller = loadCenter(TrainingPlanEditorController.class);
     controller.setTrainingPlan(plan);
     controller.setMetaController(this);
-
-    Parent center = viewWrapper.parent();
-    setAnchor(center);
-    centerContentPlaceholder.getChildren().setAll(center);
   }
 }
