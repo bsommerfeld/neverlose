@@ -603,9 +603,9 @@
 .add-unit-button {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-min-width: 40px;
-    -fx-min-height: 40px;
-    -fx-background-radius: 20px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 15px;
     -fx-cursor: hand;
     -fx-font-size: 18.0;
     -fx-background-color: radial-gradient(
