@@ -1,4 +1,4 @@
-# Neverlose - Training Plan Software For Table Tennis 
+# Neverlose - Training Plan Software For Table Tennis
 
 ## The Problem
 
@@ -22,14 +22,15 @@ ease. It’s not a digital coach, but a powerful tool to make planning more effi
 meets the real-world demands of the sport, I developed it in close collaboration with experienced coaches, building on
 their valuable insights.
 
-|                                                                      Application                                                                       |                                                                          PDF                                                                          |
-|:------------------------------------------------------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <img width="1100" alt="Bildschirmfoto 2025-06-27 um 16 14 21" src="https://github.com/user-attachments/assets/d236ea89-6dc3-419c-8915-a2f5e3e98565" /> | <img width="793" alt="Bildschirmfoto 2025-06-27 um 16 15 52" src="https://github.com/user-attachments/assets/2b07af24-495b-403e-8654-df6a3102be18" /> |
+| 1. Home View. | 2. Editor View. |
+| :------------------------------------------------: | :---------------------------------------: |
+| <img width="450" alt="Plan Editor Main View" src="https://github.com/user-attachments/assets/d9a338ac-8afe-48b3-840e-5216abcb6052"> | <img width="450" alt="Training Unit Editor" src="https://github.com/user-attachments/assets/7f241bdb-2fc7-4e68-aa6c-a89535dcf5f8"> |
+| 3. Plan Overview | 4. PDF Outcome |
+| <img width="450" alt="Training Exercise Editor" src="https://github.com/user-attachments/assets/361ba61f-4911-4714-8f3d-9a9e18b32eb1"> | <img width="300" alt="PDF Export Example" src="https://github.com/user-attachments/assets/eedcdfe0-dcec-4203-b456-597568597083"> |
 
 ## Download
 
-You can download the latest platform-specific installer from our **[GitHub Releases page
-](https://github.com/bsommerfeld/neverlose/releases)**.
+You can download the latest platform-specific installer from our **[GitHub Releases page](https://github.com/bsommerfeld/neverlose/releases)**.
 
 ## Key Features
 
