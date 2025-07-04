@@ -7,6 +7,7 @@
 ### Changed
 
 - Changed the hover style of interactable components
+- Moved the search for training plans bar into the respective view
 
 ### Fixed
 
