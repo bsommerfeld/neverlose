@@ -3,6 +3,7 @@
 ### Added
 
 - Added a new HomeView to "catch" the user on initial startup and streamline plan management
+- Added when clicking on "Sommerfeld" it opens the GitHub profile.
 
 ### Changed
 
