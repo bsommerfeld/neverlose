@@ -95,7 +95,6 @@
 }
 
 .new-plan-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: white;
     -fx-background-color: linear-gradient(
             to right,
@@ -110,7 +109,7 @@
             #ff7b29 50%,
             #e05a00 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffbb89, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -263,7 +262,6 @@
 }
 
 .button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: #777777; /* Slightly lighter text on hover */
     -fx-background-color: linear-gradient(
             to right,
@@ -278,7 +276,7 @@
             #e8e8e8 50%,
             #c8c8c8 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffffff, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -405,7 +403,6 @@
 }
 
 .delete-template-button:hover {
-    -fx-translate-y: 1;
     -fx-text-fill: white;
     -fx-background-color: linear-gradient(
             to right,
@@ -420,7 +417,7 @@
             #e74c3c 50%,
             #c0392b 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0.4, 0, 2),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #f29f97, 12, 0.9, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -488,7 +485,6 @@
 }
 
 .editor-action-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: white;
     -fx-background-color: linear-gradient(
             to right,
@@ -503,7 +499,7 @@
             #1a3a8f 50%,
             #0a2a7f 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #5a7adf, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -622,7 +618,6 @@
 }
 
 .add-unit-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: white;
     -fx-background-color: radial-gradient(
             center 50% 50%,
@@ -633,7 +628,7 @@
             #e05a00 80%,
             #c04a00 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffbb89, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -674,7 +669,6 @@
 }
 
 .add-from-template-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: white;
     -fx-background-color: linear-gradient(
             to right,
@@ -689,7 +683,7 @@
             #1a3a8f 50%,
             #0a2a7f 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #5a7adf, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -784,7 +778,6 @@
 }
 
 .save-as-template-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: #6e5a00; /* Slightly darker gold text on hover */
     -fx-background-color: linear-gradient(
             to right,
@@ -799,7 +792,7 @@
             #f5e56b 50%,
             #d4af37 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #fff0a0, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -857,7 +850,6 @@
 }
 
 .show-more-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: #777777; /* Slightly lighter text on hover */
     -fx-background-color: linear-gradient(
             to right,
@@ -872,7 +864,7 @@
             #e8e8e8 50%,
             #c8c8c8 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffffff, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -909,7 +901,6 @@
 }
 
 .add-exercise-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: black;
     -fx-background-color: radial-gradient(
             center 50% 50%,
@@ -921,7 +912,7 @@
             #a0a0a0 80%,
             #888888 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffffff, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -975,7 +966,6 @@
 }
 
 .more-button:hover {
-    -fx-translate-y: 1;
     -fx-text-fill: #777777; /* Slightly lighter text on hover */
     -fx-background-color: linear-gradient(
             to right,
@@ -990,7 +980,7 @@
             #e8e8e8 50%,
             #c8c8c8 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0.4, 0, 2),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ffffff, 12, 0.9, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
@@ -1156,7 +1146,6 @@
 }
 
 .delete-button:hover {
-    -fx-translate-y: 2;
     -fx-text-fill: white;
     -fx-background-color: linear-gradient(
             to right,
@@ -1171,7 +1160,7 @@
             #e74c3c 50%,
             #c0392b 100%
     );
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.2, 0, 1),
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 4, 0.5, 0, 2),
     innershadow(one-pass-box, #ff8b7d, 10, 0.7, 0, -1),
         /* Eingravierungs-Effekt für Text */ innershadow(one-pass-box, rgba(0, 0, 0, 0.8), 1, 0.0, 0, -1),
     innershadow(one-pass-box, rgba(255, 255, 255, 0.9), 1, 0.0, 0, 1);
