@@ -66,6 +66,18 @@
     -fx-effect: /* Sanfte Vertiefung */ innershadow(one-pass-box, rgba(0, 0, 0, 0.3), 2, 0.0, 0, -1),
         /* Heller Metallglanz */ innershadow(one-pass-box, rgba(255, 255, 255, 0.6), 1, 0.0, 0, 1);
     -fx-alignment: center-left;
+    -fx-cursor: hand;
+    -fx-underline: false;
+}
+
+.footer-label:hover {
+    -fx-text-fill: -never-blue; /* Blue color on hover */
+    -fx-effect: dropshadow(gaussian, rgba(26, 58, 143, 0.3), 5, 0, 0, 1);
+}
+
+.footer-label:pressed {
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
 }
 
 .new-plan-button {

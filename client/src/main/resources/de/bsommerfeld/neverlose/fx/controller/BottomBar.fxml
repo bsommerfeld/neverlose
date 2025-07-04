@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" styleClass="footer-bar"
@@ -10,7 +10,7 @@
       fx:controller="de.bsommerfeld.neverlose.fx.controller.BottomBarController"
       xmlns="http://javafx.com/javafx/17.0.12">
 
-    <Label text="Sommerfeld" styleClass="footer-label"/>
+    <Hyperlink text="Sommerfeld" styleClass="footer-label" onAction="#handleSommerfeldLink"/>
 
     <Region HBox.hgrow="ALWAYS"/>
 </HBox>
