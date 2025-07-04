@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
@@ -39,6 +40,8 @@ public class PlanListViewController {
 
   @FXML private FlowPane flowPane;
 
+  @FXML private TextField searchTextField;
+
   private List<PlanSummary> allPlans = new ArrayList<>();
   private ChangeListener<String> searchListener;
 
@@ -54,6 +57,8 @@ public class PlanListViewController {
   private void initialize() {
     loadPlans();
     setupSearchListener();
+    // Bind the search text field to the search state
+    javafx.beans.binding.Bindings.bindBidirectional(searchTextField.textProperty(), searchState.searchTermProperty());
   }
 
   /**

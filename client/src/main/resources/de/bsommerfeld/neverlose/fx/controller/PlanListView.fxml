@@ -2,13 +2,28 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-           styleClass="plan-list-view-background" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
-           fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanListViewController">
-    <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane">
-        <FlowPane fx:id="flowPane" styleClass="plan-list-flow-pane"/>
-    </ScrollPane>
-</StackPane>
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+      styleClass="plan-list-view-background" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
+      fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanListViewController">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <TextField fx:id="searchTextField" promptText="Search plans..." prefWidth="400.0"
+               styleClass="search-field" VBox.vgrow="NEVER">
+        <VBox.margin>
+            <Insets bottom="10"/>
+        </VBox.margin>
+    </TextField>
+
+    <StackPane VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane">
+            <FlowPane fx:id="flowPane" styleClass="plan-list-flow-pane"/>
+        </ScrollPane>
+    </StackPane>
+</VBox>

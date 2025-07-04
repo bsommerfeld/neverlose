@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" spacing="10" styleClass="top-search-bar"
@@ -16,11 +15,6 @@
     <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="editor-action-button">
         <text>Home</text>
     </Button>
-
-    <Region HBox.hgrow="ALWAYS"/>
-
-    <TextField fx:id="searchTextField" promptText="Search plans..." HBox.hgrow="NEVER" prefWidth="400.0"
-               styleClass="search-field"/>
 
     <Region HBox.hgrow="ALWAYS"/>
 </HBox>
