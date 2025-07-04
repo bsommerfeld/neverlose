@@ -139,19 +139,47 @@ public class PdfContentRenderer {
     boolean firstUnit = true;
     for (TrainingUnit unit : units) {
       if (!firstUnit) {
-        textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_UNITS);
+
+        float minHeightForNextUnit = calculateMinimumUnitHeight(unit);
+
+        if (textRenderer.getCurrentY() - (PdfLayout.SPACING_BETWEEN_UNITS + minHeightForNextUnit)
+            < PdfLayout.MARGIN) {
+          documentManager.startNewPage();
+          this.textRenderer = documentManager.getTextRenderer();
+        } else {
+          textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_UNITS);
+        }
       }
+
       renderUnit(unit);
       firstUnit = false;
     }
   }
 
-  private void renderUnit(TrainingUnit unit) throws IOException {
-    float headerHeight = calculateUnitHeaderHeight(unit);
-    if (textRenderer.getCurrentY() - headerHeight < PdfLayout.MARGIN) {
-      documentManager.startNewPage();
-      this.textRenderer = documentManager.getTextRenderer();
+  /**
+   * Calculates the minimum height required to start rendering a unit in a visually appealing way.
+   * This is defined as the height of the unit's header plus its first exercise. This prevents the
+   * unit header from being orphaned at the bottom of a page.
+   *
+   * @param unit The training unit to measure.
+   * @return The minimum required height in points.
+   * @throws IOException If there is an error calculating text dimensions.
+   */
+  private float calculateMinimumUnitHeight(TrainingUnit unit) throws IOException {
+    float minHeight = calculateUnitHeaderHeight(unit);
+
+    List<TrainingExercise> exercises =
+        unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
+
+    if (!exercises.isEmpty()) {
+      minHeight += PdfLayout.SPACING_BEFORE_EXERCISES;
+      minHeight += calculateExerciseHeight(exercises.getFirst());
     }
+
+    return minHeight;
+  }
+
+  private void renderUnit(TrainingUnit unit) throws IOException {
 
     PdfContainerRenderer containerRenderer = documentManager.getContainerRenderer();
     float availableHeight = textRenderer.getCurrentY() - PdfLayout.MARGIN;
