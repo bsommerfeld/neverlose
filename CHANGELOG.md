@@ -10,6 +10,7 @@
 
 - Fixed missing unit container when rendering a PDF for a plan with a large unit which takes space over multiple pages
 - Fixed empty first page in PDF when first unit is taking space over multiple pages
+- Fixed spacing between exercises when a unit spreads across multiple pages
 
 ### Removed
 

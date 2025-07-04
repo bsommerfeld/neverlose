@@ -235,6 +235,21 @@ public class PdfTextRenderer {
     return lines;
   }
 
+  public float calculateWrappedTextHeight(
+      String text, PdfStyle style, float maxWidth, float extraLineSpacing) throws IOException {
+    List<String> lines = wrapText(text, style.font(), style.size(), maxWidth);
+    float height = 0;
+    for (String line : lines) {
+      height += style.size() * PdfLayout.BASE_LINE_SPACING_FACTOR + extraLineSpacing;
+    }
+    return height;
+  }
+
+  public float calculateWrappedTextHeight(String text, PdfStyle style, float maxWidth)
+      throws IOException {
+    return calculateWrappedTextHeight(text, style, maxWidth, 0);
+  }
+
   /**
    * Finds the index at which to break text to fit within the specified width.
    *
