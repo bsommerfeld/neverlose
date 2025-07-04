@@ -179,18 +179,88 @@ public class PdfContentRenderer {
     return minHeight;
   }
 
+  /**
+   * Calculates the TOTAL height of a given training unit, including its header, description, all
+   * exercises, and all vertical spacing and padding.
+   *
+   * @param unit The TrainingUnit to measure.
+   * @return The total height in points.
+   * @throws IOException If text measurement fails.
+   */
+  private float calculateUnitHeight(TrainingUnit unit) throws IOException {
+    float totalHeight = PdfLayout.PADDING_UNIT_VERTICAL;
+
+    totalHeight += calculateUnitHeaderHeight(unit);
+
+    List<TrainingExercise> exercises =
+        unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
+
+    if (!exercises.isEmpty()) {
+      totalHeight += PdfLayout.SPACING_BEFORE_EXERCISES;
+
+      boolean firstExercise = true;
+      for (TrainingExercise exercise : exercises) {
+        if (!firstExercise) {
+          totalHeight += PdfLayout.SPACING_BETWEEN_EXERCISES;
+        }
+        totalHeight += calculateExerciseHeight(exercise);
+        firstExercise = false;
+      }
+    } else {
+      totalHeight +=
+          textRenderer.calculateWrappedTextHeight(
+              PLACEHOLDER_NO_EXERCISES,
+              stylePlaceholder,
+              PdfLayout.CONTENT_WIDTH
+                  - (2
+                      * (PdfLayout.INDENT_EXERCISE_CONTAINER
+                          + PdfLayout.INDENT_EXERCISE_INTERNAL)));
+    }
+
+    totalHeight += PdfLayout.PADDING_UNIT_VERTICAL;
+
+    return totalHeight;
+  }
+
   private void renderUnit(TrainingUnit unit) throws IOException {
-
+    float totalUnitHeight = calculateUnitHeight(unit);
     PdfContainerRenderer containerRenderer = documentManager.getContainerRenderer();
-    float availableHeight = textRenderer.getCurrentY() - PdfLayout.MARGIN;
-    containerRenderer.drawContainer(
-        PdfLayout.MARGIN,
-        PdfLayout.MARGIN,
-        PdfLayout.CONTENT_WIDTH,
-        availableHeight,
-        PdfLayout.UNIT_BORDER_RADIUS,
-        Theme.Colors.TRAINING_UNIT_BG);
 
+    // Fall A: The whole unit fits into the page
+    if (textRenderer.getCurrentY() - totalUnitHeight >= PdfLayout.MARGIN) {
+      // Zeichne einen einzigen, passgenauen Container.
+      containerRenderer.drawContainer(
+          PdfLayout.MARGIN,
+          textRenderer.getCurrentY() - totalUnitHeight,
+          PdfLayout.CONTENT_WIDTH,
+          totalUnitHeight,
+          PdfLayout.UNIT_BORDER_RADIUS,
+          Theme.Colors.TRAINING_UNIT_BG);
+
+      renderUnitContent(unit);
+
+    } else { // Fall B: The unit is too big and will break the page
+      float availableHeight = textRenderer.getCurrentY() - PdfLayout.MARGIN;
+      containerRenderer.drawContainer(
+          PdfLayout.MARGIN,
+          PdfLayout.MARGIN,
+          PdfLayout.CONTENT_WIDTH,
+          availableHeight,
+          PdfLayout.UNIT_BORDER_RADIUS,
+          Theme.Colors.TRAINING_UNIT_BG);
+
+      renderUnitContent(unit);
+    }
+  }
+
+  /**
+   * Renders the actual content (text and exercises) of a unit, assuming the background container
+   * has already been drawn. It handles internal page breaks for exercises.
+   *
+   * @param unit The unit whose content should be rendered.
+   * @throws IOException If writing to the PDF fails.
+   */
+  private void renderUnitContent(TrainingUnit unit) throws IOException {
     textRenderer.addSpacing(PdfLayout.PADDING_UNIT_VERTICAL);
 
     String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
