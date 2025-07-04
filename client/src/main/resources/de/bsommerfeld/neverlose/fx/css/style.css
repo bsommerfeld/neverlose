@@ -33,9 +33,9 @@
 }
 
 .search-field {
-    -fx-background-radius: 15px; /* Rounded corners */
-    -fx-border-radius: 15px;
-    -fx-border-color: -accent-silver;
+    -fx-background-radius: 15px 0 0 15px; /* Rounded corners on left side only */
+    -fx-border-radius: 15px 0 0 15px;
+    -fx-border-color: transparent;
     -fx-background-color: white;
     -fx-padding: 5 10 5 10;
     -fx-prompt-text-fill: -text-secondary;
@@ -45,6 +45,29 @@
 .search-field:focused {
     -fx-border-color: -never-blue; /* Blue accent on focus */
     -fx-effect: dropshadow(gaussian, rgba(26, 58, 143, 0.3), 5, 0, 0, 1);
+}
+
+/* Search container (HBox containing search field and label) */
+.search-container {
+    -fx-background-radius: 15px; /* Rounded corners */
+    -fx-border-radius: 15px;
+    -fx-border-color: -accent-silver;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+}
+
+/* Label next to search field */
+.search-label {
+    -fx-background-color: #ececec;
+    -fx-text-fill: -text-secondary;
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-padding: 5 15 5 5;
+    -fx-background-radius: 0 15px 15px 0; /* Rounded on right side only */
+    -fx-border-radius: 0 15px 15px 0;
+    -fx-alignment: center;
+    -fx-min-width: 70;
+    -fx-pref-height: 32; /* Match the height of the search field */
+    -fx-cursor: hand;
 }
 
 /* --- Bottom Bar (Footer) --- */

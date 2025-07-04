@@ -5,6 +5,7 @@
 ### Changed
 
 - Plans in the plan list view now open with a single click. No double click required anymore.
+- Added "Search" button to search bar
 
 ### Fixed
 
@@ -13,4 +14,3 @@
 - Fixed spacing between exercises when a unit spreads across multiple pages
 
 ### Removed
-

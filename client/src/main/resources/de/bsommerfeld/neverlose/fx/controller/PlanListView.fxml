@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-
+<?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
       styleClass="plan-list-view-background" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
       fx:controller="de.bsommerfeld.neverlose.fx.controller.PlanListViewController">
@@ -14,12 +15,23 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <TextField fx:id="searchTextField" promptText="Search plans..." prefWidth="400.0"
-               styleClass="search-field" VBox.vgrow="NEVER">
+    <HBox styleClass="search-container" spacing="0">
+        <TextField fx:id="searchTextField" promptText="Search plans..." prefWidth="400.0"
+                   styleClass="search-field" VBox.vgrow="NEVER" HBox.hgrow="ALWAYS">
+            <VBox.margin>
+                <Insets bottom="10"/>
+            </VBox.margin>
+        </TextField>
+        <Label fx:id="searchLabel" HBox.hgrow="NEVER" text="Search" styleClass="search-label" onMouseClicked="#onSearch">
+            <!-- Placeholder for search icon (magnifying glass) -->
+            <!-- <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                <Image url="@/icons/search.png"/>
+            </ImageView> -->
+        </Label>
         <VBox.margin>
             <Insets bottom="10"/>
         </VBox.margin>
-    </TextField>
+    </HBox>
 
     <StackPane VBox.vgrow="ALWAYS">
         <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane">

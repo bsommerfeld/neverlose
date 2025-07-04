@@ -12,6 +12,7 @@ import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -40,8 +41,11 @@ public class PlanListViewController {
 
   @FXML private TextField searchTextField;
 
+  @FXML private Label searchLabel;
+
   private List<PlanSummary> allPlans = new ArrayList<>();
   private ChangeListener<String> searchListener;
+  private String activeSearchTerm = "";
 
   @Inject
   public PlanListViewController(
@@ -58,6 +62,27 @@ public class PlanListViewController {
 
     // Bind the search text field to the search state
     Bindings.bindBidirectional(searchTextField.textProperty(), searchState.searchTermProperty());
+  }
+
+  @FXML
+  private void onSearch(MouseEvent mouseEvent) {
+    String currentSearchTerm = searchTextField.getText();
+
+    // If the search button shows "X" (we're already filtering with this term)
+    if (Objects.equals(searchLabel.getText(), "X")) {
+      // Clear the search
+      searchTextField.clear();
+      searchLabel.setText("Search");
+      activeSearchTerm = "";
+      displayPlans(allPlans);
+    } else {
+      // Apply the search filter
+      if (!currentSearchTerm.isBlank()) {
+        activeSearchTerm = currentSearchTerm;
+        filterPlans(currentSearchTerm);
+        searchLabel.setText("X");
+      }
+    }
   }
 
   /**
@@ -178,11 +203,30 @@ public class PlanListViewController {
     }
 
     // Create and add new listener
-    searchListener = (observable, oldValue, newValue) -> filterPlans(newValue);
+    searchListener = (observable, oldValue, newValue) -> {
+      // Update the search button text based on the search term
+      if (newValue != null && !newValue.isBlank()) {
+        if (Objects.equals(newValue, activeSearchTerm)) {
+          searchLabel.setText("X");
+        } else {
+          searchLabel.setText("Search");
+        }
+      } else {
+        searchLabel.setText("Search");
+        activeSearchTerm = "";
+      }
+    };
     searchState.searchTermProperty().addListener(searchListener);
 
     // Initial filter with current search term
-    Platform.runLater(() -> filterPlans(searchState.getSearchTerm()));
+    Platform.runLater(() -> {
+      String currentTerm = searchState.getSearchTerm();
+      if (currentTerm != null && !currentTerm.isBlank()) {
+        activeSearchTerm = currentTerm;
+        filterPlans(currentTerm);
+        searchLabel.setText("X");
+      }
+    });
   }
 
   /**
