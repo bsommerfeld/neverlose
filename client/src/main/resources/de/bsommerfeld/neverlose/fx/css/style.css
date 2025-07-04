@@ -40,10 +40,14 @@
     -fx-padding: 5 10 5 10;
     -fx-prompt-text-fill: -text-secondary;
     -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+    -fx-pref-height: 32; /* Match the height of the search label */
 }
 
 .search-field:focused {
     -fx-border-color: -never-blue; /* Blue accent on focus */
+    -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(26, 58, 143, 0.3), 5, 0, 0, 1);
 }
 
@@ -54,6 +58,10 @@
     -fx-border-color: -accent-silver;
     -fx-background-color: white;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 1);
+    -fx-border-width: 1px;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
 /* Label next to search field */
@@ -68,6 +76,8 @@
     -fx-min-width: 70;
     -fx-pref-height: 32; /* Match the height of the search field */
     -fx-cursor: hand;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
 }
 
 /* --- Bottom Bar (Footer) --- */

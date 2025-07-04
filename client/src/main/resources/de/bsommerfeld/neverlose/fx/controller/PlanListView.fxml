@@ -15,19 +15,21 @@
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <HBox styleClass="search-container" spacing="0">
-        <TextField fx:id="searchTextField" promptText="Search plans..." prefWidth="400.0"
-                   styleClass="search-field" VBox.vgrow="NEVER" HBox.hgrow="ALWAYS">
-            <VBox.margin>
-                <Insets bottom="10"/>
-            </VBox.margin>
-        </TextField>
-        <Label fx:id="searchLabel" HBox.hgrow="NEVER" text="Search" styleClass="search-label" onMouseClicked="#onSearch">
-            <!-- Placeholder for search icon (magnifying glass) -->
-            <!-- <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
-                <Image url="@/icons/search.png"/>
-            </ImageView> -->
-        </Label>
+    <HBox alignment="CENTER" VBox.vgrow="NEVER">
+        <HBox styleClass="search-container" spacing="0" HBox.hgrow="NEVER">
+            <TextField fx:id="searchTextField" promptText="Search plans..." prefWidth="400.0"
+                       styleClass="search-field" VBox.vgrow="NEVER">
+                <VBox.margin>
+                    <Insets bottom="10"/>
+                </VBox.margin>
+            </TextField>
+            <Label fx:id="searchLabel" HBox.hgrow="NEVER" text="Search" styleClass="search-label" onMouseClicked="#onSearch">
+                <!-- Placeholder for search icon (magnifying glass) -->
+                <!-- <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                    <Image url="@/icons/search.png"/>
+                </ImageView> -->
+            </Label>
+        </HBox>
         <VBox.margin>
             <Insets bottom="10"/>
         </VBox.margin>
