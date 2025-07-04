@@ -4,14 +4,7 @@
 
 ### Changed
 
-- Plans in the plan list view now open with a single click. No double click required anymore.
-- Added "Search" button to search bar
-
 ### Fixed
 
-- Fixed missing unit container when rendering a PDF for a plan with a large unit which takes space over multiple pages
-- Fixed empty first page in PDF when first unit is taking space over multiple pages
-- Fixed spacing between exercises when a unit spreads across multiple pages
-- Fixed search bar now being centralized
-
 ### Removed
+
