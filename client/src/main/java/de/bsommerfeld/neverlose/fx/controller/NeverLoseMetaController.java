@@ -41,8 +41,6 @@ public class NeverLoseMetaController {
 
     // Show the home view as the default view
     showHomeView();
-
-    bottomBarPlaceholder.requestFocus(); // to get away from the search field
   }
 
   private void loadTopBar() {
@@ -83,12 +81,6 @@ public class NeverLoseMetaController {
   public void showPlanListView() {
     PlanListViewController controller = loadCenter(PlanListViewController.class);
     controller.setMetaController(this);
-
-    // Connect the TopBarController with the PlanListViewController for search functionality
-    ViewWrapper<TopBarController> topBarWrapper = viewProvider.requestView(TopBarController.class);
-    TopBarController topBarController = topBarWrapper.controller();
-    topBarController.setPlanListViewController(controller);
-
     // Refresh the plan list to ensure it's up-to-date
     controller.refreshPlans();
   }

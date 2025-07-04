@@ -36,17 +36,12 @@ public class ExerciseControl extends VBox {
 
   private final LogFacade log = LogFacadeFactory.getLogger();
   private final TrainingExercise exercise;
-  private final TextField nameField;
-  private final TextField descriptionField;
-  private final TextField durationField;
-  private final Spinner<Integer> setsSpinner;
-  private final CheckBox ballBucketCheckBox;
   private final PlanStorageService planStorageService;
-  private Consumer<TrainingExercise> onRemoveCallback;
+  private final Consumer<TrainingExercise> onRemoveCallback;
 
   // UI components for action buttons
-  private HBox actionButtonsContainer;
-  private HBox moreButtonContainer;
+  private final HBox actionButtonsContainer;
+  private final HBox moreButtonContainer;
 
   // Event handlers for mouse events
   private EventHandler<MouseEvent> mouseEnteredHandler;
@@ -93,7 +88,7 @@ public class ExerciseControl extends VBox {
     // Name field
     Label nameLabel = new Label("Name:");
     nameLabel.getStyleClass().add("exercise-label");
-    nameField = new TextField(exercise.getName());
+    TextField nameField = new TextField(exercise.getName());
     nameField.getStyleClass().add("exercise-name-field");
     nameField.textProperty().addListener((obs, oldVal, newVal) -> exercise.setName(newVal));
     GridPane.setHgrow(nameField, Priority.ALWAYS);
@@ -101,7 +96,7 @@ public class ExerciseControl extends VBox {
     // Description field
     Label descLabel = new Label("Description:");
     descLabel.getStyleClass().add("exercise-label");
-    descriptionField = new TextField(exercise.getDescription());
+    TextField descriptionField = new TextField(exercise.getDescription());
     descriptionField.getStyleClass().add("exercise-description-field");
     descriptionField
         .textProperty()
@@ -111,14 +106,14 @@ public class ExerciseControl extends VBox {
     // Duration field
     Label durationLabel = new Label("Duration:");
     durationLabel.getStyleClass().add("exercise-label");
-    durationField = new TextField(exercise.getDuration());
+    TextField durationField = new TextField(exercise.getDuration());
     durationField.getStyleClass().add("exercise-duration-field");
     durationField.textProperty().addListener((obs, oldVal, newVal) -> exercise.setDuration(newVal));
 
     // Sets spinner
     Label setsLabel = new Label("Sets:");
     setsLabel.getStyleClass().add("exercise-label");
-    setsSpinner = new Spinner<>(1, 100, exercise.getSets());
+    Spinner<Integer> setsSpinner = new Spinner<>(1, 100, exercise.getSets());
     setsSpinner.setEditable(true);
     setsSpinner.valueProperty().addListener((obs, oldVal, newVal) -> exercise.setSets(newVal));
     setsSpinner.getStyleClass().add("exercise-sets-spinner");
@@ -126,7 +121,7 @@ public class ExerciseControl extends VBox {
     // Ball bucket checkbox
     Label ballBucketLabel = new Label("Ball Bucket:");
     ballBucketLabel.getStyleClass().add("exercise-label");
-    ballBucketCheckBox = new CheckBox();
+    CheckBox ballBucketCheckBox = new CheckBox();
     ballBucketCheckBox.setSelected(exercise.isBallBucket());
     ballBucketCheckBox
         .selectedProperty()
@@ -341,43 +336,46 @@ public class ExerciseControl extends VBox {
   }
 
   /**
-   * Initializes the event handlers for mouse events but does not attach them.
-   * This allows for on-demand activation of listeners.
+   * Initializes the event handlers for mouse events but does not attach them. This allows for
+   * on-demand activation of listeners.
    */
   private void initializeEventHandlers() {
     // Create mouse entered handler
-    mouseEnteredHandler = e -> {
-      actionButtonsContainer.setVisible(true);
-      actionButtonsContainer.setManaged(true);
-      moreButtonContainer.setVisible(false);
-      moreButtonContainer.setManaged(false);
-    };
+    mouseEnteredHandler =
+        e -> {
+          actionButtonsContainer.setVisible(true);
+          actionButtonsContainer.setManaged(true);
+          moreButtonContainer.setVisible(false);
+          moreButtonContainer.setManaged(false);
+        };
 
     // Create mouse exited handler
-    mouseExitedHandler = e -> {
-      if (!actionButtonsContainer.isHover()) {
-        actionButtonsContainer.setVisible(false);
-        actionButtonsContainer.setManaged(false);
-        moreButtonContainer.setVisible(true);
-        moreButtonContainer.setManaged(true);
-      }
-    };
+    mouseExitedHandler =
+        e -> {
+          if (!actionButtonsContainer.isHover()) {
+            actionButtonsContainer.setVisible(false);
+            actionButtonsContainer.setManaged(false);
+            moreButtonContainer.setVisible(true);
+            moreButtonContainer.setManaged(true);
+          }
+        };
 
     // Create visibility change listener
-    visibilityListener = (obs, oldValue, newValue) -> {
-      if (newValue) {
-        // Component became visible, activate listeners if not already active
-        activateListeners();
-      } else {
-        // Component became invisible, deactivate listeners
-        deactivateListeners();
-      }
-    };
+    visibilityListener =
+        (obs, oldValue, newValue) -> {
+          if (newValue) {
+            // Component became visible, activate listeners if not already active
+            activateListeners();
+          } else {
+            // Component became invisible, deactivate listeners
+            deactivateListeners();
+          }
+        };
   }
 
   /**
-   * Sets up a listener to monitor visibility changes and activate/deactivate
-   * mouse listeners accordingly.
+   * Sets up a listener to monitor visibility changes and activate/deactivate mouse listeners
+   * accordingly.
    */
   private void setupVisibilityListener() {
     // Listen for visibility changes
@@ -389,9 +387,7 @@ public class ExerciseControl extends VBox {
     }
   }
 
-  /**
-   * Activates the mouse event listeners if they're not already active.
-   */
+  /** Activates the mouse event listeners if they're not already active. */
   private void activateListeners() {
     if (!listenersActive) {
       setOnMouseEntered(mouseEnteredHandler);
@@ -401,9 +397,7 @@ public class ExerciseControl extends VBox {
     }
   }
 
-  /**
-   * Deactivates the mouse event listeners if they're active.
-   */
+  /** Deactivates the mouse event listeners if they're active. */
   private void deactivateListeners() {
     if (listenersActive) {
       setOnMouseEntered(null);
@@ -414,8 +408,8 @@ public class ExerciseControl extends VBox {
   }
 
   /**
-   * Cleans up all listeners to prevent memory leaks.
-   * This should be called when the control is no longer needed.
+   * Cleans up all listeners to prevent memory leaks. This should be called when the control is no
+   * longer needed.
    */
   public void cleanup() {
     // Remove all listeners
@@ -425,8 +419,8 @@ public class ExerciseControl extends VBox {
   }
 
   /**
-   * Applies caching hints to improve layout performance.
-   * This reduces the need for frequent layout calculations.
+   * Applies caching hints to improve layout performance. This reduces the need for frequent layout
+   * calculations.
    */
   private void applyLayoutCaching() {
     // Set cache hint to SPEED for the entire control

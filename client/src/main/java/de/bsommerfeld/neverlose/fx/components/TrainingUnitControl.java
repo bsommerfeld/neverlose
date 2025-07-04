@@ -39,34 +39,19 @@ public class TrainingUnitControl extends VBox {
 
   private final LogFacade log = LogFacadeFactory.getLogger();
   private final TrainingUnit trainingUnit;
-  private final TextField nameField;
-  private final TextField descriptionField;
   private final ComboBox<Weekday> weekdayComboBox;
   private final VBox exercisesContainer;
   private final PlanStorageService planStorageService;
-  private Consumer<TrainingUnit> saveAsTemplateCallback;
-  private Consumer<TrainingUnit> onRemoveCallback;
-
-  private boolean showAllExercises = false;
-  private Button showMoreButton;
-
+  private final Consumer<TrainingUnit> saveAsTemplateCallback;
+  private final Consumer<TrainingUnit> onRemoveCallback;
+  private final Button showMoreButton;
   // Placeholder for empty exercises list
-  private Label placeholderLabel;
-
+  private final Label placeholderLabel;
   // Toggle elements for collapsible functionality
-  private Label toggleArrow;
-  private VBox contentContainer; // Container for all collapsible elements
+  private final Label toggleArrow;
+  private final VBox contentContainer; // Container for all collapsible elements
+  private boolean showAllExercises = false;
   private boolean isExpanded = true; // Default state is expanded
-
-  /**
-   * Creates a new TrainingUnitControl for the specified TrainingUnit.
-   *
-   * @param trainingUnit the TrainingUnit to represent
-   * @param planStorageService the service for loading and saving templates
-   */
-  public TrainingUnitControl(TrainingUnit trainingUnit, PlanStorageService planStorageService) {
-    this(trainingUnit, planStorageService, null, null);
-  }
 
   /**
    * Creates a new TrainingUnitControl for the specified TrainingUnit with a callback for saving as
@@ -103,7 +88,7 @@ public class TrainingUnitControl extends VBox {
     toggleArrow.setStyle("-fx-cursor: hand;"); // Hand cursor to indicate it's clickable
 
     // Name field
-    nameField = new TextField(trainingUnit.getName());
+    TextField nameField = new TextField(trainingUnit.getName());
     nameField.getStyleClass().add("unit-name-field");
     nameField.textProperty().addListener((obs, oldVal, newVal) -> trainingUnit.setName(newVal));
     HBox.setHgrow(nameField, Priority.ALWAYS);
@@ -131,7 +116,7 @@ public class TrainingUnitControl extends VBox {
         .addAll(toggleArrow, nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
 
     // Description field
-    descriptionField = new TextField(trainingUnit.getDescription());
+    TextField descriptionField = new TextField(trainingUnit.getDescription());
     descriptionField.getStyleClass().add("unit-description-field");
     descriptionField
         .textProperty()
@@ -325,9 +310,7 @@ public class TrainingUnitControl extends VBox {
     } else {
       // Show only the first 3 exercises
       int visibleCount = 0;
-      for (int i = 0; i < exercises.size(); i++) {
-        Node exercise = exercises.get(i);
-
+      for (Node exercise : exercises) {
         // Skip the placeholder
         if (exercise == placeholderLabel) continue;
 

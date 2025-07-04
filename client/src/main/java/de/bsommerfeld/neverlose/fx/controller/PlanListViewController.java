@@ -15,11 +15,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -35,8 +35,6 @@ public class PlanListViewController {
   private final PlanStorageService planStorageService;
   private final SearchState searchState;
   private NeverLoseMetaController metaController;
-
-  @FXML private ScrollPane scrollPane;
 
   @FXML private FlowPane flowPane;
 
@@ -57,8 +55,9 @@ public class PlanListViewController {
   private void initialize() {
     loadPlans();
     setupSearchListener();
+
     // Bind the search text field to the search state
-    javafx.beans.binding.Bindings.bindBidirectional(searchTextField.textProperty(), searchState.searchTermProperty());
+    Bindings.bindBidirectional(searchTextField.textProperty(), searchState.searchTermProperty());
   }
 
   /**
@@ -119,12 +118,11 @@ public class PlanListViewController {
     controller.setPlanStorageService(planStorageService);
     controller.setParentController(this);
 
-    // Add double-click event handler to open the plan
     Node planCard = viewWrapper.parent();
     planCard.addEventHandler(
         MouseEvent.MOUSE_CLICKED,
         event -> {
-          if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+          if (event.getButton() == MouseButton.PRIMARY) {
             openPlan(plan.identifier());
           }
         });
