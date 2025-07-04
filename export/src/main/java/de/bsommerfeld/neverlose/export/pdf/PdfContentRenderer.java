@@ -94,7 +94,7 @@ public class PdfContentRenderer {
      */
     private void renderPlanHeader(TrainingPlan plan) throws IOException {
         PdfTextRenderer textRenderer = documentManager.getTextRenderer();
-        
+
         String planName = Objects.toString(plan.getName(), DEFAULT_PLAN_NAME);
         textRenderer.writeStyledWrappedText(planName, PdfLayout.INDENT_UNIT_LEVEL, stylePlanTitle);
         textRenderer.addSpacing(PdfLayout.SPACING_AFTER_TITLE);
@@ -117,7 +117,7 @@ public class PdfContentRenderer {
     private void renderSeparator() throws IOException {
         PdfTextRenderer textRenderer = documentManager.getTextRenderer();
         PdfContainerRenderer containerRenderer = documentManager.getContainerRenderer();
-        
+
         float separatorHeight = 1f;
         float totalSpaceNeeded = PdfLayout.SPACING_SEPARATOR + separatorHeight;
 
@@ -141,7 +141,7 @@ public class PdfContentRenderer {
      */
     private void renderUnitsSection(TrainingPlan plan) throws IOException {
         PdfTextRenderer textRenderer = documentManager.getTextRenderer();
-        
+
         List<TrainingUnit> units =
                 plan.getTrainingUnits() != null ? plan.getTrainingUnits().getAll() : List.of();
 
@@ -168,44 +168,95 @@ public class PdfContentRenderer {
      * @throws IOException If there's an error rendering the unit
      */
     private void renderUnit(TrainingUnit unit) throws IOException {
-        // Calculate the height needed for this unit
-        float unitHeight = calculateUnitHeight(unit);
         PdfTextRenderer textRenderer = documentManager.getTextRenderer();
         PdfContainerRenderer containerRenderer = documentManager.getContainerRenderer();
 
-        // Check if we need to start a new page
-        if (textRenderer.getCurrentY() - unitHeight < PdfLayout.MARGIN) {
-            documentManager.startNewPage();
-            textRenderer = documentManager.getTextRenderer();
-            containerRenderer = documentManager.getContainerRenderer();
-        }
-
-        // Draw the container background
-        containerRenderer.drawContainer(
-                PdfLayout.MARGIN,
-                textRenderer.getCurrentY() - unitHeight,
-                PdfLayout.CONTENT_WIDTH,
-                unitHeight,
-                PdfLayout.UNIT_BORDER_RADIUS,
-                Theme.Colors.TRAINING_UNIT_BG);
-
         // Add some padding at the top
         textRenderer.addSpacing(PdfLayout.SPACING_AFTER_UNIT_DESC);
+
+        // Draw the container background for the current visible portion
+        float topY = textRenderer.getCurrentY();
+        float visibleHeight = topY - PdfLayout.MARGIN;
+        containerRenderer.drawContainer(
+                PdfLayout.MARGIN,
+                topY - visibleHeight,
+                PdfLayout.CONTENT_WIDTH,
+                visibleHeight,
+                PdfLayout.UNIT_BORDER_RADIUS,
+                Theme.Colors.TRAINING_UNIT_BG);
 
         // Write the unit content
         String unitName = Objects.toString(unit.getName(), DEFAULT_UNIT_NAME);
         String weekday = Objects.toString(unit.getWeekday(), DEFAULT_WEEKDAY);
 
         // Write unit name and weekday on separate lines
-        textRenderer.writeStyledWrappedText(unitName, PdfLayout.INDENT_UNIT_LEVEL, styleUnitHeader);
+        if (!textRenderer.writeStyledWrappedText(unitName, PdfLayout.INDENT_UNIT_LEVEL, styleUnitHeader)) {
+            // Need a new page
+            float newPageY = documentManager.startNewPage();
+            textRenderer = documentManager.getTextRenderer();
+            containerRenderer = documentManager.getContainerRenderer();
+
+            // Draw container on the new page
+            visibleHeight = newPageY - PdfLayout.MARGIN;
+            containerRenderer.drawContainer(
+                    PdfLayout.MARGIN,
+                    newPageY - visibleHeight,
+                    PdfLayout.CONTENT_WIDTH,
+                    visibleHeight,
+                    PdfLayout.UNIT_BORDER_RADIUS,
+                    Theme.Colors.TRAINING_UNIT_BG);
+
+            // Try again on the new page
+            textRenderer.writeStyledWrappedText(unitName, PdfLayout.INDENT_UNIT_LEVEL, styleUnitHeader);
+        }
+
         textRenderer.addSpacing(PdfLayout.SPACING_AFTER_UNIT_HEADER);
-        textRenderer.writeStyledWrappedText(weekday, PdfLayout.INDENT_UNIT_LEVEL, styleUnitWeekday);
+
+        if (!textRenderer.writeStyledWrappedText(weekday, PdfLayout.INDENT_UNIT_LEVEL, styleUnitWeekday)) {
+            // Need a new page
+            float newPageY = documentManager.startNewPage();
+            textRenderer = documentManager.getTextRenderer();
+            containerRenderer = documentManager.getContainerRenderer();
+
+            // Draw container on the new page
+            visibleHeight = newPageY - PdfLayout.MARGIN;
+            containerRenderer.drawContainer(
+                    PdfLayout.MARGIN,
+                    newPageY - visibleHeight,
+                    PdfLayout.CONTENT_WIDTH,
+                    visibleHeight,
+                    PdfLayout.UNIT_BORDER_RADIUS,
+                    Theme.Colors.TRAINING_UNIT_BG);
+
+            // Try again on the new page
+            textRenderer.writeStyledWrappedText(weekday, PdfLayout.INDENT_UNIT_LEVEL, styleUnitWeekday);
+        }
+
         textRenderer.addSpacing(PdfLayout.SPACING_AFTER_UNIT_WEEKDAY);
 
         String description = unit.getDescription();
         if (description != null && !description.trim().isEmpty()) {
-            textRenderer.writeStyledWrappedText(
-                    description, PdfLayout.INDENT_UNIT_LEVEL, styleUnitDesc, PdfLayout.EXTRA_LINE_SPACING);
+            if (!textRenderer.writeStyledWrappedText(
+                    description, PdfLayout.INDENT_UNIT_LEVEL, styleUnitDesc, PdfLayout.EXTRA_LINE_SPACING)) {
+                // Need a new page
+                float newPageY = documentManager.startNewPage();
+                textRenderer = documentManager.getTextRenderer();
+                containerRenderer = documentManager.getContainerRenderer();
+
+                // Draw container on the new page
+                visibleHeight = newPageY - PdfLayout.MARGIN;
+                containerRenderer.drawContainer(
+                        PdfLayout.MARGIN,
+                        newPageY - visibleHeight,
+                        PdfLayout.CONTENT_WIDTH,
+                        visibleHeight,
+                        PdfLayout.UNIT_BORDER_RADIUS,
+                        Theme.Colors.TRAINING_UNIT_BG);
+
+                // Try again on the new page
+                textRenderer.writeStyledWrappedText(
+                        description, PdfLayout.INDENT_UNIT_LEVEL, styleUnitDesc, PdfLayout.EXTRA_LINE_SPACING);
+            }
             textRenderer.addSpacing(PdfLayout.SPACING_AFTER_UNIT_DESC);
         }
 
@@ -220,7 +271,7 @@ public class PdfContentRenderer {
      */
     private void renderExercisesSection(TrainingUnit unit) throws IOException {
         PdfTextRenderer textRenderer = documentManager.getTextRenderer();
-        
+
         List<TrainingExercise> exercises =
                 unit.getTrainingExercises() != null ? unit.getTrainingExercises().getAll() : List.of();
 
@@ -259,9 +310,19 @@ public class PdfContentRenderer {
 
         // Check if we need to start a new page
         if (textRenderer.getCurrentY() - exerciseHeight < PdfLayout.MARGIN) {
-            documentManager.startNewPage();
+            float newPageY = documentManager.startNewPage();
             textRenderer = documentManager.getTextRenderer();
             containerRenderer = documentManager.getContainerRenderer();
+
+            // Draw unit container on the new page
+            float visibleHeight = newPageY - PdfLayout.MARGIN;
+            containerRenderer.drawContainer(
+                    PdfLayout.MARGIN,
+                    newPageY - visibleHeight,
+                    PdfLayout.CONTENT_WIDTH,
+                    visibleHeight,
+                    PdfLayout.UNIT_BORDER_RADIUS,
+                    Theme.Colors.TRAINING_UNIT_BG);
         }
 
         // Draw the container background
