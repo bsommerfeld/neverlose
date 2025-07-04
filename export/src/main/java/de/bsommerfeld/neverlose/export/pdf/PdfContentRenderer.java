@@ -84,6 +84,10 @@ public class PdfContentRenderer {
         renderPlanHeader(plan);
         renderSeparator();
         renderUnitsSection(plan);
+
+        // Add spacing at the end of the document to ensure proper spacing to the last page
+        PdfTextRenderer textRenderer = documentManager.getTextRenderer();
+        textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_UNITS);
     }
 
     /**
@@ -289,7 +293,11 @@ public class PdfContentRenderer {
         boolean firstExercise = true;
         for (TrainingExercise exercise : exercises) {
             if (!firstExercise) {
-                textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_EXERCISES);
+                // Add spacing between exercises, but check if we have enough space
+                // If not enough space, the spacing will be added after page break in renderExercise
+                if (textRenderer.getCurrentY() - PdfLayout.SPACING_BETWEEN_EXERCISES >= PdfLayout.MARGIN) {
+                    textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_EXERCISES);
+                }
             }
             renderExercise(exercise);
             firstExercise = false;
@@ -323,6 +331,12 @@ public class PdfContentRenderer {
                     visibleHeight,
                     PdfLayout.UNIT_BORDER_RADIUS,
                     Theme.Colors.TRAINING_UNIT_BG);
+
+            // Add spacing before the first exercise on the new page
+            textRenderer.addSpacing(PdfLayout.SPACING_BEFORE_EXERCISES);
+
+            // Add spacing between exercises on the new page
+            textRenderer.addSpacing(PdfLayout.SPACING_BETWEEN_EXERCISES);
         }
 
         // Draw the container background
