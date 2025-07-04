@@ -5,8 +5,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" spacing="10" styleClass="top-search-bar"
       prefHeight="40.0" xmlns="http://javafx.com/javafx/21"
       HBox.hgrow="ALWAYS"
@@ -15,17 +13,14 @@
         <Insets top="5" right="10" bottom="5" left="10"/>
     </padding>
 
-    <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="button">
-        <graphic>
-            <ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
-                <Image url="/icons/plan-icon.jpg"/>
-            </ImageView>
-        </graphic>
+    <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="editor-action-button">
+        <text>Home</text>
     </Button>
 
     <Region HBox.hgrow="ALWAYS"/>
 
     <TextField fx:id="searchTextField" promptText="Search plans..." HBox.hgrow="NEVER" prefWidth="400.0"
                styleClass="search-field"/>
+
     <Region HBox.hgrow="ALWAYS"/>
 </HBox>

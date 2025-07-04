@@ -39,8 +39,8 @@ public class NeverLoseMetaController {
     loadTopBar();
     loadBottomBar();
 
-    // Show the plan list view as the default view
-    showPlanListView();
+    // Show the home view as the default view
+    showHomeView();
 
     bottomBarPlaceholder.requestFocus(); // to get away from the search field
   }
@@ -71,6 +71,12 @@ public class NeverLoseMetaController {
     centerContentPlaceholder.getChildren().setAll(center);
 
     return controller;
+  }
+
+  /** Shows the home view in the center content area. */
+  public void showHomeView() {
+    HomeViewController controller = loadCenter(HomeViewController.class);
+    controller.setMetaController(this);
   }
 
   /** Shows the plan list view in the center content area. */

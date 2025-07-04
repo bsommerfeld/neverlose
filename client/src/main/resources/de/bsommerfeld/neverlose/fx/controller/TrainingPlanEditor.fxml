@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane"
@@ -26,67 +27,70 @@
         </HBox>
     </top>
 
-    <!-- Center Content - Document-like View -->
+    <!-- Center Content with Overlay Menu -->
     <center>
-        <AnchorPane styleClass="editor-background">
-            <ScrollPane fitToWidth="true" styleClass="editor-scroll-pane" AnchorPane.topAnchor="0.0"
-                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
-                <VBox alignment="TOP_CENTER" spacing="20">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
+        <StackPane>
+            <!-- Main Content -->
+            <AnchorPane styleClass="editor-background">
+                <ScrollPane fitToWidth="true" styleClass="editor-scroll-pane" AnchorPane.topAnchor="0.0"
+                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                    <VBox alignment="TOP_CENTER" spacing="20">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
 
-                    <!-- Document-like Container -->
-                    <VBox styleClass="editor-document" maxWidth="800" prefWidth="800">
-                        <!-- Header Section -->
-                        <VBox styleClass="editor-header" spacing="10">
-                            <padding>
-                                <Insets top="20" right="20" bottom="20" left="20"/>
-                            </padding>
+                        <!-- Document-like Container -->
+                        <VBox styleClass="editor-document" maxWidth="800" prefWidth="800">
+                            <!-- Header Section -->
+                            <VBox styleClass="editor-header" spacing="10">
+                                <padding>
+                                    <Insets top="20" right="20" bottom="20" left="20"/>
+                                </padding>
 
-                            <!-- Plan Name -->
-                            <TextField fx:id="planNameField" styleClass="editor-title-field"
-                                       promptText="Training Plan Name">
-                                <font>
-                                    <Font size="24.0"/>
-                                </font>
-                            </TextField>
-
-                            <!-- Plan Description -->
-                            <TextField fx:id="planDescriptionField" styleClass="editor-description-field"
-                                       promptText="Training Plan Description">
-                                <font>
-                                    <Font size="16.0"/>
-                                </font>
-                            </TextField>
-                        </VBox>
-
-                        <!-- Training Units Container -->
-                        <VBox fx:id="trainingUnitsContainer" spacing="20" styleClass="training-units-container">
-                            <padding>
-                                <Insets top="20" right="20" bottom="20" left="20"/>
-                            </padding>
-
-                            <!-- Add Unit Buttons -->
-                            <HBox alignment="CENTER" spacing="10">
-                                <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit"
-                                        styleClass="add-unit-button">
+                                <!-- Plan Name -->
+                                <TextField fx:id="planNameField" styleClass="editor-title-field"
+                                           promptText="Training Plan Name">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="24.0"/>
                                     </font>
-                                </Button>
-                                <Button fx:id="addFromTemplateButton" text="Load"
-                                        onAction="#handleAddFromTemplate"
-                                        styleClass="add-from-template-button">
+                                </TextField>
+
+                                <!-- Plan Description -->
+                                <TextField fx:id="planDescriptionField" styleClass="editor-description-field"
+                                           promptText="Training Plan Description">
                                     <font>
-                                        <Font size="14.0"/>
+                                        <Font size="16.0"/>
                                     </font>
-                                </Button>
-                            </HBox>
+                                </TextField>
+                            </VBox>
+
+                            <!-- Training Units Container -->
+                            <VBox fx:id="trainingUnitsContainer" spacing="20" styleClass="training-units-container">
+                                <padding>
+                                    <Insets top="20" right="20" bottom="20" left="20"/>
+                                </padding>
+
+                                <!-- Add Unit Buttons -->
+                                <HBox alignment="CENTER" spacing="10">
+                                    <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit"
+                                            styleClass="add-unit-button">
+                                        <font>
+                                            <Font size="18.0"/>
+                                        </font>
+                                    </Button>
+                                    <Button fx:id="addFromTemplateButton" text="Load"
+                                            onAction="#handleAddFromTemplate"
+                                            styleClass="add-from-template-button">
+                                        <font>
+                                            <Font size="14.0"/>
+                                        </font>
+                                    </Button>
+                                </HBox>
+                            </VBox>
                         </VBox>
                     </VBox>
-                </VBox>
-            </ScrollPane>
-        </AnchorPane>
+                </ScrollPane>
+            </AnchorPane>
+        </StackPane>
     </center>
 </BorderPane>

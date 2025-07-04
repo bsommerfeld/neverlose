@@ -43,14 +43,16 @@ public class TopBarController {
     this.planListViewController = planListViewController;
   }
 
+
   /**
    * Handles the home button click event.
+   * Navigates to the home view.
    */
   @FXML
   private void handleHomeButton() {
     log.debug("Home button clicked");
     viewProvider.triggerViewChange(NeverLoseMetaController.class, controller -> {
-      controller.showPlanListView();
+      controller.showHomeView();
     });
   }
 }
