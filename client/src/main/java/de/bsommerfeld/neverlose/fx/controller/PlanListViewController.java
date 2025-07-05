@@ -21,6 +21,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -44,6 +45,8 @@ public class PlanListViewController {
 
   @FXML private Label searchLabel;
 
+  @FXML private ScrollPane scrollPane;
+
   private List<PlanSummary> allPlans = new ArrayList<>();
   private ChangeListener<String> searchListener;
   private String activeSearchTerm = "";
@@ -63,6 +66,12 @@ public class PlanListViewController {
 
     // Bind the search text field to the search state
     Bindings.bindBidirectional(searchTextField.textProperty(), searchState.searchTermProperty());
+
+    // Ensure FlowPane is properly centered
+    flowPane.setAlignment(javafx.geometry.Pos.CENTER);
+
+    // Immer Scrollbar anzeigen, wenn nötig
+    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
   }
 
   @FXML
@@ -86,10 +95,10 @@ public class PlanListViewController {
     }
   }
 
-  private void applySearchFilter(boolean currentSearchTerm, String currentSearchTerm1) {
-    if (currentSearchTerm) {
-      activeSearchTerm = currentSearchTerm1;
-      filterPlans(currentSearchTerm1);
+  private void applySearchFilter(boolean isNotBlank, String searchTerm) {
+    if (isNotBlank) {
+      activeSearchTerm = searchTerm;
+      filterPlans(searchTerm);
       searchLabel.setText("X");
     }
   }

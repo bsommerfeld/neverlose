@@ -7,8 +7,8 @@
 ### Changed
 
 - When saving a plan the user doesn't get navigated back to the PlanListView anymore
+- Made search bar a bit more modern
 
 ### Fixed
 
 ### Removed
-
