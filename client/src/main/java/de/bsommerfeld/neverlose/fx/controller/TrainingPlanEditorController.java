@@ -3,6 +3,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.fx.components.TrainingUnitControl;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -34,9 +35,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -59,6 +57,7 @@ public class TrainingPlanEditorController {
 
   private final PlanStorageService planStorageService;
   private final ExportService exportService;
+  private final NotificationService notificationService;
   // Map to store the expanded state of each unit, keyed by the unit's ID
   private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
   // Timeline for throttling scroll events to improve performance
@@ -78,12 +77,16 @@ public class TrainingPlanEditorController {
    *
    * @param planStorageService the service for saving and loading training plans
    * @param exportService the service for exporting training plans to PDF
+   * @param notificationService the service for displaying notifications
    */
   @Inject
   public TrainingPlanEditorController(
-      PlanStorageService planStorageService, ExportService exportService) {
+      PlanStorageService planStorageService,
+      ExportService exportService,
+      NotificationService notificationService) {
     this.planStorageService = planStorageService;
     this.exportService = exportService;
+    this.notificationService = notificationService;
   }
 
   /** Initializes the controller after FXML fields are injected. */
@@ -240,7 +243,11 @@ public class TrainingPlanEditorController {
   private void addTrainingUnitToUI(TrainingUnit unit) {
     TrainingUnitControl unitControl =
         new TrainingUnitControl(
-            unit, planStorageService, this::saveUnitAsTemplate, this::removeTrainingUnit);
+            unit,
+            planStorageService,
+            this::saveUnitAsTemplate,
+            this::removeTrainingUnit,
+            notificationService);
 
     // Apply the stored expanded state if available
     Boolean expandedState = unitExpandedStates.get(unit.getId());
@@ -277,38 +284,62 @@ public class TrainingPlanEditorController {
 
       if (existingUnitId.isPresent() && !existingUnitId.get().equals(unit.getId())) {
         // A unit with this name exists but has a different ID
+        // We need to create a final copy of the unit for use in the lambda
+        final TrainingUnit finalUnit = unit;
+
         // Show confirmation dialog before overwriting
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Overwrite Template?");
-        confirmDialog.setHeaderText(
-            "A Unit template with the name '" + unitName + "' already exists.");
-        confirmDialog.setContentText("Do you really want to overwrite the existing template?");
+        notificationService.showConfirmation(
+            "Overwrite Template?",
+            "A Unit template with the name '"
+                + unitName
+                + "' already exists.\n\nDo you really want to overwrite the existing template?",
+            () -> {
+              // This code runs when the user confirms
+              log.info("User confirmed overwriting unit template with name '{}'.", unitName);
 
-        // Apply application stylesheet to the dialog
-        DialogPane dialogPane = confirmDialog.getDialogPane();
-        dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+              // Use the existing ID for the template unit
+              TrainingUnit updatedUnit =
+                  new TrainingUnit(
+                      existingUnitId.get(),
+                      unitName,
+                      finalUnit.getDescription(),
+                      finalUnit.getWeekday(),
+                      finalUnit.getTrainingExercises());
 
-        // Wait for user response
-        Optional<ButtonType> result = confirmDialog.showAndWait();
+              // Continue with the save operation using the updated unit
+              saveUnitAsTemplateInternal(updatedUnit);
+            },
+            () -> {
+              // This code runs when the user cancels
+              log.info("User canceled overwriting unit template with name '{}'.", unitName);
+              // No further action needed
+            });
 
-        // If user confirmed, update the existing unit
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-          log.info("User confirmed overwriting unit template with name '{}'.", unitName);
-          // Use the existing ID for the template unit
-          unit =
-              new TrainingUnit(
-                  existingUnitId.get(),
-                  unitName,
-                  unit.getDescription(),
-                  unit.getWeekday(),
-                  unit.getTrainingExercises());
-        } else {
-          // User canceled, abort save operation
-          log.info("User canceled overwriting unit template with name '{}'.", unitName);
-          return;
-        }
+        // Return early since we'll continue in the callback if confirmed
+        return;
       }
 
+      // If we get here, there's no conflict, so continue with the save operation
+      saveUnitAsTemplateInternal(unit);
+    } catch (Exception e) {
+      log.error("Error saving training unit as template", e);
+
+      // Show error message
+      showStyledAlert(
+          Alert.AlertType.ERROR,
+          "Error while saving template",
+          "Saving the template has failed.",
+          "An error occurred: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Internal method to save a training unit as a template after any confirmation dialogs.
+   *
+   * @param unit the training unit to save as a template
+   */
+  private void saveUnitAsTemplateInternal(TrainingUnit unit) {
+    try {
       // Create a new unit with the same ID to ensure it overwrites any existing template with the
       // same ID
       TrainingUnit templateUnit =
@@ -411,7 +442,8 @@ public class TrainingPlanEditorController {
   private void handleAddFromTemplate() {
     try {
       // Create the controller instance with the required dependencies
-      TemplateBrowserController controller = new TemplateBrowserController(planStorageService);
+      TemplateBrowserController controller =
+          new TemplateBrowserController(planStorageService, notificationService);
 
       // Load the template browser view
       FXMLLoader loader =
@@ -498,36 +530,64 @@ public class TrainingPlanEditorController {
 
       if (existingPlanId != null && !existingPlanId.equals(trainingPlan.getId())) {
         // A plan with this name exists but has a different ID
+        // We need to create final copies of the variables for use in the lambda
+        final String finalPlanName = planName;
+        final UUID finalExistingPlanId = existingPlanId;
+        final TrainingPlan finalTrainingPlan = trainingPlan;
+
         // Show confirmation dialog before overwriting
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Overwrite Plan?");
-        confirmDialog.setHeaderText("A Plan with the name '" + planName + "' already exists.");
-        confirmDialog.setContentText("Do you really want to overwrite the existing plan?");
+        notificationService.showConfirmation(
+            "Overwrite Plan?",
+            "A Plan with the name '"
+                + planName
+                + "' already exists.\n\nDo you really want to overwrite the existing plan?",
+            () -> {
+              // This code runs when the user confirms
+              log.info("User confirmed overwriting plan with name '{}'.", finalPlanName);
 
-        // Apply application stylesheet to the dialog
-        DialogPane dialogPane = confirmDialog.getDialogPane();
-        dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+              // Update the existing plan
+              TrainingPlan updatedPlan =
+                  new TrainingPlan(
+                      finalExistingPlanId,
+                      finalPlanName,
+                      finalTrainingPlan.getDescription(),
+                      finalTrainingPlan.getTrainingUnits());
 
-        // Wait for user response
-        Optional<ButtonType> result = confirmDialog.showAndWait();
+              // Continue with the save operation using the updated plan
+              savePlanInternal(updatedPlan);
+            },
+            () -> {
+              // This code runs when the user cancels
+              log.info("User canceled overwriting plan with name '{}'.", finalPlanName);
+              // No further action needed
+            });
 
-        // If user confirmed, update the existing plan
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-          log.info("User confirmed overwriting plan with name '{}'.", planName);
-          trainingPlan =
-              new TrainingPlan(
-                  existingPlanId,
-                  planName,
-                  trainingPlan.getDescription(),
-                  trainingPlan.getTrainingUnits());
-        } else {
-          // User canceled, abort save operation
-          log.info("User canceled overwriting plan with name '{}'.", planName);
-          return;
-        }
+        // Return early since we'll continue in the callback if confirmed
+        return;
       }
 
-      String identifier = planStorageService.savePlan(trainingPlan);
+      // If we get here, there's no conflict, so continue with the save operation
+      savePlanInternal(trainingPlan);
+    } catch (Exception e) {
+      log.error("Error saving training plan", e);
+
+      // Show error message
+      showStyledAlert(
+          Alert.AlertType.ERROR,
+          "Save Error",
+          "The save operation failed.",
+          "An error occurred while saving the plan: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Internal method to save a training plan after any confirmation dialogs.
+   *
+   * @param plan the training plan to save
+   */
+  private void savePlanInternal(TrainingPlan plan) {
+    try {
+      String identifier = planStorageService.savePlan(plan);
       log.info("Training plan saved successfully with identifier: {}", identifier);
 
       // Show success message
@@ -624,7 +684,7 @@ public class TrainingPlanEditorController {
   }
 
   /**
-   * Creates and shows an Alert with the application's stylesheet applied.
+   * Creates and shows a notification with the given parameters.
    *
    * @param alertType the type of the alert
    * @param title the title of the alert
@@ -633,26 +693,39 @@ public class TrainingPlanEditorController {
    */
   private void showStyledAlert(
       Alert.AlertType alertType, String title, String headerText, String contentText) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
-    alert.setContentText(contentText);
+    String displayTitle = title;
+    String displayContent =
+        headerText != null && !headerText.isEmpty() ? headerText + "\n" + contentText : contentText;
 
-    DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
-
-    alert.showAndWait();
+    switch (alertType) {
+      case INFORMATION:
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+      case WARNING:
+        notificationService.showWarning(displayTitle, displayContent);
+        break;
+      case ERROR:
+        notificationService.showError(displayTitle, displayContent);
+        break;
+      case CONFIRMATION:
+        // For confirmation, we should use a different method
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+      default:
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+    }
   }
 
   /**
-   * Creates and shows an Alert with a hyperlink and the application's stylesheet applied.
+   * Creates and shows a notification with a button to open a file.
    *
    * @param alertType the type of the alert
    * @param title the title of the alert
    * @param headerText the header text (can be null)
-   * @param contentText the content text to display above the hyperlink
-   * @param linkText the text to display for the hyperlink
-   * @param file the file to open when the hyperlink is clicked
+   * @param contentText the content text to display
+   * @param linkText the text to display for the button
+   * @param file the file to open when the button is clicked
    */
   private void showStyledAlertWithLink(
       Alert.AlertType alertType,
@@ -661,18 +734,18 @@ public class TrainingPlanEditorController {
       String contentText,
       String linkText,
       File file) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(headerText);
+    String displayTitle = title;
+    String displayContent =
+        headerText != null && !headerText.isEmpty() ? headerText + "\n" + contentText : contentText;
 
-    // Create a VBox to hold the content text and hyperlink
-    VBox content = new VBox(10); // 10px spacing between elements
-    content.getChildren().add(new Text(contentText));
-
-    // Create hyperlink
-    Hyperlink hyperlink = new Hyperlink(linkText);
-    hyperlink.setOnAction(
-        e -> {
+    // Use a confirmation notification with custom button text
+    notificationService.showConfirmation(
+        displayTitle,
+        displayContent,
+        linkText,
+        "Close",
+        () -> {
+          // Action when the "Open File" button is clicked
           try {
             Desktop.getDesktop().open(file);
           } catch (IOException ex) {
@@ -683,16 +756,8 @@ public class TrainingPlanEditorController {
                 null,
                 "Could not open the file: " + ex.getMessage());
           }
-        });
-
-    content.getChildren().add(hyperlink);
-
-    // Set the custom content
-    alert.getDialogPane().setContent(content);
-
-    DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().addAll(rootPane.getScene().getStylesheets());
-
-    alert.showAndWait();
+        },
+        null // No action needed for the Close button
+        );
   }
 }

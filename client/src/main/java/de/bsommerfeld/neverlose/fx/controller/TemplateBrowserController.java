@@ -2,6 +2,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.controller.base.AbstractBrowserController;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.persistence.model.UnitSummary;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
@@ -23,10 +24,11 @@ public class TemplateBrowserController
    * Constructor for Guice injection.
    *
    * @param planStorageService the service for loading and managing templates
+   * @param notificationService the service for displaying notifications
    */
   @Inject
-  public TemplateBrowserController(PlanStorageService planStorageService) {
-    super(planStorageService);
+  public TemplateBrowserController(PlanStorageService planStorageService, NotificationService notificationService) {
+    super(planStorageService, notificationService);
   }
 
   @Override

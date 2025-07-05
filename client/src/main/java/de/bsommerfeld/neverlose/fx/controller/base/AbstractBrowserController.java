@@ -1,5 +1,6 @@
 package de.bsommerfeld.neverlose.fx.controller.base;
 
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.util.DialogUtils;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -30,6 +31,7 @@ public abstract class AbstractBrowserController<S, T, C> {
 
   protected final LogFacade log = LogFacadeFactory.getLogger();
   protected final PlanStorageService planStorageService;
+  protected final NotificationService notificationService;
 
   @FXML protected BorderPane rootPane;
 
@@ -41,9 +43,11 @@ public abstract class AbstractBrowserController<S, T, C> {
    * Constructor for Guice injection.
    *
    * @param planStorageService the service for loading and managing templates
+   * @param notificationService the service for displaying notifications
    */
-  protected AbstractBrowserController(PlanStorageService planStorageService) {
+  protected AbstractBrowserController(PlanStorageService planStorageService, NotificationService notificationService) {
     this.planStorageService = planStorageService;
+    this.notificationService = notificationService;
   }
 
   /** Initializes the controller after FXML fields are injected. */
@@ -88,7 +92,8 @@ public abstract class AbstractBrowserController<S, T, C> {
           "Error Loading",
           "The templates could not be loaded.",
           "An error occurred: " + e.getMessage(),
-          rootPane);
+          rootPane,
+          notificationService);
     }
   }
 
@@ -145,7 +150,8 @@ public abstract class AbstractBrowserController<S, T, C> {
             "Template Not Found",
             null,
             "The selected template could not be loaded.",
-            rootPane);
+            rootPane,
+            notificationService);
       }
     } catch (IOException e) {
       log.error("Error loading template {}", templateId, e);
@@ -154,7 +160,8 @@ public abstract class AbstractBrowserController<S, T, C> {
           "Error Loading",
           "The template could not be loaded.",
           "An error occurred: " + e.getMessage(),
-          rootPane);
+          rootPane,
+          notificationService);
     }
   }
 
@@ -170,7 +177,8 @@ public abstract class AbstractBrowserController<S, T, C> {
             getDeleteDialogTitle(),
             "Do you really want to delete this template?",
             "This action cannot be undone.",
-            rootPane);
+            rootPane,
+            notificationService);
 
     // If user confirmed, delete the template
     if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -189,7 +197,8 @@ public abstract class AbstractBrowserController<S, T, C> {
               "Template Not Found",
               null,
               "The template to be deleted could not be found.",
-              rootPane);
+              rootPane,
+              notificationService);
         }
       } catch (IOException e) {
         log.error("Error deleting template {}", templateId, e);
@@ -198,7 +207,8 @@ public abstract class AbstractBrowserController<S, T, C> {
             "Error Deleting",
             "The template could not be deleted.",
             "An error occurred: " + e.getMessage(),
-            rootPane);
+            rootPane,
+            notificationService);
       }
     }
   }

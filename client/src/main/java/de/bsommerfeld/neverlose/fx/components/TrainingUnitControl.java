@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.components;
 
 import de.bsommerfeld.neverlose.fx.controller.ExerciseTemplateBrowserController;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
@@ -50,6 +51,7 @@ public class TrainingUnitControl extends VBox {
   // Toggle elements for collapsible functionality
   private final Label toggleArrow;
   private final VBox contentContainer; // Container for all collapsible elements
+  private final NotificationService notificationService;
   private boolean showAllExercises = false;
   private boolean isExpanded = true; // Default state is expanded
 
@@ -67,11 +69,13 @@ public class TrainingUnitControl extends VBox {
       TrainingUnit trainingUnit,
       PlanStorageService planStorageService,
       Consumer<TrainingUnit> saveAsTemplateCallback,
-      Consumer<TrainingUnit> onRemoveCallback) {
+      Consumer<TrainingUnit> onRemoveCallback,
+      NotificationService notificationService) {
     this.trainingUnit = trainingUnit;
     this.planStorageService = planStorageService;
     this.saveAsTemplateCallback = saveAsTemplateCallback;
     this.onRemoveCallback = onRemoveCallback;
+    this.notificationService = notificationService;
 
     // Configure the VBox
     setSpacing(10);
@@ -445,7 +449,7 @@ public class TrainingUnitControl extends VBox {
                       "/de/bsommerfeld/neverlose/fx/controller/ExerciseTemplateBrowser.fxml"));
       // Set the controller factory to create the controller with the PlanStorageService
       loader.setControllerFactory(
-          param -> new ExerciseTemplateBrowserController(planStorageService));
+          param -> new ExerciseTemplateBrowserController(planStorageService, notificationService));
       Parent root = loader.load();
 
       // Get the controller and set the callback

@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.state.SearchState;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
@@ -37,6 +38,7 @@ public class PlanListViewController {
   private final ViewProvider viewProvider;
   private final PlanStorageService planStorageService;
   private final SearchState searchState;
+  private final NotificationService notificationService;
   private NeverLoseMetaController metaController;
 
   @FXML private FlowPane flowPane;
@@ -53,10 +55,12 @@ public class PlanListViewController {
 
   @Inject
   public PlanListViewController(
-      ViewProvider viewProvider, PlanStorageService planStorageService, SearchState searchState) {
+      ViewProvider viewProvider, PlanStorageService planStorageService, SearchState searchState,
+      NotificationService notificationService) {
     this.viewProvider = viewProvider;
     this.planStorageService = planStorageService;
     this.searchState = searchState;
+    this.notificationService = notificationService;
   }
 
   @FXML
@@ -160,6 +164,7 @@ public class PlanListViewController {
     controller.setPlan(plan);
     controller.setPlanStorageService(planStorageService);
     controller.setParentController(this);
+    controller.setNotificationService(notificationService);
 
     Node planCard = viewWrapper.parent();
     planCard.addEventHandler(

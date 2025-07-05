@@ -1,11 +1,14 @@
 package de.bsommerfeld.neverlose.fx.util;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
+import de.bsommerfeld.neverlose.fx.components.NotificationController.NotificationType;
 
 /**
  * Utility class for creating and showing dialog windows. Centralizes dialog creation and styling to
@@ -25,17 +28,34 @@ public final class DialogUtils {
    * @param header the header text of the alert (can be null)
    * @param content the content text of the alert
    * @param styleSource the parent node to get stylesheets from
+   * @param notificationService the notification service to use
    */
   public static void showAlert(
-      Alert.AlertType alertType, String title, String header, String content, Parent styleSource) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(header);
-    alert.setContentText(content);
+      Alert.AlertType alertType, String title, String header, String content, Parent styleSource,
+      NotificationService notificationService) {
 
-    applyStylesheets(alert.getDialogPane(), styleSource);
+    // Use the notification service instead of Alert
+    String displayTitle = title;
+    String displayContent = header != null && !header.isEmpty() ? header + "\n" + content : content;
 
-    alert.showAndWait();
+    switch (alertType) {
+      case INFORMATION:
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+      case WARNING:
+        notificationService.showWarning(displayTitle, displayContent);
+        break;
+      case ERROR:
+        notificationService.showError(displayTitle, displayContent);
+        break;
+      case CONFIRMATION:
+        // For confirmation, we should use showConfirmationDialog instead
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+      default:
+        notificationService.showInfo(displayTitle, displayContent);
+        break;
+    }
   }
 
   /**
@@ -45,18 +65,34 @@ public final class DialogUtils {
    * @param header the header text of the dialog
    * @param content the content text of the dialog
    * @param styleSource the parent node to get stylesheets from
+   * @param notificationService the notification service to use
    * @return an Optional containing the user's response (ButtonType.OK if confirmed)
    */
   public static Optional<ButtonType> showConfirmationDialog(
-      String title, String header, String content, Parent styleSource) {
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmDialog.setTitle(title);
-    confirmDialog.setHeaderText(header);
-    confirmDialog.setContentText(content);
+      String title, String header, String content, Parent styleSource,
+      NotificationService notificationService) {
 
-    applyStylesheets(confirmDialog.getDialogPane(), styleSource);
+    // Create a CompletableFuture to handle the asynchronous response
+    CompletableFuture<Boolean> future = new CompletableFuture<>();
 
-    return confirmDialog.showAndWait();
+    String displayContent = header != null && !header.isEmpty() ? header + "\n" + content : content;
+
+    notificationService.showConfirmation(
+        title,
+        displayContent,
+        "OK",
+        "Cancel",
+        () -> future.complete(true),
+        () -> future.complete(false));
+
+    // Try to get the result synchronously to maintain compatibility with the old API
+    try {
+      boolean result = future.get();
+      return result ? Optional.of(ButtonType.OK) : Optional.of(ButtonType.CANCEL);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Optional.empty();
+    }
   }
 
   /**

@@ -1,5 +1,6 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -26,6 +27,7 @@ public class PlanCardController {
   private PlanSummary plan;
   private PlanStorageService planStorageService;
   private PlanListViewController parentController;
+  private NotificationService notificationService;
 
   /**
    * Sets the plan to display in this card.
@@ -65,6 +67,15 @@ public class PlanCardController {
   }
 
   /**
+   * Sets the notification service for this controller.
+   *
+   * @param notificationService the notification service
+   */
+  public void setNotificationService(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
+
+  /**
    * Handles the delete button action. Shows a confirmation dialog and deletes the plan if
    * confirmed.
    */
@@ -76,37 +87,35 @@ public class PlanCardController {
       return;
     }
 
-    // Show confirmation dialog
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmDialog.setTitle("Delete Plan");
-    confirmDialog.setHeaderText("Delete Plan \"" + plan.name() + "\"?");
-    confirmDialog.setContentText(
-        "Do you really want to delete this plan? This action cannot be made undo.");
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = confirmDialog.getDialogPane();
-    if (deleteButton.getScene() != null) {
-      dialogPane.getStylesheets().addAll(deleteButton.getScene().getStylesheets());
+    if (notificationService == null) {
+      log.error("Cannot show confirmation dialog: notificationService is null");
+      return;
     }
 
-    Optional<ButtonType> result = confirmDialog.showAndWait();
-    if (result.isPresent() && result.get() == ButtonType.OK) {
-      try {
-        boolean deleted = planStorageService.deletePlan(plan.identifier());
-        if (deleted) {
-          log.info("Successfully deleted plan: {}", plan.name());
-          // Refresh the plan list view
-          parentController.refreshPlans();
-        } else {
-          log.warn("Failed to delete plan: {}", plan.name());
-          showErrorAlert("Error", "The plan could not be deleted.");
-        }
-      } catch (IOException e) {
-        log.error("Error deleting plan: {}", plan.name(), e);
-        showErrorAlert(
-            "Error", "An error occured while trying to delete the plan: " + e.getMessage());
-      }
-    }
+    // Show confirmation dialog using NotificationService
+    notificationService.showConfirmation(
+        "Delete Plan",
+        "Delete Plan \"" + plan.name() + "\"?\n\nDo you really want to delete this plan? This action cannot be made undo.",
+        () -> {
+          // This code runs when the user confirms
+          try {
+            boolean deleted = planStorageService.deletePlan(plan.identifier());
+            if (deleted) {
+              log.info("Successfully deleted plan: {}", plan.name());
+              // Refresh the plan list view
+              parentController.refreshPlans();
+            } else {
+              log.warn("Failed to delete plan: {}", plan.name());
+              showErrorAlert("Error", "The plan could not be deleted.");
+            }
+          } catch (IOException e) {
+            log.error("Error deleting plan: {}", plan.name(), e);
+            showErrorAlert(
+                "Error", "An error occured while trying to delete the plan: " + e.getMessage());
+          }
+        },
+        null // No action on cancel
+    );
   }
 
   /**
@@ -116,17 +125,10 @@ public class PlanCardController {
    * @param message the alert message
    */
   private void showErrorAlert(String title, String message) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(title);
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = alert.getDialogPane();
-    if (deleteButton.getScene() != null) {
-      dialogPane.getStylesheets().addAll(deleteButton.getScene().getStylesheets());
+    if (notificationService != null) {
+      notificationService.showError(title, message);
+    } else {
+      log.error("Cannot show error alert: notificationService is null. Error: {} - {}", title, message);
     }
-
-    alert.showAndWait();
   }
 }
