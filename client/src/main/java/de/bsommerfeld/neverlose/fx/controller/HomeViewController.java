@@ -1,5 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
+import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -11,8 +13,13 @@ import javafx.fxml.FXML;
 public class HomeViewController {
 
   private static final LogFacade log = LogFacadeFactory.getLogger();
-
+  private final NotificationService notificationService;
   private NeverLoseMetaController metaController;
+
+  @Inject
+  public HomeViewController(NotificationService notificationService) {
+    this.notificationService = notificationService;
+  }
 
   /**
    * Sets a reference to the meta controller for navigation.
@@ -44,6 +51,10 @@ public class HomeViewController {
     if (metaController != null) {
       TrainingPlan newPlan = new TrainingPlan("New Training Plan", "Description");
       metaController.showTrainingPlanEditor(newPlan);
+
+      // Show a success notification
+      notificationService.showSuccess(
+          "Plan Created", "A new training plan has been created successfully.");
     } else {
       log.error("Meta controller not set, cannot create new plan");
     }

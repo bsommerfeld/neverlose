@@ -1244,3 +1244,107 @@
 .bottom-bar-placeholder {
     -fx-hgrow: ALWAYS;
 }
+
+/* --- Notification Styles --- */
+.notification-container {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0, 3);
+    -fx-opacity: 0.95;
+    -fx-max-width: 350;
+    -fx-min-width: 250;
+}
+
+.notification {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: -accent-silver;
+    -fx-border-width: 1px;
+    -fx-spacing: 5;
+}
+
+.notification-title {
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -text-primary;
+}
+
+.notification-message {
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-font-size: 14px;
+    -fx-text-fill: -text-secondary;
+}
+
+.notification-close-button {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+    -fx-cursor: hand;
+}
+
+.notification-close-button:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.1);
+    -fx-background-radius: 50%;
+}
+
+.notification-close-icon {
+    -fx-stroke: -text-secondary;
+    -fx-stroke-width: 2;
+}
+
+.notification-icon-container {
+    -fx-background-radius: 50%;
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+    -fx-max-width: 24;
+    -fx-max-height: 24;
+    -fx-alignment: center;
+}
+
+.notification-icon {
+    -fx-fill: white;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.notification-info {
+    -fx-background-color: #3498db;
+}
+
+.notification-success {
+    -fx-background-color: #2ecc71;
+}
+
+.notification-warning {
+    -fx-background-color: #f39c12;
+}
+
+.notification-error {
+    -fx-background-color: #e74c3c;
+}
+
+.notification-button {
+    -fx-font-family: "Lato, 'Segoe UI', System";
+    -fx-font-size: 13px;
+    -fx-padding: 5 10;
+    -fx-cursor: hand;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+.notification-confirm-button {
+    -fx-text-fill: white;
+    -fx-background-color: #2ecc71;
+}
+
+.notification-confirm-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+.notification-cancel-button {
+    -fx-text-fill: -text-primary;
+    -fx-background-color: #ecf0f1;
+}
+
+.notification-cancel-button:hover {
+    -fx-background-color: #bdc3c7;
+}

@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
@@ -9,12 +10,14 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /** Controller for the meta view. */
 @View
 public class NeverLoseMetaController {
 
   private final ViewProvider viewProvider;
+  private final NotificationService notificationService;
 
   @FXML private HBox topBarPlaceholder;
 
@@ -22,9 +25,12 @@ public class NeverLoseMetaController {
 
   @FXML private HBox bottomBarPlaceholder;
 
+  @FXML private VBox notificationContainer;
+
   @Inject
-  public NeverLoseMetaController(ViewProvider viewProvider) {
+  public NeverLoseMetaController(ViewProvider viewProvider, NotificationService notificationService) {
     this.viewProvider = viewProvider;
+    this.notificationService = notificationService;
   }
 
   private static void setAnchor(Parent center) {
@@ -38,6 +44,13 @@ public class NeverLoseMetaController {
   private void initialize() {
     loadTopBar();
     loadBottomBar();
+
+    // Make the notification container NOT transparent for mouse events
+    // so that notifications can be clicked
+    notificationContainer.setMouseTransparent(false);
+
+    // Initialize the notification service
+    notificationService.init(notificationContainer);
 
     // Show the home view as the default view
     showHomeView();
