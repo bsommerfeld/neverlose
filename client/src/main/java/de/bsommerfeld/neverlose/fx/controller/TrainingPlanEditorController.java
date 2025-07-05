@@ -102,30 +102,36 @@ public class TrainingPlanEditorController {
   }
 
   /**
-   * Sets up scroll event throttling to improve performance.
-   * This reduces layout updates to 60 FPS (16ms interval) during scrolling.
+   * Sets up scroll event throttling to improve performance. This reduces layout updates to 60 FPS
+   * (16ms interval) during scrolling.
    */
   private void setupScrollThrottling() {
     // Configure the timeline for throttling (60 FPS = 16ms interval)
-    scrollThrottleTimeline.getKeyFrames().add(
-        new KeyFrame(Duration.millis(16), event -> {
-          // Only update if there's a pending update
-          if (scrollUpdatePending.getAndSet(false)) {
-            // Apply any pending layout updates
-            rootPane.layout();
-            log.debug("Applied throttled layout update during scroll");
-          }
-        })
-    );
+    scrollThrottleTimeline
+        .getKeyFrames()
+        .add(
+            new KeyFrame(
+                Duration.millis(16),
+                event -> {
+                  // Only update if there's a pending update
+                  if (scrollUpdatePending.getAndSet(false)) {
+                    // Apply any pending layout updates
+                    rootPane.layout();
+                    log.debug("Applied throttled layout update during scroll");
+                  }
+                }));
     scrollThrottleTimeline.setCycleCount(Timeline.INDEFINITE);
 
     // Find the ScrollPane in the scene graph after the scene is fully initialized
-    rootPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
-      if (newScene != null) {
-        // Use Platform.runLater to ensure the scene is fully initialized
-        Platform.runLater(() -> findScrollPane(rootPane));
-      }
-    });
+    rootPane
+        .sceneProperty()
+        .addListener(
+            (obs, oldScene, newScene) -> {
+              if (newScene != null) {
+                // Use Platform.runLater to ensure the scene is fully initialized
+                Platform.runLater(() -> findScrollPane(rootPane));
+              }
+            });
   }
 
   /**
@@ -158,16 +164,17 @@ public class TrainingPlanEditorController {
    * @param scrollPane the ScrollPane to add the listener to
    */
   private void setupScrollListener(ScrollPane scrollPane) {
-    scrollPane.setOnScroll(event -> {
-      // Mark that an update is pending
-      if (!scrollUpdatePending.getAndSet(true)) {
-        // Start the timeline if it's not already running
-        if (!scrollThrottleTimeline.getStatus().equals(Timeline.Status.RUNNING)) {
-          scrollThrottleTimeline.play();
-        }
-      }
-      // Don't consume the event to allow normal scrolling
-    });
+    scrollPane.setOnScroll(
+        event -> {
+          // Mark that an update is pending
+          if (!scrollUpdatePending.getAndSet(true)) {
+            // Start the timeline if it's not already running
+            if (!scrollThrottleTimeline.getStatus().equals(Timeline.Status.RUNNING)) {
+              scrollThrottleTimeline.play();
+            }
+          }
+          // Don't consume the event to allow normal scrolling
+        });
   }
 
   /**
@@ -529,13 +536,6 @@ public class TrainingPlanEditorController {
           "Plan Saved",
           null,
           "The training plan has been successfully saved.");
-
-      // Navigate back to the plan list view
-      if (metaController != null) {
-        metaController.showPlanListView();
-      } else {
-        log.error("Meta controller not set, cannot navigate back to plan list view");
-      }
     } catch (Exception e) {
       log.error("Error saving training plan", e);
 
