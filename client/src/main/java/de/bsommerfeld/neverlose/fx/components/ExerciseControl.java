@@ -1,5 +1,6 @@
 package de.bsommerfeld.neverlose.fx.components;
 
+import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
@@ -14,11 +15,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -37,6 +35,7 @@ public class ExerciseControl extends VBox {
   private final LogFacade log = LogFacadeFactory.getLogger();
   private final TrainingExercise exercise;
   private final PlanStorageService planStorageService;
+  private final NotificationService notificationService;
   private final Consumer<TrainingExercise> onRemoveCallback;
 
   // UI components for action buttons
@@ -54,9 +53,13 @@ public class ExerciseControl extends VBox {
    *
    * @param exercise the TrainingExercise to represent
    * @param planStorageService the service for loading and saving templates
+   * @param notificationService the service for displaying notifications
    */
-  public ExerciseControl(TrainingExercise exercise, PlanStorageService planStorageService) {
-    this(exercise, planStorageService, null);
+  public ExerciseControl(
+      TrainingExercise exercise,
+      PlanStorageService planStorageService,
+      NotificationService notificationService) {
+    this(exercise, planStorageService, notificationService, null);
   }
 
   /**
@@ -64,14 +67,17 @@ public class ExerciseControl extends VBox {
    *
    * @param exercise the TrainingExercise to represent
    * @param planStorageService the service for loading and saving templates
+   * @param notificationService the service for displaying notifications
    * @param onRemoveCallback callback to be called when the "Remove" button is clicked
    */
   public ExerciseControl(
       TrainingExercise exercise,
       PlanStorageService planStorageService,
+      NotificationService notificationService,
       Consumer<TrainingExercise> onRemoveCallback) {
     this.exercise = exercise;
     this.planStorageService = planStorageService;
+    this.notificationService = notificationService;
     this.onRemoveCallback = onRemoveCallback;
 
     // Configure the VBox
@@ -217,58 +223,59 @@ public class ExerciseControl extends VBox {
       if (existingExerciseId.isPresent() && !existingExerciseId.get().equals(exercise.getId())) {
         // An exercise with this name exists but has a different ID
         // Show confirmation dialog before overwriting
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Overwrite Template?");
-        confirmDialog.setHeaderText(
-            "An Exercise template with the name '" + exerciseName + "' already exists.");
-        confirmDialog.setContentText("Do you really want to overwrite the existing template?");
+        notificationService.showConfirmation(
+            "Overwrite Template?",
+            "An Exercise template with the name '"
+                + exerciseName
+                + "' already exists. Do you really want to overwrite the existing template?",
+            () -> {
+              // User confirmed, create a new exercise with the existing ID
+              log.info(
+                  "User confirmed overwriting exercise template with name '{}'.", exerciseName);
+              try {
+                TrainingExercise newExercise =
+                    new TrainingExercise(
+                        existingExerciseId.get(),
+                        exercise.getName(),
+                        exercise.getDescription(),
+                        exercise.getDuration(),
+                        exercise.getSets(),
+                        exercise.isBallBucket());
 
-        // Apply application stylesheet to the dialog
-        DialogPane dialogPane = confirmDialog.getDialogPane();
-        if (getScene() != null && getScene().getRoot() != null) {
-          dialogPane.getStylesheets().addAll(getScene().getStylesheets());
-        }
+                planStorageService.saveExercise(newExercise);
+                log.info("Exercise saved as template successfully: {}", newExercise.getName());
 
-        // Wait for user response
-        Optional<ButtonType> result = confirmDialog.showAndWait();
+                // Show success message
+                notificationService.showSuccess(
+                    "Template Saved", "The exercise was successfully saved as a template.");
+              } catch (IOException e) {
+                log.error("Error saving exercise as template", e);
 
-        // If user confirmed, create a new exercise with the existing ID
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-          log.info("User confirmed overwriting exercise template with name '{}'.", exerciseName);
-          // Create a new exercise with the existing ID
-          exerciseToSave =
-              new TrainingExercise(
-                  existingExerciseId.get(),
-                  exercise.getName(),
-                  exercise.getDescription(),
-                  exercise.getDuration(),
-                  exercise.getSets(),
-                  exercise.isBallBucket());
-        } else {
-          // User canceled, abort save operation
-          log.info("User canceled overwriting exercise template with name '{}'.", exerciseName);
-          return;
-        }
+                // Show error message
+                notificationService.showError(
+                    "Error Saving",
+                    "Saving as template has failed. An error occurred: " + e.getMessage());
+              }
+            },
+            () -> {
+              // User canceled, abort save operation
+              log.info("User canceled overwriting exercise template with name '{}'.", exerciseName);
+            });
+        return;
       }
 
       planStorageService.saveExercise(exerciseToSave);
       log.info("Exercise saved as template successfully: {}", exerciseToSave.getName());
 
       // Show success message
-      showAlert(
-          Alert.AlertType.INFORMATION,
-          "Template Saved",
-          null,
-          "The exercise was successfully saved as a template.");
+      notificationService.showSuccess(
+          "Template Saved", "The exercise was successfully saved as a template.");
     } catch (IOException e) {
       log.error("Error saving exercise as template", e);
 
       // Show error message
-      showAlert(
-          Alert.AlertType.ERROR,
-          "Error Saving",
-          "Saving as template has failed.",
-          "An error occurred: " + e.getMessage());
+      notificationService.showError(
+          "Error Saving", "Saving as template has failed. An error occurred: " + e.getMessage());
     }
   }
 
@@ -277,51 +284,21 @@ public class ExerciseControl extends VBox {
    * exercise after confirmation.
    */
   private void handleRemove() {
-    // Show confirmation dialog
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmDialog.setTitle("Remove Exercise");
-    confirmDialog.setHeaderText("Are you sure you want to remove this exercise?");
-    confirmDialog.setContentText("This action cannot be undone.");
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = confirmDialog.getDialogPane();
-    if (getScene() != null && getScene().getRoot() != null) {
-      dialogPane.getStylesheets().addAll(getScene().getStylesheets());
-    }
-
-    // Wait for user response
-    Optional<ButtonType> result = confirmDialog.showAndWait();
-
-    // If user confirmed, call the callback
-    if (result.isPresent() && result.get() == ButtonType.OK) {
-      if (onRemoveCallback != null) {
-        onRemoveCallback.accept(exercise);
-      }
-    }
+    // Show confirmation notification using NotificationService
+    notificationService.showConfirmation(
+        "Remove Exercise",
+        "Are you sure you want to remove this exercise? This action cannot be undone.",
+        () -> {
+          // If user confirmed, call the callback
+          if (onRemoveCallback != null) {
+            onRemoveCallback.accept(exercise);
+          }
+        },
+        () -> {
+          // User canceled, do nothing
+        });
   }
 
-  /**
-   * Shows an alert dialog with the given parameters.
-   *
-   * @param alertType the type of alert
-   * @param title the title of the alert
-   * @param header the header text of the alert (can be null)
-   * @param content the content text of the alert
-   */
-  private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(header);
-    alert.setContentText(content);
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = alert.getDialogPane();
-    if (getScene() != null && getScene().getRoot() != null) {
-      dialogPane.getStylesheets().addAll(getScene().getStylesheets());
-    }
-
-    alert.showAndWait();
-  }
 
   /**
    * Toggles the visibility of the action buttons when the "More" button is clicked. This is

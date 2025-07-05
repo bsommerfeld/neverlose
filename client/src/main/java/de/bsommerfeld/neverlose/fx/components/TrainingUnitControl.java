@@ -10,7 +10,6 @@ import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -20,7 +19,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -222,7 +220,7 @@ public class TrainingUnitControl extends VBox {
    */
   private void addExerciseToUI(TrainingExercise exercise) {
     ExerciseControl exerciseControl =
-        new ExerciseControl(exercise, planStorageService, this::removeExercise);
+        new ExerciseControl(exercise, planStorageService, notificationService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
     updateExercisesVisibility();
   }
@@ -339,6 +337,25 @@ public class TrainingUnitControl extends VBox {
   }
 
   /**
+   * Shows a confirmation dialog before removing an exercise.
+   *
+   * @param exercise the exercise to potentially remove
+   */
+  private void removeExerciseWithConfirmation(TrainingExercise exercise) {
+    // Show confirmation notification using NotificationService
+    notificationService.showConfirmation(
+        "Remove Exercise",
+        "Are you sure you want to remove this exercise? This action cannot be undone.",
+        () -> {
+          // If user confirmed, remove the exercise
+          removeExercise(exercise);
+        },
+        () -> {
+          // User canceled, do nothing
+        });
+  }
+
+  /**
    * Removes an exercise from the training unit and updates the UI.
    *
    * @param exercise the exercise to remove
@@ -412,27 +429,19 @@ public class TrainingUnitControl extends VBox {
    * the training unit after confirmation.
    */
   private void handleRemove() {
-    // Show confirmation dialog
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmDialog.setTitle("Remove Training Unit");
-    confirmDialog.setHeaderText("Are you sure you want to remove this training unit?");
-    confirmDialog.setContentText("This action cannot be undone.");
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = confirmDialog.getDialogPane();
-    if (getScene() != null && getScene().getRoot() != null) {
-      dialogPane.getStylesheets().addAll(getScene().getStylesheets());
-    }
-
-    // Wait for user response
-    Optional<ButtonType> result = confirmDialog.showAndWait();
-
-    // If user confirmed, call the callback
-    if (result.isPresent() && result.get() == ButtonType.OK) {
-      if (onRemoveCallback != null) {
-        onRemoveCallback.accept(trainingUnit);
-      }
-    }
+    // Show confirmation notification using NotificationService
+    notificationService.showConfirmation(
+        "Remove Training Unit",
+        "Are you sure you want to remove this training unit? This action cannot be undone.",
+        () -> {
+          // If user confirmed, call the callback
+          if (onRemoveCallback != null) {
+            onRemoveCallback.accept(trainingUnit);
+          }
+        },
+        () -> {
+          // User canceled, do nothing
+        });
   }
 
   /**
