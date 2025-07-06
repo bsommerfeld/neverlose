@@ -3,7 +3,8 @@
 ### Added
 
 - Search bar can now be used with ENTER key to search
-- Notification system to streamline alerts
+- Added a Notification system to streamline alerts across all views
+- Added messages.properties for future internationalization
 
 ### Changed
 
