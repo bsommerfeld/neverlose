@@ -1,7 +1,6 @@
 package de.bsommerfeld.neverlose.fx.controller.base;
 
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
-import de.bsommerfeld.neverlose.fx.util.DialogUtils;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
@@ -12,12 +11,13 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
+import org.checkerframework.checker.units.qual.C;
 
 /**
  * Abstract base controller for browser overlays that display available templates. Allows users to
@@ -45,7 +45,8 @@ public abstract class AbstractBrowserController<S, T, C> {
    * @param planStorageService the service for loading and managing templates
    * @param notificationService the service for displaying notifications
    */
-  protected AbstractBrowserController(PlanStorageService planStorageService, NotificationService notificationService) {
+  protected AbstractBrowserController(
+      PlanStorageService planStorageService, NotificationService notificationService) {
     this.planStorageService = planStorageService;
     this.notificationService = notificationService;
   }
@@ -87,13 +88,8 @@ public abstract class AbstractBrowserController<S, T, C> {
 
     } catch (IOException e) {
       log.error("Error loading templates", e);
-      DialogUtils.showAlert(
-          Alert.AlertType.ERROR,
-          "Error Loading",
-          "The templates could not be loaded.",
-          "An error occurred: " + e.getMessage(),
-          rootPane,
-          notificationService);
+      notificationService.showError(
+          "The templates could not be loaded", "An error occurred: " + e.getMessage());
     }
   }
 
@@ -141,27 +137,25 @@ public abstract class AbstractBrowserController<S, T, C> {
         // Call the callback with the loaded item
         templateSelectedCallback.accept(item);
 
-        // Close the dialog
-        DialogUtils.closeDialog(rootPane);
+        // Close the window
+        close();
       } else {
         log.warn("Selected template not found: {}", templateId);
-        DialogUtils.showAlert(
-            Alert.AlertType.WARNING,
-            "Template Not Found",
-            null,
-            "The selected template could not be loaded.",
-            rootPane,
-            notificationService);
+        notificationService.showWarning(
+            "Template Not Found", "The selected template could not be loaded.");
       }
     } catch (IOException e) {
       log.error("Error loading template {}", templateId, e);
-      DialogUtils.showAlert(
-          Alert.AlertType.ERROR,
-          "Error Loading",
-          "The template could not be loaded.",
-          "An error occurred: " + e.getMessage(),
-          rootPane,
-          notificationService);
+      notificationService.showError(
+          "The template could not be loaded", "An error occured: " + e.getMessage());
+    }
+  }
+
+  private void close() {
+    Node node = rootPane;
+    if (node != null && node.getScene() != null && node.getScene().getWindow() != null) {
+      Stage stage = (Stage) node.getScene().getWindow();
+      stage.close();
     }
   }
 
@@ -172,45 +166,30 @@ public abstract class AbstractBrowserController<S, T, C> {
    */
   protected void handleDeleteTemplate(UUID templateId) {
     // Show confirmation dialog
-    Optional<ButtonType> result =
-        DialogUtils.showConfirmationDialog(
-            getDeleteDialogTitle(),
-            "Do you really want to delete this template?",
-            "This action cannot be undone.",
-            rootPane,
-            notificationService);
+    notificationService.showConfirmation(
+        getDeleteDialogTitle(),
+        "Do you really want to delete this template? \n\n This action cannot be undone.",
+        () -> {
+          try {
+            boolean deleted = deleteTemplate(templateId);
 
-    // If user confirmed, delete the template
-    if (result.isPresent() && result.get() == ButtonType.OK) {
-      try {
-        boolean deleted = deleteTemplate(templateId);
+            if (deleted) {
+              log.info("Template deleted: {}", templateId);
 
-        if (deleted) {
-          log.info("Template deleted: {}", templateId);
-
-          // Reload the templates to update the UI
-          loadTemplates();
-        } else {
-          log.warn("Template not found for deletion: {}", templateId);
-          DialogUtils.showAlert(
-              Alert.AlertType.WARNING,
-              "Template Not Found",
-              null,
-              "The template to be deleted could not be found.",
-              rootPane,
-              notificationService);
-        }
-      } catch (IOException e) {
-        log.error("Error deleting template {}", templateId, e);
-        DialogUtils.showAlert(
-            Alert.AlertType.ERROR,
-            "Error Deleting",
-            "The template could not be deleted.",
-            "An error occurred: " + e.getMessage(),
-            rootPane,
-            notificationService);
-      }
-    }
+              // Reload the templates to update the UI
+              loadTemplates();
+            } else {
+              log.warn("Template not found for deletion: {}", templateId);
+              notificationService.showWarning(
+                  "Template Not Found", "The template to be deleted could not be found.");
+            }
+          } catch (IOException e) {
+            log.error("Error deleting template {}", templateId, e);
+            notificationService.showError(
+                "The template could not be deleted", "An error occurred: " + e.getMessage());
+          }
+        },
+        null);
   }
 
   /**
