@@ -12,8 +12,7 @@
         <Insets top="5" right="10" bottom="5" left="10"/>
     </padding>
 
-    <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="editor-action-button">
-        <text>Home</text>
+    <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="editor-action-button" text="%fxml.topBar.home">
     </Button>
 
     <Region HBox.hgrow="ALWAYS"/>

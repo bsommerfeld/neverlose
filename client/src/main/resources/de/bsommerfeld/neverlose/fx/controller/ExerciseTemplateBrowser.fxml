@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.FlowPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/17"
             fx:controller="de.bsommerfeld.neverlose.fx.controller.ExerciseTemplateBrowserController"
-            styleClass="template-browser">
+            styleClass="template-browser" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css">
     <top>
-        <Label text="Exercise Templates" styleClass="template-browser-title"/>
+        <Label text="%exercise.templateBrowserTitle" styleClass="template-browser-title"/>
     </top>
     <center>
         <ScrollPane styleClass="template-browser-scroll-pane">

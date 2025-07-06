@@ -1,6 +1,8 @@
 package de.bsommerfeld.neverlose.fx.components;
 
 import de.bsommerfeld.neverlose.fx.controller.ExerciseTemplateBrowserController;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
+import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -10,6 +12,7 @@ import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import de.bsommerfeld.neverlose.plan.components.Weekday;
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -17,10 +20,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -62,6 +63,9 @@ public class TrainingUnitControl extends VBox {
    * @param saveAsTemplateCallback callback to be called when the "Save as Template" button is
    *     clicked
    * @param onRemoveCallback callback to be called when the "Remove" button is clicked
+   * @param notificationService service for showing notifications
+   * @throws IllegalArgumentException if trainingUnit, planStorageService, or notificationService is
+   *     null
    */
   public TrainingUnitControl(
       TrainingUnit trainingUnit,
@@ -69,10 +73,21 @@ public class TrainingUnitControl extends VBox {
       Consumer<TrainingUnit> saveAsTemplateCallback,
       Consumer<TrainingUnit> onRemoveCallback,
       NotificationService notificationService) {
+    // Check for null required parameters
+    if (trainingUnit == null) {
+      throw new IllegalArgumentException("TrainingUnit cannot be null");
+    }
+    if (planStorageService == null) {
+      throw new IllegalArgumentException("PlanStorageService cannot be null");
+    }
+    if (notificationService == null) {
+      throw new IllegalArgumentException("NotificationService cannot be null");
+    }
+
     this.trainingUnit = trainingUnit;
     this.planStorageService = planStorageService;
-    this.saveAsTemplateCallback = saveAsTemplateCallback;
-    this.onRemoveCallback = onRemoveCallback;
+    this.saveAsTemplateCallback = saveAsTemplateCallback; // Can be null
+    this.onRemoveCallback = onRemoveCallback; // Can be null
     this.notificationService = notificationService;
 
     // Configure the VBox
@@ -85,7 +100,8 @@ public class TrainingUnitControl extends VBox {
     header.setAlignment(Pos.CENTER_LEFT);
 
     // Toggle arrow for collapsible functionality
-    toggleArrow = new Label("▼"); // Down arrow for expanded state
+    toggleArrow =
+        new Label(Messages.getString("ui.button.expandToggle")); // Down arrow for expanded state
     toggleArrow.getStyleClass().add("toggle-arrow");
     toggleArrow.setStyle("-fx-cursor: hand;"); // Hand cursor to indicate it's clickable
 
@@ -103,12 +119,12 @@ public class TrainingUnitControl extends VBox {
     weekdayComboBox.getStyleClass().add("unit-weekday-selector");
 
     // Save as Template button
-    Button saveAsTemplateButton = new Button("Save");
+    Button saveAsTemplateButton = new Button(Messages.getString("ui.button.save"));
     saveAsTemplateButton.getStyleClass().add("save-as-template-button");
     saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 
     // Remove button (red X)
-    Button removeButton = new Button("X");
+    Button removeButton = new Button(Messages.getString("ui.button.remove"));
     removeButton.getStyleClass().add("remove-button");
     removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
     removeButton.setOnAction(e -> handleRemove());
@@ -129,14 +145,14 @@ public class TrainingUnitControl extends VBox {
     exercisesContainer.getStyleClass().add("exercises-container");
 
     // Create placeholder for empty exercises list
-    placeholderLabel = new Label("No exercises yet. Click '+' to add one.");
+    placeholderLabel = new Label(Messages.getString("ui.label.noExercises"));
     placeholderLabel.getStyleClass().add("placeholder-label");
     placeholderLabel.setAlignment(Pos.CENTER);
     placeholderLabel.setMaxWidth(Double.MAX_VALUE);
     placeholderLabel.setPadding(new Insets(20, 0, 20, 0));
 
     // Create the "Show more" button
-    showMoreButton = new Button("Show more");
+    showMoreButton = new Button(Messages.getString("ui.button.showMore"));
     showMoreButton.getStyleClass().add("show-more-button");
     showMoreButton.setMaxWidth(Double.MAX_VALUE); // Make button span full width
     showMoreButton.setOnAction(
@@ -154,12 +170,12 @@ public class TrainingUnitControl extends VBox {
     }
 
     // Add exercise button
-    Button addExerciseButton = new Button("+");
+    Button addExerciseButton = new Button(Messages.getString("ui.button.add"));
     addExerciseButton.getStyleClass().add("add-exercise-button");
     addExerciseButton.setOnAction(e -> handleAddExercise());
 
     // Add from template button
-    Button addFromTemplateButton = new Button("Load");
+    Button addFromTemplateButton = new Button(Messages.getString("ui.button.load"));
     addFromTemplateButton.getStyleClass().add("add-from-template-button");
     addFromTemplateButton.setOnAction(e -> handleAddExerciseFromTemplate());
 
@@ -202,9 +218,11 @@ public class TrainingUnitControl extends VBox {
 
       // Update the arrow icon based on the current state
       if (isExpanded) {
-        toggleArrow.setText("▼"); // Down arrow for expanded state
+        toggleArrow.setText(
+            Messages.getString("ui.button.expandToggle")); // Down arrow for expanded state
       } else {
-        toggleArrow.setText("▶"); // Right arrow for collapsed state
+        toggleArrow.setText(
+            Messages.getString("ui.button.collapseToggle")); // Right arrow for collapsed state
       }
 
       // Update the visibility of the content container
@@ -220,7 +238,8 @@ public class TrainingUnitControl extends VBox {
    */
   private void addExerciseToUI(TrainingExercise exercise) {
     ExerciseControl exerciseControl =
-        new ExerciseControl(exercise, planStorageService, notificationService, this::removeExercise);
+        new ExerciseControl(
+            exercise, planStorageService, notificationService, this::removeExercise);
     exercisesContainer.getChildren().add(exerciseControl);
     updateExercisesVisibility();
   }
@@ -234,9 +253,11 @@ public class TrainingUnitControl extends VBox {
 
     // Update the arrow icon based on the current state
     if (isExpanded) {
-      toggleArrow.setText("▼"); // Down arrow for expanded state
+      toggleArrow.setText(
+          Messages.getString("ui.button.expandToggle")); // Down arrow for expanded state
     } else {
-      toggleArrow.setText("▶"); // Right arrow for collapsed state
+      toggleArrow.setText(
+          Messages.getString("ui.button.collapseToggle")); // Right arrow for collapsed state
     }
 
     // Update the visibility of the content container
@@ -247,81 +268,62 @@ public class TrainingUnitControl extends VBox {
   /**
    * Updates the visibility of exercises based on the showAllExercises flag. Shows only the first
    * three exercises if showAllExercises is false, or all exercises if showAllExercises is true.
+   * This method is optimized to minimize iterations over the children list.
    */
   private void updateExercisesVisibility() {
-    List<Node> exercises = exercisesContainer.getChildren();
-    // Count actual exercises (excluding the placeholder)
-    int exerciseCount =
-        (int) exercises.stream().filter(node -> !(node == placeholderLabel)).count();
-
-    // Show placeholder if there are no exercises, hide it otherwise
-    if (exerciseCount == 0) {
-      placeholderLabel.setVisible(true);
-      placeholderLabel.setManaged(true);
-
-      // Hide the show more button if it exists
-      if (showMoreButton != null) {
-        showMoreButton.setVisible(false);
-        showMoreButton.setManaged(false);
-      }
-      return;
-    } else {
-      placeholderLabel.setVisible(false);
-      placeholderLabel.setManaged(false);
-    }
-
-    // If we have 3 or fewer exercises, show all and hide the button
-    if (exerciseCount <= 3) {
-      // Show all exercises
-      for (Node exercise : exercises) {
-        // Skip the placeholder
-        if (exercise == placeholderLabel) continue;
-
-        exercise.setVisible(true);
-        exercise.setManaged(true);
-
-        // Remove fade-out effect from all exercises
-        exercise.getStyleClass().remove("exercise-fade-out");
-      }
-
-      // Hide the show more button if it exists
-      if (showMoreButton != null) {
-        showMoreButton.setVisible(false);
-        showMoreButton.setManaged(false);
-      }
+    if (exercisesContainer == null || placeholderLabel == null) {
+      log.error("Exercise container or placeholder label is null");
       return;
     }
 
-    // We have more than 3 exercises
-    if (showAllExercises) {
-      // Show all exercises
-      for (Node exercise : exercises) {
-        // Skip the placeholder
-        if (exercise == placeholderLabel) continue;
-
-        exercise.setVisible(true);
-        exercise.setManaged(true);
-
-        // Remove fade-out effect from all exercises
-        exercise.getStyleClass().remove("exercise-fade-out");
+    try {
+      List<Node> exercises = exercisesContainer.getChildren();
+      if (exercises == null) {
+        log.error("Exercise container children list is null");
+        return;
       }
 
-      // Hide the show more button
-      showMoreButton.setVisible(false);
-      showMoreButton.setManaged(false);
-    } else {
-      // Show only the first 3 exercises
+      // Calculate exercise count and handle placeholder visibility in a single pass
+      int exerciseCount = 0;
+      for (Node node : exercises) {
+        if (node != placeholderLabel) {
+          exerciseCount++;
+        }
+      }
+
+      // Handle placeholder visibility
+      boolean hasExercises = exerciseCount > 0;
+      placeholderLabel.setVisible(!hasExercises);
+      placeholderLabel.setManaged(!hasExercises);
+
+      // Early return if no exercises
+      if (!hasExercises) {
+        if (showMoreButton != null) {
+          showMoreButton.setVisible(false);
+          showMoreButton.setManaged(false);
+        }
+        return;
+      }
+
+      // Determine if we should show the "show more" button
+      boolean showAllExercisesNow = showAllExercises || exerciseCount <= 3;
+      if (showMoreButton != null) {
+        showMoreButton.setVisible(!showAllExercisesNow && exerciseCount > 3);
+        showMoreButton.setManaged(!showAllExercisesNow && exerciseCount > 3);
+      }
+
+      // Update exercise visibility in a single pass
       int visibleCount = 0;
       for (Node exercise : exercises) {
         // Skip the placeholder
         if (exercise == placeholderLabel) continue;
 
-        boolean visible = visibleCount < 3;
+        boolean visible = showAllExercisesNow || visibleCount < 3;
         exercise.setVisible(visible);
         exercise.setManaged(visible);
 
-        // Add fade-out effect to the third exercise
-        if (visibleCount == 2) {
+        // Handle fade-out effect
+        if (visibleCount == 2 && !showAllExercisesNow) {
           exercise.getStyleClass().add("exercise-fade-out");
         } else {
           exercise.getStyleClass().remove("exercise-fade-out");
@@ -329,10 +331,8 @@ public class TrainingUnitControl extends VBox {
 
         visibleCount++;
       }
-
-      // Show the show more button
-      showMoreButton.setVisible(true);
-      showMoreButton.setManaged(true);
+    } catch (Exception e) {
+      log.error("Error updating exercise visibility: {}", e.getMessage(), e);
     }
   }
 
@@ -344,8 +344,8 @@ public class TrainingUnitControl extends VBox {
   private void removeExerciseWithConfirmation(TrainingExercise exercise) {
     // Show confirmation notification using NotificationService
     notificationService.showConfirmation(
-        "Remove Exercise",
-        "Are you sure you want to remove this exercise? This action cannot be undone.",
+        Messages.getString("exercise.removeDialogTitle"),
+        Messages.getString("exercise.removeDialogMessage"),
         () -> {
           // If user confirmed, remove the exercise
           removeExercise(exercise);
@@ -396,7 +396,12 @@ public class TrainingUnitControl extends VBox {
   private void handleAddExercise() {
     // Create a new exercise with default values
     TrainingExercise newExercise =
-        new TrainingExercise("New Exercise", "Description", "30 min", 3, false);
+        new TrainingExercise(
+            Messages.getString("unit.defaultExerciseName"),
+            Messages.getString("unit.defaultExerciseDescription"),
+            Messages.getString("unit.defaultExerciseDuration"),
+            3,
+            false);
 
     // Add it to the training unit
     trainingUnit.getTrainingExercises().add(newExercise);
@@ -421,6 +426,10 @@ public class TrainingUnitControl extends VBox {
   private void handleSaveAsTemplate() {
     if (saveAsTemplateCallback != null) {
       saveAsTemplateCallback.accept(trainingUnit);
+    } else {
+      log.warn(
+          "Save as template callback is null, cannot save unit as template: {}",
+          trainingUnit.getName());
     }
   }
 
@@ -429,18 +438,26 @@ public class TrainingUnitControl extends VBox {
    * the training unit after confirmation.
    */
   private void handleRemove() {
+    if (notificationService == null) {
+      log.error("NotificationService is null, cannot show confirmation dialog");
+      return;
+    }
+
     // Show confirmation notification using NotificationService
     notificationService.showConfirmation(
-        "Remove Training Unit",
-        "Are you sure you want to remove this training unit? This action cannot be undone.",
+        Messages.getString("unit.removeDialogTitle"),
+        Messages.getString("unit.removeDialogMessage"),
         () -> {
           // If user confirmed, call the callback
           if (onRemoveCallback != null) {
             onRemoveCallback.accept(trainingUnit);
+          } else {
+            log.warn("Remove callback is null, cannot remove unit: {}", trainingUnit.getName());
           }
         },
         () -> {
           // User canceled, do nothing
+          log.debug("User canceled removal of training unit: {}", trainingUnit.getName());
         });
   }
 
@@ -453,9 +470,10 @@ public class TrainingUnitControl extends VBox {
       // Load the exercise template browser view
       FXMLLoader loader =
           new FXMLLoader(
-              getClass()
-                  .getResource(
-                      "/de/bsommerfeld/neverlose/fx/controller/ExerciseTemplateBrowser.fxml"));
+              getClass().getResource(Messages.getString("path.exerciseTemplateBrowser.fxml")));
+      // Set the resource bundle for internationalization
+      ResourceBundle resourceBundle = new MessagesResourceBundle();
+      loader.setResources(resourceBundle);
       // Set the controller factory to create the controller with the PlanStorageService
       loader.setControllerFactory(
           param -> new ExerciseTemplateBrowserController(planStorageService, notificationService));
@@ -467,7 +485,7 @@ public class TrainingUnitControl extends VBox {
 
       // Create a new stage for the template browser
       Stage templateBrowserStage = new Stage();
-      templateBrowserStage.setTitle("Exercise Templates");
+      templateBrowserStage.setTitle(Messages.getString("exercise.templateBrowserTitle"));
       templateBrowserStage.initModality(Modality.APPLICATION_MODAL);
       templateBrowserStage.initOwner(getScene().getWindow());
 
@@ -478,12 +496,10 @@ public class TrainingUnitControl extends VBox {
       templateBrowserStage.showAndWait();
 
     } catch (IOException e) {
-      log.error("Error opening exercise template browser", e);
-      showAlert(
-          Alert.AlertType.ERROR,
-          "Error Opening",
-          "The exercise template browser could not be opened.",
-          "An error occurred: " + e.getMessage());
+      log.error(Messages.getString("unit.errorOpeningBrowser"), e);
+      notificationService.showError(
+          Messages.getString("unit.errorOpeningTitle"),
+          Messages.getString("unit.errorOpeningDetail", e.getMessage()));
     }
   }
 
@@ -508,29 +524,6 @@ public class TrainingUnitControl extends VBox {
     // Add it to the UI
     addExerciseToUI(newExercise);
 
-    log.info("Added exercise template '{}' to training unit", templateExercise.getName());
-  }
-
-  /**
-   * Shows an alert dialog with the given parameters.
-   *
-   * @param alertType the type of alert
-   * @param title the title of the alert
-   * @param header the header text of the alert (can be null)
-   * @param content the content text of the alert
-   */
-  private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(title);
-    alert.setHeaderText(header);
-    alert.setContentText(content);
-
-    // Apply application stylesheet to the dialog
-    DialogPane dialogPane = alert.getDialogPane();
-    if (getScene() != null && getScene().getRoot() != null) {
-      dialogPane.getStylesheets().addAll(getScene().getStylesheets());
-    }
-
-    alert.showAndWait();
+    log.info(Messages.getString("unit.exerciseAdded", templateExercise.getName()));
   }
 }

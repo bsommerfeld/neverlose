@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.bsommerfeld.neverlose.fx.components.NotificationController;
 import de.bsommerfeld.neverlose.fx.components.NotificationController.NotificationType;
+import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import java.io.IOException;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -142,6 +144,9 @@ public class NotificationService {
       FXMLLoader loader =
           new FXMLLoader(
               getClass().getResource("/de/bsommerfeld/neverlose/fx/components/Notification.fxml"));
+      // Set the resource bundle for internationalization
+      ResourceBundle resourceBundle = new MessagesResourceBundle();
+      loader.setResources(resourceBundle);
       Node notification = loader.load();
       NotificationController controller = loader.getController();
 
@@ -204,6 +209,9 @@ public class NotificationService {
       FXMLLoader loader =
           new FXMLLoader(
               getClass().getResource("/de/bsommerfeld/neverlose/fx/components/Notification.fxml"));
+      // Set the resource bundle for internationalization
+      ResourceBundle resourceBundle = new MessagesResourceBundle();
+      loader.setResources(resourceBundle);
       Node notification = loader.load();
       NotificationController controller = loader.getController();
 

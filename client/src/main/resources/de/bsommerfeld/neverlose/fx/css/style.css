@@ -765,6 +765,7 @@
     -fx-font-weight: bold;
     -fx-padding: 0 5 0 0;
     -fx-cursor: hand;
+    -fx-font-family: "Arial Unicode MS, Segoe UI Symbol, DejaVu Sans, Lucida Sans Unicode, sans-serif";
 }
 
 .unit-name-field {

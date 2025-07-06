@@ -21,7 +21,7 @@
     <Label fx:id="planNameLabel" styleClass="plan-card-title"/>
 
     <HBox styleClass="plan-card-button-container">
-        <Button fx:id="deleteButton" text="Delete" styleClass="delete-button"
+        <Button fx:id="deleteButton" text="%fxml.planCard.delete" styleClass="delete-button"
                 onAction="#handleDeleteButtonAction"/>
     </HBox>
 </VBox>

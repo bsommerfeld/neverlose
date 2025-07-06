@@ -10,7 +10,7 @@
       fx:controller="de.bsommerfeld.neverlose.fx.controller.BottomBarController"
       xmlns="http://javafx.com/javafx/17.0.12">
 
-    <Hyperlink text="Sommerfeld" styleClass="footer-label" onAction="#handleSommerfeldLink"/>
+    <Hyperlink text="%fxml.bottomBar.sommerfeld" styleClass="footer-label" onAction="#handleSommerfeldLink"/>
 
     <Region HBox.hgrow="ALWAYS"/>
 </HBox>

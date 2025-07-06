@@ -3,6 +3,8 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.fx.components.TrainingUnitControl;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
+import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.logger.LogFacade;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.animation.KeyFrame;
@@ -94,7 +97,10 @@ public class TrainingPlanEditorController {
   private void initialize() {
     // Initialize with an empty training plan if none is set
     if (trainingPlan == null) {
-      trainingPlan = new TrainingPlan("New Training Plan", "Description");
+      trainingPlan =
+          new TrainingPlan(
+              Messages.getString("general.defaultPlanName"),
+              Messages.getString("general.defaultPlanDescription"));
     }
 
     // Set up scroll throttling
@@ -120,7 +126,7 @@ public class TrainingPlanEditorController {
                   if (scrollUpdatePending.getAndSet(false)) {
                     // Apply any pending layout updates
                     rootPane.layout();
-                    log.debug("Applied throttled layout update during scroll");
+                    log.debug(Messages.getString("log.debug.scrollUpdate"));
                   }
                 }));
     scrollThrottleTimeline.setCycleCount(Timeline.INDEFINITE);
@@ -146,7 +152,7 @@ public class TrainingPlanEditorController {
     if (node instanceof ScrollPane) {
       editorScrollPane = (ScrollPane) node;
       setupScrollListener(editorScrollPane);
-      log.debug("Found and configured ScrollPane for throttling");
+      log.debug(Messages.getString("log.debug.scrollPaneFound"));
       return;
     }
 
@@ -289,13 +295,11 @@ public class TrainingPlanEditorController {
 
         // Show confirmation dialog before overwriting
         notificationService.showConfirmation(
-            "Overwrite Template?",
-            "A Unit template with the name '"
-                + unitName
-                + "' already exists.\n\nDo you really want to overwrite the existing template?",
+            Messages.getString("dialog.overwrite.template.title"),
+            Messages.getString("dialog.overwrite.template.message", unitName),
             () -> {
               // This code runs when the user confirms
-              log.info("User confirmed overwriting unit template with name '{}'.", unitName);
+              log.info(Messages.getString("log.template.overwriteConfirmed", unitName));
 
               // Use the existing ID for the template unit
               TrainingUnit updatedUnit =
@@ -311,7 +315,7 @@ public class TrainingPlanEditorController {
             },
             () -> {
               // This code runs when the user cancels
-              log.info("User canceled overwriting unit template with name '{}'.", unitName);
+              log.info(Messages.getString("log.template.overwriteCanceled", unitName));
               // No further action needed
             });
 
@@ -322,14 +326,14 @@ public class TrainingPlanEditorController {
       // If we get here, there's no conflict, so continue with the save operation
       saveUnitAsTemplateInternal(unit);
     } catch (Exception e) {
-      log.error("Error saving training unit as template", e);
+      log.error(Messages.getString("log.template.saveFailed"), e);
 
       // Show error message
       showStyledAlert(
           Alert.AlertType.ERROR,
-          "Error while saving template",
-          "Saving the template has failed.",
-          "An error occurred: " + e.getMessage());
+          Messages.getString("error.template.saveFailed.title"),
+          Messages.getString("error.template.saveFailed.text"),
+          Messages.getString("error.template.saveFailed.detail", e.getMessage()));
     }
   }
 
@@ -367,23 +371,23 @@ public class TrainingPlanEditorController {
 
       // Save the template unit
       planStorageService.saveUnit(templateUnit);
-      log.info("Training unit saved as template successfully: {}", templateUnit.getName());
+      log.info(Messages.getString("log.template.saved", templateUnit.getName()));
 
       // Show success message
       showStyledAlert(
           Alert.AlertType.INFORMATION,
-          "Template saved",
+          Messages.getString("notification.template.saved.title"),
           null,
-          "The Training Unit was successfully saved as template.");
+          Messages.getString("notification.template.saved.text"));
     } catch (Exception e) {
-      log.error("Error saving training unit as template", e);
+      log.error(Messages.getString("log.template.saveFailed"), e);
 
       // Show error message
       showStyledAlert(
           Alert.AlertType.ERROR,
-          "Error while saving template",
-          "Saving the template has failed.",
-          "An error occurred: " + e.getMessage());
+          Messages.getString("error.template.saveFailed.title"),
+          Messages.getString("error.template.saveFailed.text"),
+          Messages.getString("error.template.saveFailed.detail", e.getMessage()));
     }
   }
 
@@ -395,7 +399,7 @@ public class TrainingPlanEditorController {
     placeholder.setPadding(new Insets(20));
     placeholder.getStyleClass().add("empty-placeholder");
 
-    Text message = new Text("No training units added yet");
+    Text message = new Text(Messages.getString("ui.label.noTrainingUnits"));
     message.getStyleClass().add("placeholder-text");
 
     placeholder.getChildren().add(message);
@@ -404,11 +408,11 @@ public class TrainingPlanEditorController {
 
   /** Adds the "Add Unit" button to the container. */
   private void addAddUnitButton() {
-    Button addButton = new Button("+");
+    Button addButton = new Button(Messages.getString("ui.button.add"));
     addButton.getStyleClass().add("add-unit-button");
     addButton.setOnAction(event -> handleAddUnit());
 
-    Button addFromTemplate = new Button("Load");
+    Button addFromTemplate = new Button(Messages.getString("ui.button.load"));
     addFromTemplate.getStyleClass().add("add-from-template-button");
     addFromTemplate.setOnAction(event -> handleAddFromTemplate());
 
@@ -428,7 +432,11 @@ public class TrainingPlanEditorController {
     updateModelFromUI();
 
     // Create a new training unit with default values
-    TrainingUnit newUnit = new TrainingUnit("New Unit", "Description", Weekday.MONDAY);
+    TrainingUnit newUnit =
+        new TrainingUnit(
+            Messages.getString("general.defaultUnitName"),
+            Messages.getString("general.defaultUnitDescription"),
+            Weekday.MONDAY);
 
     // Add it to the training plan
     trainingPlan.getTrainingUnits().add(newUnit);
@@ -451,6 +459,10 @@ public class TrainingPlanEditorController {
               getClass()
                   .getResource("/de/bsommerfeld/neverlose/fx/controller/TemplateBrowser.fxml"));
 
+      // Set the resource bundle for internationalization
+      ResourceBundle resourceBundle = new MessagesResourceBundle();
+      loader.setResources(resourceBundle);
+
       // Set the controller before loading
       loader.setController(controller);
       Parent root = loader.load();
@@ -460,7 +472,7 @@ public class TrainingPlanEditorController {
 
       // Create a new stage for the template browser
       Stage templateBrowserStage = new Stage();
-      templateBrowserStage.setTitle("Training Unit Templates");
+      templateBrowserStage.setTitle(Messages.getString("ui.title.templateBrowser"));
       templateBrowserStage.initModality(Modality.APPLICATION_MODAL);
       templateBrowserStage.initOwner(rootPane.getScene().getWindow());
 
@@ -474,9 +486,9 @@ public class TrainingPlanEditorController {
       log.error("Error opening template browser", e);
       showStyledAlert(
           Alert.AlertType.ERROR,
-          "Error Opening",
-          "The template browser could not be opened.",
-          "An error occurred: " + e.getMessage());
+          Messages.getString("error.browser.openFailed.title"),
+          Messages.getString("error.browser.openFailed.text"),
+          Messages.getString("error.browser.openFailed.detail", e.getMessage()));
     }
   }
 
@@ -515,7 +527,7 @@ public class TrainingPlanEditorController {
     // Update the UI
     updateUIFromModel();
 
-    log.info("Added template unit '{}' to training plan", templateUnit.getName());
+    log.info(Messages.getString("log.template.added", templateUnit.getName()));
   }
 
   /** Handles the save button action. */
@@ -537,13 +549,11 @@ public class TrainingPlanEditorController {
 
         // Show confirmation dialog before overwriting
         notificationService.showConfirmation(
-            "Overwrite Plan?",
-            "A Plan with the name '"
-                + planName
-                + "' already exists.\n\nDo you really want to overwrite the existing plan?",
+            Messages.getString("dialog.overwrite.plan.title"),
+            Messages.getString("dialog.overwrite.plan.message", planName),
             () -> {
               // This code runs when the user confirms
-              log.info("User confirmed overwriting plan with name '{}'.", finalPlanName);
+              log.info(Messages.getString("log.plan.overwriteConfirmed", finalPlanName));
 
               // Update the existing plan
               TrainingPlan updatedPlan =
@@ -558,7 +568,7 @@ public class TrainingPlanEditorController {
             },
             () -> {
               // This code runs when the user cancels
-              log.info("User canceled overwriting plan with name '{}'.", finalPlanName);
+              log.info(Messages.getString("log.plan.overwriteCanceled", finalPlanName));
               // No further action needed
             });
 
@@ -588,23 +598,23 @@ public class TrainingPlanEditorController {
   private void savePlanInternal(TrainingPlan plan) {
     try {
       String identifier = planStorageService.savePlan(plan);
-      log.info("Training plan saved successfully with identifier: {}", identifier);
+      log.info(Messages.getString("log.plan.saved", identifier));
 
       // Show success message
       showStyledAlert(
           Alert.AlertType.INFORMATION,
-          "Plan Saved",
+          Messages.getString("notification.plan.saved.title"),
           null,
-          "The training plan has been successfully saved.");
+          Messages.getString("notification.plan.saved.text"));
     } catch (Exception e) {
-      log.error("Error saving training plan", e);
+      log.error(Messages.getString("log.error.savePlan"), e);
 
       // Show error message
       showStyledAlert(
           Alert.AlertType.ERROR,
-          "Save Error",
-          "The save operation failed.",
-          "An error occurred while saving the plan: " + e.getMessage());
+          Messages.getString("error.plan.saveFailed.title"),
+          Messages.getString("error.plan.saveFailed.text"),
+          Messages.getString("error.plan.saveFailed.detail", e.getMessage()));
     }
   }
 
@@ -634,13 +644,15 @@ public class TrainingPlanEditorController {
     updateModelFromUI();
 
     FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Export Training Plan as PDF");
+    fileChooser.setTitle(Messages.getString("ui.title.exportDialog"));
 
     String initialFileName = trainingPlan.getName().replaceAll("\\s+", "_") + ".pdf";
     fileChooser.setInitialFileName(initialFileName);
 
     FileChooser.ExtensionFilter extFilter =
-        new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
+        new FileChooser.ExtensionFilter(
+            Messages.getString("ui.title.exportFilter"),
+            Messages.getString("ui.title.exportFilterExtension"));
     fileChooser.getExtensionFilters().add(extFilter);
 
     Stage stage = (Stage) rootPane.getScene().getWindow();
@@ -649,27 +661,27 @@ public class TrainingPlanEditorController {
     if (file != null) {
       try {
         exportService.export(trainingPlan, file);
-        log.info("Training plan successfully exported to: {}", file.getAbsolutePath());
+        log.info(Messages.getString("log.plan.exported", file.getAbsolutePath()));
 
         showStyledAlertWithLink(
             Alert.AlertType.INFORMATION,
-            "Export Successful",
+            Messages.getString("notification.export.success.title"),
             null,
-            "The training plan has been successfully saved as a PDF.",
-            "Open file",
+            Messages.getString("notification.export.success.text"),
+            Messages.getString("notification.export.openFile"),
             file);
 
       } catch (Exception e) {
-        log.error("Error exporting training plan", e);
+        log.error(Messages.getString("log.error.exportPlan"), e);
 
         showStyledAlert(
             Alert.AlertType.ERROR,
-            "Export Error",
-            "The export failed.",
-            "An error occurred while saving the PDF file: " + e.getMessage());
+            Messages.getString("error.export.failed.title"),
+            Messages.getString("error.export.failed.text"),
+            Messages.getString("error.export.failed.detail", e.getMessage()));
       }
     } else {
-      log.info("Export canceled by user.");
+      log.info(Messages.getString("log.plan.exportCanceled"));
     }
   }
 
@@ -743,18 +755,18 @@ public class TrainingPlanEditorController {
         displayTitle,
         displayContent,
         linkText,
-        "Close",
+        Messages.getString("ui.button.close"),
         () -> {
           // Action when the "Open File" button is clicked
           try {
             Desktop.getDesktop().open(file);
           } catch (IOException ex) {
-            log.error("Error opening file: {}", file.getAbsolutePath(), ex);
+            log.error(Messages.getString("log.error.openFile", file.getAbsolutePath()), ex);
             showStyledAlert(
                 Alert.AlertType.ERROR,
-                "Error Opening File",
+                Messages.getString("error.file.openFailed.title"),
                 null,
-                "Could not open the file: " + ex.getMessage());
+                Messages.getString("error.file.openFailed.text", ex.getMessage()));
           }
         },
         null // No action needed for the Close button

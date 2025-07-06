@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.state.SearchState;
 import de.bsommerfeld.neverlose.fx.view.View;
@@ -55,7 +56,9 @@ public class PlanListViewController {
 
   @Inject
   public PlanListViewController(
-      ViewProvider viewProvider, PlanStorageService planStorageService, SearchState searchState,
+      ViewProvider viewProvider,
+      PlanStorageService planStorageService,
+      SearchState searchState,
       NotificationService notificationService) {
     this.viewProvider = viewProvider;
     this.planStorageService = planStorageService;
@@ -87,10 +90,10 @@ public class PlanListViewController {
     String currentSearchTerm = searchTextField.getText();
 
     // If the search button shows "X" (we're already filtering with this term)
-    if (Objects.equals(searchLabel.getText(), "X")) {
+    if (Objects.equals(searchLabel.getText(), Messages.getString("ui.button.clear"))) {
       // Clear the search
       searchTextField.clear();
-      searchLabel.setText("Search");
+      searchLabel.setText(Messages.getString("ui.button.search"));
       activeSearchTerm = "";
       displayPlans(allPlans);
     } else {
@@ -103,7 +106,7 @@ public class PlanListViewController {
     if (isNotBlank) {
       activeSearchTerm = searchTerm;
       filterPlans(searchTerm);
-      searchLabel.setText("X");
+      searchLabel.setText(Messages.getString("ui.button.clear"));
     }
   }
 
@@ -122,8 +125,8 @@ public class PlanListViewController {
       allPlans = planStorageService.loadPlanSummaries();
       displayPlans(allPlans);
     } catch (IOException e) {
-      log.error("Failed to load plan summaries", e);
-      showErrorMessage("Failed to load plans");
+      log.error(Messages.getString("log.plan.loadFailed"), e);
+      showErrorMessage(Messages.getString("error.plan.loadFailed.title"));
     }
   }
 
@@ -145,7 +148,7 @@ public class PlanListViewController {
         Node planCard = createPlanCard(plan);
         flowPane.getChildren().add(planCard);
       } catch (IOException e) {
-        log.error("Failed to create plan card for plan: {}", plan.name(), e);
+        log.error(Messages.getString("log.plan.cardCreateFailed", plan.name()), e);
       }
     }
   }
@@ -185,7 +188,7 @@ public class PlanListViewController {
    */
   private void openPlan(UUID planId) {
     if (metaController == null) {
-      log.error("Meta controller not set, cannot open plan");
+      log.error(Messages.getString("log.error.noMetaControllerForOpen"));
       return;
     }
 
@@ -194,14 +197,14 @@ public class PlanListViewController {
           .loadPlan(planId)
           .ifPresent(plan -> metaController.showTrainingPlanEditor(plan));
     } catch (IOException e) {
-      log.error("Failed to load plan with ID: {}", planId, e);
-      showErrorMessage("Failed to load plan");
+      log.error(Messages.getString("log.plan.loadFailed", planId), e);
+      showErrorMessage(Messages.getString("error.plan.loadSingleFailed.title"));
     }
   }
 
   /** Shows a message when no plans are available. */
   private void showNoPlansMessage() {
-    Label noPlansLabel = new Label("No plans found");
+    Label noPlansLabel = new Label(Messages.getString("ui.label.noPlans"));
     noPlansLabel.getStyleClass().add("search-results-placeholder");
     flowPane.getChildren().add(noPlansLabel);
   }
@@ -242,12 +245,12 @@ public class PlanListViewController {
           // Update the search button text based on the search term
           if (newValue != null && !newValue.isBlank()) {
             if (Objects.equals(newValue, activeSearchTerm)) {
-              searchLabel.setText("X");
+              searchLabel.setText(Messages.getString("ui.button.clear"));
             } else {
-              searchLabel.setText("Search");
+              searchLabel.setText(Messages.getString("ui.button.search"));
             }
           } else {
-            searchLabel.setText("Search");
+            searchLabel.setText(Messages.getString("ui.button.search"));
             activeSearchTerm = "";
           }
         };

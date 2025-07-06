@@ -12,11 +12,11 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10" />
     </padding>
-    
+
     <HBox alignment="CENTER_RIGHT">
-        <Button fx:id="deleteButton" text="-" styleClass="delete-template-button" 
+        <Button fx:id="deleteButton" text="%fxml.templateCard.delete" styleClass="delete-template-button" 
                 onAction="#handleDeleteButtonClick" />
     </HBox>
-    
+
     <Label fx:id="templateNameLabel" styleClass="template-name" wrapText="true" />
 </VBox>

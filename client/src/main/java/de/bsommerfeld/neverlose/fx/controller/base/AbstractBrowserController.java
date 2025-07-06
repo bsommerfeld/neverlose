@@ -1,5 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller.base;
 
+import de.bsommerfeld.neverlose.fx.messages.Messages;
+import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -7,6 +9,7 @@ import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javafx.fxml.FXML;
@@ -87,9 +90,10 @@ public abstract class AbstractBrowserController<S, T, C> {
       }
 
     } catch (IOException e) {
-      log.error("Error loading templates", e);
+      log.error(Messages.getString("log.plan.loadFailed"), e);
       notificationService.showError(
-          "The templates could not be loaded", "An error occurred: " + e.getMessage());
+          Messages.getString("error.template.loadFailed.title"),
+          Messages.getString("error.template.loadFailed.text", e.getMessage()));
     }
   }
 
@@ -102,6 +106,9 @@ public abstract class AbstractBrowserController<S, T, C> {
     try {
       // Load the card FXML
       FXMLLoader loader = new FXMLLoader(getClass().getResource(getCardFxmlPath()));
+      // Set the resource bundle for internationalization
+      ResourceBundle resourceBundle = new MessagesResourceBundle();
+      loader.setResources(resourceBundle);
       Parent cardRoot = loader.load();
 
       // Get the controller and set up the card
@@ -112,7 +119,7 @@ public abstract class AbstractBrowserController<S, T, C> {
       templatesContainer.getChildren().add(cardRoot);
 
     } catch (IOException e) {
-      log.error("Error creating template card for {}", getTemplateName(template), e);
+      log.error(Messages.getString("error.template.createFailed", getTemplateName(template)), e);
     }
   }
 
@@ -123,7 +130,7 @@ public abstract class AbstractBrowserController<S, T, C> {
    */
   protected void handleSelectTemplate(UUID templateId) {
     if (templateSelectedCallback == null) {
-      log.warn("Template selected but no callback is set");
+      log.warn(Messages.getString("log.error.noCallback"));
       return;
     }
 
@@ -132,7 +139,7 @@ public abstract class AbstractBrowserController<S, T, C> {
 
       if (itemOpt.isPresent()) {
         T item = itemOpt.get();
-        log.info("Template selected: {}", getItemName(item));
+        log.info(Messages.getString("log.template.selected", getItemName(item)));
 
         // Call the callback with the loaded item
         templateSelectedCallback.accept(item);
@@ -140,14 +147,16 @@ public abstract class AbstractBrowserController<S, T, C> {
         // Close the window
         close();
       } else {
-        log.warn("Selected template not found: {}", templateId);
+        log.warn(Messages.getString("log.template.notFound", templateId));
         notificationService.showWarning(
-            "Template Not Found", "The selected template could not be loaded.");
+            Messages.getString("error.template.notFound.title"),
+            Messages.getString("error.template.notFound.text"));
       }
     } catch (IOException e) {
-      log.error("Error loading template {}", templateId, e);
+      log.error(Messages.getString("log.template.notFound", templateId), e);
       notificationService.showError(
-          "The template could not be loaded", "An error occured: " + e.getMessage());
+          Messages.getString("error.template.loadFailed.single.title"),
+          Messages.getString("error.template.loadFailed.single.text", e.getMessage()));
     }
   }
 
@@ -168,25 +177,27 @@ public abstract class AbstractBrowserController<S, T, C> {
     // Show confirmation dialog
     notificationService.showConfirmation(
         getDeleteDialogTitle(),
-        "Do you really want to delete this template? \n\n This action cannot be undone.",
+        Messages.getString("dialog.delete.template.message"),
         () -> {
           try {
             boolean deleted = deleteTemplate(templateId);
 
             if (deleted) {
-              log.info("Template deleted: {}", templateId);
+              log.info(Messages.getString("log.template.deleted", templateId));
 
               // Reload the templates to update the UI
               loadTemplates();
             } else {
-              log.warn("Template not found for deletion: {}", templateId);
+              log.warn(Messages.getString("log.template.notFoundForDeletion", templateId));
               notificationService.showWarning(
-                  "Template Not Found", "The template to be deleted could not be found.");
+                  Messages.getString("error.template.notFoundForDeletion.title"),
+                  Messages.getString("error.template.notFoundForDeletion.text"));
             }
           } catch (IOException e) {
-            log.error("Error deleting template {}", templateId, e);
+            log.error(Messages.getString("log.template.notFoundForDeletion", templateId), e);
             notificationService.showError(
-                "The template could not be deleted", "An error occurred: " + e.getMessage());
+                Messages.getString("error.template.deleteFailed.title"),
+                Messages.getString("error.template.deleteFailed.text", e.getMessage()));
           }
         },
         null);

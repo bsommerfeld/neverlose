@@ -2,6 +2,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
@@ -82,36 +83,36 @@ public class PlanCardController {
   @FXML
   private void handleDeleteButtonAction() {
     if (plan == null || planStorageService == null || parentController == null) {
-      log.error("Cannot delete plan: plan, planStorageService, or parentController is null");
-      showErrorAlert("Error", "The plan could not be deleted.");
+      log.error(Messages.getString("log.error.cannotDeletePlan"));
+      showErrorAlert(Messages.getString("error.general.title"), Messages.getString("error.plan.cannotDelete.text"));
       return;
     }
 
     if (notificationService == null) {
-      log.error("Cannot show confirmation dialog: notificationService is null");
+      log.error(Messages.getString("log.error.cannotShowConfirmation"));
       return;
     }
 
     // Show confirmation dialog using NotificationService
     notificationService.showConfirmation(
-        "Delete Plan",
-        "Delete Plan \"" + plan.name() + "\"?\n\nDo you really want to delete this plan? This action cannot be made undo.",
+        Messages.getString("dialog.delete.plan.title"),
+        Messages.getString("dialog.delete.plan.message", plan.name()),
         () -> {
           // This code runs when the user confirms
           try {
             boolean deleted = planStorageService.deletePlan(plan.identifier());
             if (deleted) {
-              log.info("Successfully deleted plan: {}", plan.name());
+              log.info(Messages.getString("log.plan.deleted", plan.name()));
               // Refresh the plan list view
               parentController.refreshPlans();
             } else {
-              log.warn("Failed to delete plan: {}", plan.name());
-              showErrorAlert("Error", "The plan could not be deleted.");
+              log.warn(Messages.getString("log.plan.deleteFailed", plan.name()));
+              showErrorAlert(Messages.getString("error.general.title"), Messages.getString("error.plan.cannotDelete.text"));
             }
           } catch (IOException e) {
-            log.error("Error deleting plan: {}", plan.name(), e);
+            log.error(Messages.getString("log.error.deletePlan", plan.name()), e);
             showErrorAlert(
-                "Error", "An error occured while trying to delete the plan: " + e.getMessage());
+                Messages.getString("error.general.title"), Messages.getString("error.general.text", e.getMessage()));
           }
         },
         null // No action on cancel
@@ -128,7 +129,7 @@ public class PlanCardController {
     if (notificationService != null) {
       notificationService.showError(title, message);
     } else {
-      log.error("Cannot show error alert: notificationService is null. Error: {} - {}", title, message);
+      log.error(Messages.getString("log.error.cannotShowError", title, message));
     }
   }
 }

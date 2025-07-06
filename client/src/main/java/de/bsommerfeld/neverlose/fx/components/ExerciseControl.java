@@ -1,5 +1,6 @@
 package de.bsommerfeld.neverlose.fx.components;
 
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
@@ -92,7 +93,7 @@ public class ExerciseControl extends VBox {
     grid.setPadding(new Insets(5));
 
     // Name field
-    Label nameLabel = new Label("Name:");
+    Label nameLabel = new Label(Messages.getString("ui.label.name"));
     nameLabel.getStyleClass().add("exercise-label");
     TextField nameField = new TextField(exercise.getName());
     nameField.getStyleClass().add("exercise-name-field");
@@ -100,7 +101,7 @@ public class ExerciseControl extends VBox {
     GridPane.setHgrow(nameField, Priority.ALWAYS);
 
     // Description field
-    Label descLabel = new Label("Description:");
+    Label descLabel = new Label(Messages.getString("ui.label.description"));
     descLabel.getStyleClass().add("exercise-label");
     TextField descriptionField = new TextField(exercise.getDescription());
     descriptionField.getStyleClass().add("exercise-description-field");
@@ -110,14 +111,14 @@ public class ExerciseControl extends VBox {
     GridPane.setHgrow(descriptionField, Priority.ALWAYS);
 
     // Duration field
-    Label durationLabel = new Label("Duration:");
+    Label durationLabel = new Label(Messages.getString("ui.label.duration"));
     durationLabel.getStyleClass().add("exercise-label");
     TextField durationField = new TextField(exercise.getDuration());
     durationField.getStyleClass().add("exercise-duration-field");
     durationField.textProperty().addListener((obs, oldVal, newVal) -> exercise.setDuration(newVal));
 
     // Sets spinner
-    Label setsLabel = new Label("Sets:");
+    Label setsLabel = new Label(Messages.getString("ui.label.sets"));
     setsLabel.getStyleClass().add("exercise-label");
     Spinner<Integer> setsSpinner = new Spinner<>(1, 100, exercise.getSets());
     setsSpinner.setEditable(true);
@@ -125,7 +126,7 @@ public class ExerciseControl extends VBox {
     setsSpinner.getStyleClass().add("exercise-sets-spinner");
 
     // Ball bucket checkbox
-    Label ballBucketLabel = new Label("Ball Bucket:");
+    Label ballBucketLabel = new Label(Messages.getString("ui.label.ballBucket"));
     ballBucketLabel.getStyleClass().add("exercise-label");
     CheckBox ballBucketCheckBox = new CheckBox();
     ballBucketCheckBox.setSelected(exercise.isBallBucket());
@@ -151,18 +152,18 @@ public class ExerciseControl extends VBox {
     grid.add(ballBucketCheckBox, 1, 4);
 
     // Create a save as template button
-    Button saveAsTemplateButton = new Button("Save");
+    Button saveAsTemplateButton = new Button(Messages.getString("ui.button.save"));
     saveAsTemplateButton.getStyleClass().add("save-as-template-button");
     saveAsTemplateButton.setOnAction(e -> handleSaveAsTemplate());
 
     // Create a remove button (red X)
-    Button removeButton = new Button("X");
+    Button removeButton = new Button(Messages.getString("ui.button.remove"));
     removeButton.getStyleClass().add("remove-button");
     removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
     removeButton.setOnAction(e -> handleRemove());
 
     // Create a more button for touch devices
-    Button moreButton = new Button("⋮");
+    Button moreButton = new Button(Messages.getString("exercise.moreButton"));
     moreButton.getStyleClass().add("more-button");
     moreButton.setOnAction(e -> toggleActionButtons());
 
@@ -224,14 +225,12 @@ public class ExerciseControl extends VBox {
         // An exercise with this name exists but has a different ID
         // Show confirmation dialog before overwriting
         notificationService.showConfirmation(
-            "Overwrite Template?",
-            "An Exercise template with the name '"
-                + exerciseName
-                + "' already exists. Do you really want to overwrite the existing template?",
+            Messages.getString("exercise.overwriteDialogTitle"),
+            Messages.getString("exercise.overwriteDialogMessage", exerciseName),
             () -> {
               // User confirmed, create a new exercise with the existing ID
               log.info(
-                  "User confirmed overwriting exercise template with name '{}'.", exerciseName);
+                  Messages.getString("exercise.overwriteConfirmed"), exerciseName);
               try {
                 TrainingExercise newExercise =
                     new TrainingExercise(
@@ -243,23 +242,24 @@ public class ExerciseControl extends VBox {
                         exercise.isBallBucket());
 
                 planStorageService.saveExercise(newExercise);
-                log.info("Exercise saved as template successfully: {}", newExercise.getName());
+                log.info(Messages.getString("exercise.saveSuccess"), newExercise.getName());
 
                 // Show success message
                 notificationService.showSuccess(
-                    "Template Saved", "The exercise was successfully saved as a template.");
+                    Messages.getString("notification.exercise.saved.title"), 
+                    Messages.getString("notification.exercise.saved.text"));
               } catch (IOException e) {
-                log.error("Error saving exercise as template", e);
+                log.error(Messages.getString("exercise.saveError"), e);
 
                 // Show error message
                 notificationService.showError(
-                    "Error Saving",
-                    "Saving as template has failed. An error occurred: " + e.getMessage());
+                    Messages.getString("notification.exercise.saveFailed.title"),
+                    Messages.getString("notification.exercise.saveFailed.text", e.getMessage()));
               }
             },
             () -> {
               // User canceled, abort save operation
-              log.info("User canceled overwriting exercise template with name '{}'.", exerciseName);
+              log.info(Messages.getString("exercise.overwriteCanceled"), exerciseName);
             });
         return;
       }

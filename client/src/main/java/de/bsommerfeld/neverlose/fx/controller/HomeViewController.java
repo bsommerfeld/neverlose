@@ -3,6 +3,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
@@ -33,11 +34,11 @@ public class HomeViewController {
   /** Handles the "Show Plans" button click event. Navigates to the plan list view. */
   @FXML
   private void handleShowPlans() {
-    log.debug("Show Plans button clicked");
+    log.debug(Messages.getString("log.debug.showPlansClicked"));
     if (metaController != null) {
       metaController.showPlanListView();
     } else {
-      log.error("Meta controller not set, cannot navigate to plan list view");
+      log.error(Messages.getString("log.error.noMetaController"));
     }
   }
 
@@ -47,16 +48,19 @@ public class HomeViewController {
    */
   @FXML
   private void handleNewPlan() {
-    log.debug("New Plan button clicked");
+    log.debug(Messages.getString("log.debug.newPlanClicked"));
     if (metaController != null) {
-      TrainingPlan newPlan = new TrainingPlan("New Training Plan", "Description");
+      TrainingPlan newPlan = new TrainingPlan(
+          Messages.getString("general.defaultPlanName"), 
+          Messages.getString("general.defaultPlanDescription"));
       metaController.showTrainingPlanEditor(newPlan);
 
       // Show a success notification
       notificationService.showSuccess(
-          "Plan Created", "A new training plan has been created successfully.");
+          Messages.getString("ui.message.planCreated.title"), 
+          Messages.getString("ui.message.planCreated.text"));
     } else {
-      log.error("Meta controller not set, cannot create new plan");
+      log.error(Messages.getString("log.error.noMetaControllerForPlan"));
     }
   }
 }

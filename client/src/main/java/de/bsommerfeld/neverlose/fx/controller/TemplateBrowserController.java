@@ -2,6 +2,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.controller.base.AbstractBrowserController;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.persistence.model.UnitSummary;
@@ -33,17 +34,17 @@ public class TemplateBrowserController
 
   @Override
   protected String getNoTemplatesMessage() {
-    return "No templates available. Save training units as templates to display them here.";
+    return Messages.getString("template.noTemplatesAvailable");
   }
 
   @Override
   protected String getCardFxmlPath() {
-    return "/de/bsommerfeld/neverlose/fx/controller/TemplateCard.fxml";
+    return Messages.getString("path.templateCard.fxml");
   }
 
   @Override
   protected String getDeleteDialogTitle() {
-    return "Delete Template";
+    return Messages.getString("template.deleteButtonText");
   }
 
   @Override

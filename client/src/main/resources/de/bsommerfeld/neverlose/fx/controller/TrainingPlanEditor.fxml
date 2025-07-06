@@ -22,8 +22,8 @@
             <padding>
                 <Insets top="10" right="10" bottom="10" left="10"/>
             </padding>
-            <Button fx:id="saveButton" text="Save" onAction="#handleSave" styleClass="editor-action-button"/>
-            <Button fx:id="exportButton" text="Export" onAction="#handleExport" styleClass="editor-action-button"/>
+            <Button fx:id="saveButton" text="%ui.button.save" onAction="#handleSave" styleClass="editor-action-button"/>
+            <Button fx:id="exportButton" text="%fxml.trainingPlanEditor.export" onAction="#handleExport" styleClass="editor-action-button"/>
         </HBox>
     </top>
 
@@ -49,7 +49,7 @@
 
                                 <!-- Plan Name -->
                                 <TextField fx:id="planNameField" styleClass="editor-title-field"
-                                           promptText="Training Plan Name">
+                                           promptText="%fxml.trainingPlanEditor.planNamePrompt">
                                     <font>
                                         <Font size="24.0"/>
                                     </font>
@@ -57,7 +57,7 @@
 
                                 <!-- Plan Description -->
                                 <TextField fx:id="planDescriptionField" styleClass="editor-description-field"
-                                           promptText="Training Plan Description">
+                                           promptText="%fxml.trainingPlanEditor.planDescriptionPrompt">
                                     <font>
                                         <Font size="16.0"/>
                                     </font>
@@ -72,13 +72,13 @@
 
                                 <!-- Add Unit Buttons -->
                                 <HBox alignment="CENTER" spacing="10">
-                                    <Button fx:id="addUnitButton" text="+" onAction="#handleAddUnit"
+                                    <Button fx:id="addUnitButton" text="%ui.button.add" onAction="#handleAddUnit"
                                             styleClass="add-unit-button">
                                         <font>
                                             <Font size="18.0"/>
                                         </font>
                                     </Button>
-                                    <Button fx:id="addFromTemplateButton" text="Load"
+                                    <Button fx:id="addFromTemplateButton" text="%ui.button.load"
                                             onAction="#handleAddFromTemplate"
                                             styleClass="add-from-template-button">
                                         <font>

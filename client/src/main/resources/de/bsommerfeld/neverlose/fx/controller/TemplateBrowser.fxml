@@ -8,7 +8,7 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootPane" xmlns="http://javafx.com/javafx/17"
             styleClass="template-browser" stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css">
     <top>
-        <Label text="Training Unit Templates" styleClass="template-browser-title"/>
+        <Label text="%ui.title.templateBrowser" styleClass="template-browser-title"/>
     </top>
     <center>
         <ScrollPane styleClass="template-browser-scroll-pane">

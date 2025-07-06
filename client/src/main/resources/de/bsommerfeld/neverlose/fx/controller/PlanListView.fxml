@@ -18,10 +18,10 @@
     <StackPane VBox.vgrow="NEVER" alignment="CENTER">
         <VBox alignment="CENTER" VBox.vgrow="NEVER">
             <HBox alignment="CENTER" HBox.hgrow="NEVER" styleClass="search-container">
-                <TextField fx:id="searchTextField" promptText="Search plans..."
+                <TextField fx:id="searchTextField" promptText="%fxml.planListView.searchPrompt"
                            styleClass="search-field" HBox.hgrow="ALWAYS">
                 </TextField>
-                <Label fx:id="searchLabel" text="Search" styleClass="search-label"
+                <Label fx:id="searchLabel" text="%fxml.planListView.searchLabel" styleClass="search-label"
                        onMouseClicked="#onSearch"/>
             </HBox>
 

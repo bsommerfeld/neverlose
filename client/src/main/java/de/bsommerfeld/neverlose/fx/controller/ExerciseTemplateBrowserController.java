@@ -2,6 +2,7 @@ package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.fx.controller.base.AbstractBrowserController;
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.persistence.model.ExerciseSummary;
@@ -33,17 +34,17 @@ public class ExerciseTemplateBrowserController
 
   @Override
   protected String getNoTemplatesMessage() {
-    return "No exercise templates available. Save exercises as templates to display them here.";
+    return Messages.getString("exercise.noTemplatesAvailable");
   }
 
   @Override
   protected String getCardFxmlPath() {
-    return "/de/bsommerfeld/neverlose/fx/controller/ExerciseCard.fxml";
+    return Messages.getString("path.exerciseCard.fxml");
   }
 
   @Override
   protected String getDeleteDialogTitle() {
-    return "Delete Exercise Template";
+    return Messages.getString("exercise.deleteButtonText");
   }
 
   @Override

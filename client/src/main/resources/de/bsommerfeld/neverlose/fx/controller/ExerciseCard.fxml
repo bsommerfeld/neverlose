@@ -11,7 +11,7 @@
      styleClass="template-card" onMouseClicked="#handleCardClick">
 
     <HBox styleClass="template-card-header">
-        <Button fx:id="deleteButton" text="-" styleClass="delete-template-button" 
+        <Button fx:id="deleteButton" text="%fxml.templateCard.delete" styleClass="delete-template-button" 
                 onAction="#handleDeleteButtonClick" />
     </HBox>
 

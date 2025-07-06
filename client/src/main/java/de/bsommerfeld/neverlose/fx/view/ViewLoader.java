@@ -2,9 +2,11 @@ package de.bsommerfeld.neverlose.fx.view;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -37,6 +39,10 @@ public class ViewLoader {
 
     fxmlLoader.setLocation(fxmlLocation);
     fxmlLoader.setControllerFactory(injector::getInstance);
+
+    // Set the resource bundle for internationalization
+    ResourceBundle resourceBundle = new MessagesResourceBundle();
+    fxmlLoader.setResources(resourceBundle);
 
     try {
       Parent parent = fxmlLoader.load();
