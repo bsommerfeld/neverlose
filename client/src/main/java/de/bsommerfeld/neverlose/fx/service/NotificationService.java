@@ -176,12 +176,11 @@ public class NotificationService {
 
       Platform.runLater(
           () -> {
-            // Stelle sicher, dass nur die sichtbaren Elemente der Benachrichtigung klickbar sind
+            // Make only the visible areas fetch mouse events
             notification.setMouseTransparent(false);
-            notification.setPickOnBounds(
-                false); // Nur die tatsächlich sichtbaren Bereiche fangen Mausevents ab
+            notification.setPickOnBounds(false);
             // Add at the beginning (bottom) of the container
-            notificationContainer.getChildren().add(0, notification);
+            notificationContainer.getChildren().addFirst(notification);
             // Show the notification after it's been added to the container
             controller.show();
           });

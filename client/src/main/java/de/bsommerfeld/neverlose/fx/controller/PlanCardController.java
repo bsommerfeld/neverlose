@@ -1,19 +1,15 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
+import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
-import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import java.io.IOException;
-import java.util.Optional;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 
 /** Controller for the plan card view that displays a single training plan. */
@@ -84,7 +80,9 @@ public class PlanCardController {
   private void handleDeleteButtonAction() {
     if (plan == null || planStorageService == null || parentController == null) {
       log.error(Messages.getString("log.error.cannotDeletePlan"));
-      showErrorAlert(Messages.getString("error.general.title"), Messages.getString("error.plan.cannotDelete.text"));
+      showErrorAlert(
+          Messages.getString("error.general.title"),
+          Messages.getString("error.plan.cannotDelete.text"));
       return;
     }
 
@@ -107,16 +105,19 @@ public class PlanCardController {
               parentController.refreshPlans();
             } else {
               log.warn(Messages.getString("log.plan.deleteFailed", plan.name()));
-              showErrorAlert(Messages.getString("error.general.title"), Messages.getString("error.plan.cannotDelete.text"));
+              showErrorAlert(
+                  Messages.getString("error.general.title"),
+                  Messages.getString("error.plan.cannotDelete.text"));
             }
           } catch (IOException e) {
             log.error(Messages.getString("log.error.deletePlan", plan.name()), e);
             showErrorAlert(
-                Messages.getString("error.general.title"), Messages.getString("error.general.text", e.getMessage()));
+                Messages.getString("error.general.title"),
+                Messages.getString("error.general.text", e.getMessage()));
           }
         },
         null // No action on cancel
-    );
+        );
   }
 
   /**
