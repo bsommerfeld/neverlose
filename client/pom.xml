@@ -22,6 +22,13 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>neverlose.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.properties</exclude>
                 </excludes>
@@ -32,6 +39,9 @@
                 <includes>
                     <include>**/*.properties</include>
                 </includes>
+                <excludes>
+                    <exclude>neverlose.properties</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
@@ -41,9 +51,6 @@
                 <version>3.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>properties</nonFilteredFileExtension>
-                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
             <plugin>
