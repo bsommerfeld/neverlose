@@ -14,6 +14,7 @@
 
     <properties>
         <javafx.version>24.0.1</javafx.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -21,6 +22,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
             </resource>
         </resources>
         <plugins>
@@ -30,6 +41,9 @@
                 <version>3.3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
             <plugin>
@@ -68,6 +82,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>io.github.snoopy137</groupId>
+            <artifactId>language-manager</artifactId>
+            <version>1.1.1</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
