@@ -13,14 +13,15 @@ import java.util.Properties;
 /**
  * Utility class to load and provide localized messages from a properties file located in the
  * classpath resources. Properties are loaded once when the class is initialized.
- * <p>
- * This class provides various helper methods for retrieving different types of messages
- * (UI strings, error messages, log messages, etc.) with proper formatting.
+ *
+ * <p>This class provides various helper methods for retrieving different types of messages (UI
+ * strings, error messages, log messages, etc.) with proper formatting.
  */
 public final class Messages {
 
   private static final LogFacade log;
   private static final Properties PROPERTIES = new Properties();
+  private static final String INTERNAL_PROPERTIES_RESOURCE_PATH = "/internal_messages.properties";
   private static final String PROPERTIES_RESOURCE_PATH = "/messages.properties";
 
   static {
@@ -47,10 +48,11 @@ public final class Messages {
   }
 
   /**
-   * Loads properties from the resource file defined by PROPERTIES_RESOURCE_PATH. Called only once
-   * from the static initializer.
+   * Loads properties from the resource files defined by PROPERTIES_RESOURCE_PATH and 
+   * INTERNAL_PROPERTIES_RESOURCE_PATH. Called only once from the static initializer.
    */
   private static void loadPropertiesFromResources() {
+    // Load main properties file
     try (InputStream propertiesStream =
         Messages.class.getResourceAsStream(PROPERTIES_RESOURCE_PATH)) {
 
@@ -60,8 +62,7 @@ public final class Messages {
         throw new IllegalStateException("Resource file not found: " + PROPERTIES_RESOURCE_PATH);
       } else {
         PROPERTIES.load(new InputStreamReader(propertiesStream, StandardCharsets.UTF_8));
-        log.info(getString("log.app.messagesLoaded", PROPERTIES_RESOURCE_PATH));
-        log.debug(getString("log.app.messagesCount", PROPERTIES.size()));
+        log.info("Successfully loaded messages from resource: {}", PROPERTIES_RESOURCE_PATH);
       }
     } catch (IOException e) {
       log.error(
@@ -76,6 +77,35 @@ public final class Messages {
       throw new IllegalStateException(
           "Unexpected error loading properties from resource: " + PROPERTIES_RESOURCE_PATH, e);
     }
+
+    // Load internal properties file
+    try (InputStream internalPropertiesStream =
+        Messages.class.getResourceAsStream(INTERNAL_PROPERTIES_RESOURCE_PATH)) {
+
+      if (internalPropertiesStream == null) {
+        log.error(
+            "FATAL ERROR: Internal resource file not found in classpath: {}", INTERNAL_PROPERTIES_RESOURCE_PATH);
+        throw new IllegalStateException("Internal resource file not found: " + INTERNAL_PROPERTIES_RESOURCE_PATH);
+      } else {
+        PROPERTIES.load(new InputStreamReader(internalPropertiesStream, StandardCharsets.UTF_8));
+        log.info("Successfully loaded messages from resource: {}", INTERNAL_PROPERTIES_RESOURCE_PATH);
+      }
+    } catch (IOException e) {
+      log.error(
+          "FATAL ERROR: Could not load properties from internal resource: {}", INTERNAL_PROPERTIES_RESOURCE_PATH, e);
+      throw new IllegalStateException(
+          "Could not load properties from internal resource: " + INTERNAL_PROPERTIES_RESOURCE_PATH, e);
+    } catch (Exception e) {
+      log.error(
+          "FATAL ERROR: Unexpected error loading properties from internal resource: {}",
+          INTERNAL_PROPERTIES_RESOURCE_PATH,
+          e);
+      throw new IllegalStateException(
+          "Unexpected error loading properties from internal resource: " + INTERNAL_PROPERTIES_RESOURCE_PATH, e);
+    }
+
+    // Log the total number of properties loaded
+    log.debug(getString("log.app.messagesCount", PROPERTIES.size()));
   }
 
   /**
@@ -137,8 +167,8 @@ public final class Messages {
   }
 
   /**
-   * Retrieves a UI string for the given element type and name.
-   * This is a convenience method for accessing UI-related strings.
+   * Retrieves a UI string for the given element type and name. This is a convenience method for
+   * accessing UI-related strings.
    *
    * @param elementType The type of UI element (button, label, title, etc.)
    * @param name The specific name of the element
@@ -247,7 +277,8 @@ public final class Messages {
   }
 
   /**
-   * Retrieves a dialog message for the given dialog type and formats it with the provided arguments.
+   * Retrieves a dialog message for the given dialog type and formats it with the provided
+   * arguments.
    *
    * @param dialogType The type of dialog (delete, overwrite, etc.)
    * @param name The specific name of the dialog
@@ -316,14 +347,16 @@ public final class Messages {
   }
 
   /**
-   * Retrieves a notification message for the given notification type and formats it with the provided arguments.
+   * Retrieves a notification message for the given notification type and formats it with the
+   * provided arguments.
    *
    * @param notificationType The type of notification (template, plan, export, etc.)
    * @param name The specific name of the notification (title, text, etc.)
    * @param arguments The arguments to be formatted into the notification message
    * @return The formatted notification message
    */
-  public static String getNotificationMessage(String notificationType, String name, Object... arguments) {
+  public static String getNotificationMessage(
+      String notificationType, String name, Object... arguments) {
     return getString("notification." + notificationType + "." + name, arguments);
   }
 
