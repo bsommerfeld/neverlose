@@ -69,7 +69,7 @@
     -fx-background-insets: 0;
     -fx-padding: 0;
     -fx-max-width: 400px;
-    -fx-min-width: 300px;
+    -fx-min-width: 400px;
     -fx-pref-height: 30px;
     -fx-alignment: CENTER;
 }
