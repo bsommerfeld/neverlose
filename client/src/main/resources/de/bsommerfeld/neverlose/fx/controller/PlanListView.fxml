@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
@@ -14,22 +11,6 @@
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
-
-    <StackPane VBox.vgrow="NEVER" alignment="CENTER">
-        <VBox alignment="CENTER" VBox.vgrow="NEVER">
-            <HBox alignment="CENTER" HBox.hgrow="NEVER" styleClass="search-container">
-                <TextField fx:id="searchTextField" promptText="%fxml.planListView.searchPrompt"
-                           styleClass="search-field" HBox.hgrow="ALWAYS">
-                </TextField>
-                <Label fx:id="searchLabel" text="%fxml.planListView.searchLabel" styleClass="search-label"
-                       onMouseClicked="#onSearch"/>
-            </HBox>
-
-            <VBox.margin>
-                <Insets bottom="20"/>
-            </VBox.margin>
-        </VBox>
-    </StackPane>
 
     <StackPane VBox.vgrow="ALWAYS" styleClass="preview-container">
         <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane" fitToWidth="true" fitToHeight="true">

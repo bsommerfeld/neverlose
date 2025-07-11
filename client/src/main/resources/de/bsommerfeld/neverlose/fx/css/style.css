@@ -32,18 +32,24 @@
     -fx-pref-height: 40.0;
 }
 
+/* Dynamic components container in TopBar */
+.dynamic-components-container {
+    -fx-padding: 5 15 5 15;
+    -fx-min-height: 30px;
+}
+
 .search-field {
     -fx-background-radius: 20px 0 0 20px; /* Größere abgerundete Ecken, links */
     -fx-border-radius: 20px 0 0 20px;
     -fx-border-color: transparent;
     -fx-background-color: white;
-    -fx-padding: 10 15 10 15;
+    -fx-padding: 5 10 5 10;
     -fx-prompt-text-fill: -text-secondary;
     -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
     -fx-border-insets: 0;
     -fx-background-insets: 0;
-    -fx-pref-height: 40; /* Größere Höhe */
-    -fx-font-size: 15px; /* Größere Schrift */
+    -fx-pref-height: 30; /* Angepasste Höhe */
+    -fx-font-size: 13px; /* Angepasste Schriftgröße */
 }
 
 .search-field:focused {
@@ -63,8 +69,9 @@
     -fx-border-insets: 0;
     -fx-background-insets: 0;
     -fx-padding: 0;
-    -fx-max-width: 550px;
-    -fx-min-width: 450px;
+    -fx-max-width: 400px;
+    -fx-min-width: 300px;
+    -fx-pref-height: 30px;
     -fx-alignment: CENTER;
 }
 
@@ -73,16 +80,16 @@
     -fx-background-color: #ececec;
     -fx-text-fill: -text-secondary;
     -fx-font-family: "Lato, 'Segoe UI', System";
-    -fx-padding: 10 20 10 10;
+    -fx-padding: 5 15 5 10;
     -fx-background-radius: 0 20px 20px 0; /* Größere abgerundete Ecken, rechts */
     -fx-border-radius: 0 20px 20px 0;
     -fx-alignment: center;
-    -fx-min-width: 90;
-    -fx-pref-height: 40; /* Größere Höhe */
+    -fx-min-width: 70;
+    -fx-pref-height: 30; /* Angepasste Höhe */
     -fx-cursor: hand;
     -fx-border-insets: 0;
     -fx-background-insets: 0;
-    -fx-font-size: 15px; /* Größere Schrift */
+    -fx-font-size: 13px; /* Angepasste Schriftgröße */
 }
 
 /* --- Bottom Bar (Footer) --- */

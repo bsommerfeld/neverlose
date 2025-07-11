@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <HBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER_LEFT" spacing="10" styleClass="top-search-bar"
       prefHeight="40.0" xmlns="http://javafx.com/javafx/21"
       HBox.hgrow="ALWAYS"
@@ -12,8 +11,12 @@
         <Insets top="5" right="10" bottom="5" left="10"/>
     </padding>
 
+    <!-- Home button on the left -->
     <Button fx:id="homeButton" onAction="#handleHomeButton" styleClass="editor-action-button" text="%fxml.topBar.home">
     </Button>
 
-    <Region HBox.hgrow="ALWAYS"/>
+    <!-- Dynamic components container with background -->
+    <HBox fx:id="dynamicComponentsContainer" spacing="10" alignment="CENTER" HBox.hgrow="ALWAYS"
+          styleClass="dynamic-components-container">
+    </HBox>
 </HBox>

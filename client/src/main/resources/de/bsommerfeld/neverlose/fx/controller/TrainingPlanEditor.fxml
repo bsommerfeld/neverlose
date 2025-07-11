@@ -16,17 +16,6 @@
             fx:controller="de.bsommerfeld.neverlose.fx.controller.TrainingPlanEditorController"
             styleClass="plan-editor-background">
 
-    <!-- Top Action Bar -->
-    <top>
-        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="editor-action-bar">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="10"/>
-            </padding>
-            <Button fx:id="saveButton" text="%ui.button.save" onAction="#handleSave" styleClass="editor-action-button"/>
-            <Button fx:id="exportButton" text="%fxml.trainingPlanEditor.export" onAction="#handleExport" styleClass="editor-action-button"/>
-        </HBox>
-    </top>
-
     <!-- Center Content with Overlay Menu -->
     <center>
         <StackPane>
