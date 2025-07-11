@@ -34,7 +34,6 @@
 
 /* Dynamic components container in TopBar */
 .dynamic-components-container {
-    -fx-padding: 5 15 5 15;
     -fx-min-height: 30px;
 }
 
@@ -353,6 +352,15 @@
     -fx-border-style: solid;
     -fx-border-color: -accent-silver;
     -fx-border-width: 1px 0 0 0; /* Top line only */
+}
+
+/* Vertical separator styling */
+.separator:vertical *.line {
+    -fx-border-style: solid;
+    -fx-border-color: -never-blue; /* Using the app's blue color for better visibility */
+    -fx-border-width: 0 2px 0 0; /* Right line only, thicker for better visibility */
+    -fx-opacity: 0.3; /* Slightly transparent for a softer look */
+    -fx-effect: dropshadow(gaussian, rgba(26, 58, 143, 0.3), 3, 0, 1, 0); /* Subtle shadow for depth */
 }
 
 /* --- Typography Classes --- */
