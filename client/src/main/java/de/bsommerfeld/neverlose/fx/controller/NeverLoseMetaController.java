@@ -119,8 +119,9 @@ public class NeverLoseMetaController {
 
     private void updateTopBarControlNodes(Object controller) {
         ControlsContainer container = controlsContainerMap.get(controller);
+        topBarController.unregisterAllComponents(); // Clear the components from the last view
+        
         if (container == null) {
-            topBarController.unregisterAllComponents();
             log.debug("Could not show controls container because container is null.");
             return;
         }
