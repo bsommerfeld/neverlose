@@ -28,6 +28,15 @@ public class HomeViewController {
     @FXML
     private void handleShowPlans() {
         log.debug(Messages.getString("log.debug.showPlansClicked"));
+
+        /*
+         * We need to refresh the plans here so that the recent changes (or initial plans)
+         * are loaded correctly. If we don't do that any plan you want to open initially
+         * would turn into a new plan.
+         *
+         * The same is (probably) to be expected when saving a plan and reopening it.
+         * So we need to update the cache.
+         */
         viewProvider.triggerViewChange(PlanListViewController.class, PlanListViewController::refreshPlans);
     }
 
