@@ -253,8 +253,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
 
             // Store the expanded state of each unit before clearing
             for (Node node : trainingUnitsContainer.getChildren()) {
-                if (node instanceof TrainingUnitControl) {
-                    TrainingUnitControl unitControl = (TrainingUnitControl) node;
+                if (node instanceof TrainingUnitControl unitControl) {
                     TrainingUnit unit = unitControl.getTrainingUnit();
                     // Store whether this unit is expanded or collapsed
                     unitExpandedStates.put(unit.getId(), unitControl.isExpanded());

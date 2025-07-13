@@ -43,7 +43,6 @@ public class PlanListViewController implements ControlsProvider {
     private final PlanStorageService planStorageService;
     private final SearchState searchState;
     private final NotificationService notificationService;
-    private NeverLoseMetaController metaController;
 
     @FXML
     private FlowPane flowPane;
@@ -161,16 +160,6 @@ public class PlanListViewController implements ControlsProvider {
         }
     }
 
-    /**
-     * Sets a reference to the meta controller for navigation.
-     *
-     * @param metaController the meta controller
-     */
-    public void setMetaController(NeverLoseMetaController metaController) {
-        this.metaController = metaController;
-        log.debug("Meta controller set for PlanListViewController");
-    }
-
     /** Loads all available plans and displays them in the flow pane. */
     private void loadPlans() {
         try {
@@ -241,15 +230,11 @@ public class PlanListViewController implements ControlsProvider {
      * @param planId the ID of the plan to open
      */
     private void openPlan(UUID planId) {
-        if (metaController == null) {
-            log.error(Messages.getString("log.error.noMetaControllerForOpen"));
-            return;
-        }
-
         try {
             planStorageService
                     .loadPlan(planId)
-                    .ifPresent(plan -> metaController.showTrainingPlanEditor(plan));
+                    .ifPresent(plan -> viewProvider.triggerViewChange(TrainingPlanEditorController.class,
+                            t -> t.setTrainingPlan(plan)));
         } catch (IOException e) {
             log.error(Messages.getString("log.plan.loadFailed", planId), e);
             showErrorMessage(Messages.getString("error.plan.loadSingleFailed.title"));

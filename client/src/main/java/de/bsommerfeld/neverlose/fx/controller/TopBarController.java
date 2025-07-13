@@ -38,8 +38,7 @@ public class TopBarController {
     @FXML
     private void handleHomeButton() {
         log.debug("Home button clicked");
-        viewProvider.triggerViewChange(
-                NeverLoseMetaController.class, NeverLoseMetaController::showHomeView);
+        viewProvider.triggerViewChange(HomeViewController.class);
     }
 
     /**

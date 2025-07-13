@@ -8,7 +8,6 @@ import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
-import de.bsommerfeld.neverlose.plan.TrainingPlan;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
@@ -56,6 +55,8 @@ public class NeverLoseMetaController {
 
     @FXML
     private void initialize() {
+        registerViewChangeListener();
+
         loadTopBar();
         loadBottomBar();
 
@@ -67,7 +68,14 @@ public class NeverLoseMetaController {
         notificationService.init(notificationContainer);
 
         // Show the home view as the default view
-        showHomeView();
+        viewProvider.triggerViewChange(HomeViewController.class);
+    }
+
+    private void registerViewChangeListener() {
+        // Ein Listener für alle Views, der die View anzeigt
+        viewProvider.registerViewChangeListener(HomeViewController.class, this::displayView);
+        viewProvider.registerViewChangeListener(PlanListViewController.class, this::displayView);
+        viewProvider.registerViewChangeListener(TrainingPlanEditorController.class, this::displayView);
     }
 
     private void loadTopBar() {
@@ -92,35 +100,10 @@ public class NeverLoseMetaController {
         bottomBarPlaceholder.getChildren().add(bottomBar);
     }
 
-    /**
-     * Loads a view into the center content area.
-     *
-     * @param clazz the class of the controller for the view to load
-     * @param <T>   the type of the controller
-     *
-     * @return the controller instance
-     */
-    public <T> T loadCenter(Class<T> clazz) {
-        ViewWrapper<T> viewWrapper = viewProvider.requestView(clazz);
-        T controller = viewWrapper.controller();
-
-        Parent center = viewWrapper.parent();
-        setAnchor(center);
-        centerContentPlaceholder.getChildren().setAll(center);
-
-        // Register controls if provided
-        registerControls(controller);
-
-        // Update the topbar with control nodes
-        updateTopBarControlNodes(controller);
-
-        return controller;
-    }
-
     private void updateTopBarControlNodes(Object controller) {
         ControlsContainer container = controlsContainerMap.get(controller);
         topBarController.unregisterAllComponents(); // Clear the components from the last view
-        
+
         if (container == null) {
             log.debug("Could not show controls container because container is null.");
             return;
@@ -129,28 +112,22 @@ public class NeverLoseMetaController {
         topBarController.registerComponents(container.alignment, container.container);
     }
 
-    /** Shows the home view in the center content area. */
-    public void showHomeView() {
-        HomeViewController controller = loadCenter(HomeViewController.class);
-        controller.setMetaController(this);
-    }
+    private <T> void displayView(ViewWrapper<T> viewWrapper) {
+        Parent center = viewWrapper.parent();
+        T controller = viewWrapper.controller();
 
-    /** Shows the plan list view in the center content area. */
-    public void showPlanListView() {
-        PlanListViewController controller = loadCenter(PlanListViewController.class);
-        controller.setMetaController(this);
-        // Refresh the plan list to ensure it's up-to-date
-        controller.refreshPlans();
-    }
+        setAnchor(center);
+        centerContentPlaceholder.getChildren().setAll(center);
 
-    /**
-     * Shows the training plan editor for the given plan in the center content area.
-     *
-     * @param plan the plan to edit
-     */
-    public void showTrainingPlanEditor(TrainingPlan plan) {
-        TrainingPlanEditorController controller = loadCenter(TrainingPlanEditorController.class);
-        controller.setTrainingPlan(plan);
+        registerControls(controller);
+
+        // Aktualisiere die TopBar basierend auf dem (bereits konfigurierten) Controller
+        updateTopBarControlNodes(controller);
+
+        // Spezifische Logik kann hier noch folgen, falls nötig
+        if (controller instanceof PlanListViewController planListViewController) {
+            planListViewController.refreshPlans();
+        }
     }
 
     static class ControlsContainer {
