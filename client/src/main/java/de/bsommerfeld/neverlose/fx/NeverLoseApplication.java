@@ -16,26 +16,26 @@ import javafx.stage.Stage;
 
 public class NeverLoseApplication extends Application {
 
-  private final Injector injector;
-  private final LogFacade log = LogFacadeFactory.getLogger();
+    private final Injector injector;
+    private final LogFacade log = LogFacadeFactory.getLogger();
 
-  public NeverLoseApplication() {
-    this.injector = Guice.createInjector(new NeverLoseModule());
-  }
+    public NeverLoseApplication() {
+        this.injector = Guice.createInjector(new NeverLoseModule());
+    }
 
-  @Override
-  public void start(Stage stage) {
-    log.info("Starting Topspin application");
-    ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
-    Parent root = viewProvider.requestView(NeverLoseMetaController.class).parent();
-    Scene scene = new Scene(root);
+    @Override
+    public void start(Stage stage) {
+        log.info("Starting Topspin application");
+        ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
+        Parent root = viewProvider.requestView(NeverLoseMetaController.class).parent();
+        Scene scene = new Scene(root);
 
-    // Centrally load the application stylesheet
-    scene.getStylesheets().add("/de/bsommerfeld/neverlose/fx/css/style.css");
+        // Centrally load the application stylesheet
+        scene.getStylesheets().add("/de/bsommerfeld/neverlose/fx/css/style.css");
 
-    stage.setScene(scene);
-    stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/icon.png"));
-    stage.setTitle("Neverlose " + Main.getNeverloseVersion());
-    stage.show();
-  }
+        stage.setScene(scene);
+        stage.getIcons().setAll(new Image("de/bsommerfeld/neverlose/fx/icon.png"));
+        stage.setTitle("Neverlose " + Main.getNeverloseVersion());
+        stage.show();
+    }
 }
