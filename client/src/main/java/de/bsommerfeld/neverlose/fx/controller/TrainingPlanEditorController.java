@@ -506,20 +506,53 @@ public class TrainingPlanEditorController implements ControlsProvider {
             loader.setController(controller);
             Parent root = loader.load();
 
+            // Create a draggable container for the template browser
+            de.bsommerfeld.neverlose.fx.components.DraggableContainer container =
+                    new de.bsommerfeld.neverlose.fx.components.DraggableContainer(root);
+            container.setPrefSize(600, 400);
+            container.setMaxSize(600, 400);
+
             // Set the callback
-            controller.setTemplateSelectedCallback(this::addTemplateToTrainingPlan);
+            controller.setTemplateSelectedCallback(templateUnit -> {
+                try {
+                    // Add the template to the training plan
+                    addTemplateToTrainingPlan(templateUnit);
 
-            // Create a new stage for the template browser
-            Stage templateBrowserStage = new Stage();
-            templateBrowserStage.setTitle(Messages.getString("ui.title.templateBrowser"));
-            templateBrowserStage.initModality(Modality.APPLICATION_MODAL);
-            templateBrowserStage.initOwner(rootPane.getScene().getWindow());
+                    // Remove the container after selection
+                    container.removeFromParent();
+                } catch (Exception e) {
+                    log.error("Error handling template selection", e);
+                    notificationService.showError(
+                            Messages.getString("error.browser.selectionFailed.title"),
+                            Messages.getString("error.browser.selectionFailed.detail", e.getMessage()));
+                }
+            });
 
-            // Set the scene and show the stage
-            Scene scene = new Scene(root, 600, 400);
-            scene.getStylesheets().addAll(rootPane.getScene().getStylesheets());
-            templateBrowserStage.setScene(scene);
-            templateBrowserStage.showAndWait();
+            // Find the root pane of the application
+            Scene scene = rootPane.getScene();
+            if (scene != null) {
+                // Get the root pane of the scene
+                Parent rootNode = scene.getRoot();
+
+                // Find a suitable parent pane to add the container to
+                javafx.scene.layout.Pane parentPane = findSuitableParentPane(rootNode);
+
+                if (parentPane != null) {
+                    // Add the container to the parent pane
+                    container.addToParent(parentPane);
+
+                    // Apply stylesheets
+                    container.getStylesheets().addAll(scene.getStylesheets());
+                } else {
+                    // Fallback to old behavior if no suitable parent pane is found
+                    log.warn("No suitable parent pane found for draggable container, falling back to dialog");
+                    showAsDialog(root);
+                }
+            } else {
+                // Fallback to old behavior if no scene is available
+                log.warn("No scene available for draggable container, falling back to dialog");
+                showAsDialog(root);
+            }
 
         } catch (Exception e) {
             log.error("Error opening template browser", e);
@@ -567,6 +600,65 @@ public class TrainingPlanEditorController implements ControlsProvider {
         updateUIFromModel();
 
         log.info(Messages.getString("log.template.added", templateUnit.getName()));
+    }
+
+    /**
+     * Finds a suitable parent pane to add the draggable container to.
+     * <p>
+     * This method searches the scene graph for the centerContentPlaceholder, which is the preferred container for the
+     * draggable template browser. If it can't find the centerContentPlaceholder, it will recursively search for any
+     * suitable Pane in the scene graph. As a last resort, it will use the root pane of the scene.
+     *
+     * @param node the node to search from
+     *
+     * @return a suitable parent pane, or null if none is found
+     */
+    private javafx.scene.layout.Pane findSuitableParentPane(Node node) {
+        // Try to find the centerContentPlaceholder
+        if (node instanceof javafx.scene.layout.Pane) {
+            // Look for the centerContentPlaceholder by ID
+            for (Node child : ((javafx.scene.layout.Pane) node).getChildren()) {
+                if (child.getId() != null && child.getId().equals("centerContentPlaceholder")) {
+                    return (javafx.scene.layout.Pane) child;
+                }
+            }
+
+            // If not found, recursively search children
+            for (Node child : ((javafx.scene.layout.Pane) node).getChildren()) {
+                javafx.scene.layout.Pane result = findSuitableParentPane(child);
+                if (result != null) {
+                    return result;
+                }
+            }
+
+            // If still not found, use the root pane as a fallback
+            return (javafx.scene.layout.Pane) node;
+        }
+
+        return null;
+    }
+
+    /**
+     * Shows the template browser in a dialog (old behavior).
+     * <p>
+     * This is a fallback method that's used if we can't find a suitable parent pane to add the draggable container to.
+     * It creates a separate modal dialog window for the template browser, which is the original behavior before the
+     * implementation of the embedded draggable container.
+     *
+     * @param root the root node of the template browser
+     */
+    private void showAsDialog(Parent root) {
+        // Create a new stage for the template browser
+        Stage templateBrowserStage = new Stage();
+        templateBrowserStage.setTitle(Messages.getString("ui.title.templateBrowser"));
+        templateBrowserStage.initModality(Modality.APPLICATION_MODAL);
+        templateBrowserStage.initOwner(rootPane.getScene().getWindow());
+
+        // Set the scene and show the stage
+        Scene scene = new Scene(root, 600, 400);
+        scene.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+        templateBrowserStage.setScene(scene);
+        templateBrowserStage.showAndWait();
     }
 
     /** Handles the save button action. */
