@@ -1,0 +1,337 @@
+/* 
+ * MODERN UI DESIGN 2025/2026
+ * 
+ * This CSS file implements the futuristic UI design elements described in the issue:
+ * 1. Adaptive Intelligence in Design
+ * 2. Flüssige Morphologie (Liquid Design)
+ * 3. Neurogene Farbsysteme (Responsive Colors)
+ * 4. Glassmorphismus 2.0 (Crystalline UI)
+ * 5. Mikro-Narrative in der Navigation
+ * 6. Spatial Computing Vorbereitung (Z-Axis Design)
+ * 7. Biometrische Anpassung
+ * 8. Organische Datenvisualisierung
+ * 9. Quantenhafte Interaktionen (Superposition UI)
+ * 10. Empathische Geometrie
+ * 11. Temporale Schichtung
+ * 12. Synästhetische Feedback-Systeme
+ * 13. Kollektive Intelligenz-Oberflächen
+ * 14. Metamorphe Layouts
+ * 15. Poetische Technologie (Lyrical UI)
+ */
+
+/* --- Import base styles --- */
+@import "style.css";
+
+/* --- Modern UI Theme 2025/2026 --- */
+
+/* --- 4. Glassmorphismus 2.0 (Crystalline UI) --- */
+
+/* Apply crystalline effect to plan cards */
+.plan-card {
+    -fx-background-color: rgba(255, 255, 255, 0.6);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-width: 1px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 15, 0.2, 0, 5);
+}
+
+.plan-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0.3, 0, 8);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Apply crystalline effect to template cards */
+.template-card {
+    -fx-background-color: rgba(255, 255, 255, 0.6);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-width: 1px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 15, 0.2, 0, 5);
+}
+
+.template-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0.3, 0, 8);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* --- 2. Flüssige Morphologie (Liquid Design) --- */
+
+/* Liquid buttons that morph on hover */
+.button {
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-transition-duration: 0.4s;
+}
+
+.button:hover {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-cursor: hand;
+}
+
+/* Special liquid effect for primary action buttons */
+.new-plan-button, .editor-action-button, .add-unit-button, .add-from-template-button {
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-transition-duration: 0.4s;
+}
+
+.new-plan-button:hover, .editor-action-button:hover, .add-unit-button:hover, .add-from-template-button:hover {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-cursor: hand;
+}
+
+/* --- 6. Spatial Computing Vorbereitung (Z-Axis Design) --- */
+
+/* Z-axis positioning for training units */
+.training-unit-control {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+/* Z-axis positioning for exercises */
+.exercise-control {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+/* --- 3. Neurogene Farbsysteme (Responsive Colors) --- */
+
+/* Morning theme (6am-12pm): Cool, focusing blues */
+.morning-theme {
+    -fx-base: #e8f1fc;
+    -fx-background: #f5f9fe;
+    -fx-text-fill: #2a5da0;
+}
+
+.morning-theme .button {
+    -fx-background-color: linear-gradient(to bottom, #7ab5f1, #4a90e2, #2a5da0);
+    -fx-text-fill: white;
+}
+
+/* Afternoon theme (12pm-6pm): Warm, creative oranges */
+.afternoon-theme {
+    -fx-base: #ffefe5;
+    -fx-background: #fff5f0;
+    -fx-text-fill: #d06e34;
+}
+
+.afternoon-theme .button {
+    -fx-background-color: linear-gradient(to bottom, #ffb794, #ff9e64, #d06e34);
+    -fx-text-fill: white;
+}
+
+/* Evening theme (6pm-6am): Calm, relaxing purples */
+.evening-theme {
+    -fx-base: #ede7f6;
+    -fx-background: #f5f2fa;
+    -fx-text-fill: #4d2c91;
+}
+
+.evening-theme .button {
+    -fx-background-color: linear-gradient(to bottom, #b39ddb, #7e57c2, #4d2c91);
+    -fx-text-fill: white;
+}
+
+/* --- 15. Poetische Technologie (Lyrical UI) --- */
+
+/* Subtle text shadow for depth and emotion */
+.plan-card-title, .editor-title-field, .unit-name-field {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 1, 0, 0, 1);
+    -fx-font-family: "Garamond, Baskerville, 'Times New Roman', serif";
+}
+
+/* --- 12. Synästhetische Feedback-Systeme --- */
+
+/* Success feedback combines color, scale and shadow */
+.synesthetic-success {
+    -fx-background-color: #2ecc71;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(46, 204, 113, 0.5), 15, 0, 0, 0);
+}
+
+/* Error feedback combines color, scale and shadow */
+.synesthetic-error {
+    -fx-background-color: #e74c3c;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(gaussian, rgba(231, 76, 60, 0.5), 15, 0, 0, 0);
+}
+
+/* --- 10. Empathische Geometrie --- */
+
+/* Energetic state (deadlines, important tasks) */
+.energetic-geometry {
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+}
+
+/* Calm state (planning, review) */
+.calm-geometry {
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+}
+
+/* --- 11. Temporale Schichtung --- */
+
+/* Past actions appear with reduced opacity */
+.temporal-past {
+    -fx-opacity: 0.6;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);
+}
+
+/* Current actions are fully visible */
+.temporal-present {
+    -fx-opacity: 1.0;
+}
+
+/* Future actions appear as outlines */
+.temporal-future {
+    -fx-opacity: 0.4;
+    -fx-border-width: 1px;
+    -fx-border-color: #666666;
+    -fx-background-color: transparent;
+}
+
+/* --- 5. Mikro-Narrative in der Navigation --- */
+
+/* Add animation class for new elements */
+.add-animation {
+    -fx-opacity: 0;
+    -fx-translate-y: -20;
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+/* Remove animation class for deleted elements */
+.remove-animation {
+    -fx-opacity: 0;
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0;
+    -fx-translate-y: 20;
+}
+
+/* --- 14. Metamorphe Layouts --- */
+
+/* Planning mode layout */
+.metamorphic-planning {
+    -fx-background-color: #e8f1fc;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+/* Exercise design mode layout */
+.metamorphic-exercise {
+    -fx-background-color: #ffefe5;
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+/* Analysis mode layout */
+.metamorphic-analysis {
+    -fx-background-color: #ede7f6;
+    -fx-padding: 25px;
+    -fx-spacing: 20px;
+}
+
+/* --- 9. Quantenhafte Interaktionen (Superposition UI) --- */
+
+/* Superposition state for elements with multiple potential actions */
+.superposition-container {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+    -fx-padding: 10px;
+}
+
+.superposition-option {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+    -fx-margin: 5px;
+    -fx-cursor: hand;
+}
+
+.superposition-option:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* --- 8. Organische Datenvisualisierung --- */
+
+/* Organic progress indicator */
+.organic-progress {
+    -fx-background-color: #f5f5f0;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-padding: 2px;
+}
+
+.organic-progress-bar {
+    -fx-background-color: linear-gradient(to right, #2ecc71, #4a90e2);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+/* --- 7. Biometrische Anpassung --- */
+
+/* Stress-responsive interface elements */
+.stress-calm {
+    -fx-background-color: rgba(46, 204, 113, 0.1);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+.stress-moderate {
+    -fx-background-color: rgba(241, 196, 15, 0.1);
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-padding: 10px;
+    -fx-spacing: 8px;
+}
+
+.stress-high {
+    -fx-background-color: rgba(231, 76, 60, 0.1);
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
+}
+
+/* --- 13. Kollektive Intelligenz-Oberflächen --- */
+
+/* Highlight for popular elements based on collective usage */
+.collective-popular {
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.3), 10, 0, 0, 0);
+    -fx-border-color: rgba(74, 144, 226, 0.5);
+    -fx-border-width: 1px;
+}
+
+.collective-very-popular {
+    -fx-effect: dropshadow(gaussian, rgba(74, 144, 226, 0.5), 15, 0, 0, 0);
+    -fx-border-color: rgba(74, 144, 226, 0.7);
+    -fx-border-width: 2px;
+}
+
+/* Breathing animation is now implemented using JavaFX Animation API in ModernUIController */
