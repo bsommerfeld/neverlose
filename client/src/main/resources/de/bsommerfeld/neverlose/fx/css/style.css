@@ -1385,3 +1385,24 @@
 .notification-cancel-button:hover {
     -fx-background-color: #bdc3c7;
 }
+
+/* Draggable Container */
+.draggable-container {
+    -fx-background-color: -fx-background;
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+    -fx-padding: 10px;
+}
+
+/* Ensure the draggable container is above other content but below notifications */
+.draggable-container {
+    -fx-z-index: 100;
+}
+
+/* Notification container should be above everything */
+.notification-container {
+    -fx-z-index: 1000;
+}

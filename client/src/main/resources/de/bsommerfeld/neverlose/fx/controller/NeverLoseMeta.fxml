@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
 <StackPane xmlns:fx="http://javafx.com/fxml/1"
            xmlns="http://javafx.com/javafx/17.0.12"
            stylesheets="/de/bsommerfeld/neverlose/fx/css/style.css"
@@ -27,7 +27,8 @@
     </BorderPane>
 
     <!-- Notification container -->
-    <VBox fx:id="notificationContainer" alignment="BOTTOM_RIGHT" maxWidth="400" spacing="10" pickOnBounds="false" mouseTransparent="true">
+    <VBox fx:id="notificationContainer" styleClass="notification-container" alignment="BOTTOM_RIGHT" maxWidth="400"
+          spacing="10" pickOnBounds="false" mouseTransparent="true">
         <padding>
             <Insets bottom="20" right="20"/>
         </padding>
