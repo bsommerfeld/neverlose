@@ -142,29 +142,26 @@ public class DraggableContainer extends BorderPane {
     }
 
     /**
-     * Adds this container to the specified parent pane.
+     * Adds this container to the specified parent pane and centers it immediately.
      *
      * @param parent the parent pane to add this container to
      */
     public void addToParent(Pane parent) {
+        // Calculate center position based on parent size and preferred size
+        double parentWidth = parent.getWidth();
+        double parentHeight = parent.getHeight();
+        double containerWidth = getPrefWidth();
+        double containerHeight = getPrefHeight();
+
+        // Center the container before adding it to the parent
+        setTranslateX((parentWidth - containerWidth) / 2);
+        setTranslateY((parentHeight - containerHeight) / 2);
+
         // Add the container to the parent
         parent.getChildren().add(this);
 
         // Make sure it's on top of other content
         toFront();
-
-        // Position the container in the center of the parent after layout
-        javafx.application.Platform.runLater(() -> {
-            // Calculate center position based on parent size and preferred size
-            double parentWidth = parent.getWidth();
-            double parentHeight = parent.getHeight();
-            double containerWidth = getPrefWidth();
-            double containerHeight = getPrefHeight();
-
-            // Center the container
-            setTranslateX((parentWidth - containerWidth) / 2);
-            setTranslateY((parentHeight - containerHeight) / 2);
-        });
     }
 
     /**

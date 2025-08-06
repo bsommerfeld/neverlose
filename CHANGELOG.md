@@ -8,5 +8,7 @@
 
 ### Fixed
 
+- Fixed Template Browsers not being able to delete entries because the notification center was behind the view
+
 ### Removed
 

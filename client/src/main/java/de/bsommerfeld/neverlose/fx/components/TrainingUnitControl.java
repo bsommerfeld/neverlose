@@ -469,7 +469,7 @@ public class TrainingUnitControl extends VBox {
      * the template browser is open.
      * <p>
      * The container is positioned in the center of the parent pane, regardless of the application window size. This is
-     * achieved by using Platform.runLater to ensure proper centering after the JavaFX layout pass.
+     * achieved by immediately calculating and setting the position before adding the container to the parent.
      * <p>
      * When a template is selected, the exercise is added to the training unit and the template browser is automatically
      * closed (removed from the scene). Error handling is in place to prevent crashes during template selection.
