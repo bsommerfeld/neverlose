@@ -1,8 +1,10 @@
 package de.bsommerfeld.neverlose;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import de.bsommerfeld.neverlose.bootstrap.Bootstrap;
 import de.bsommerfeld.neverlose.bootstrap.LogDirectorySetup;
-import de.bsommerfeld.neverlose.bootstrap.NeverLoseBootstrap;
+import de.bsommerfeld.neverlose.bootstrap.NeverLoseModule;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 
@@ -20,13 +22,21 @@ public class Main {
     private static String neverloseVersion = "UNLOADED";
     private static boolean testMode = false;
 
+    private static Injector injector;
+
     public static void main(String[] args) {
         LogDirectorySetup.setupLogDirectory();
         verifyTestMode(args);
         loadNeverloseVersion();
 
-        Bootstrap topspinBootstrap = new NeverLoseBootstrap();
+        injector = Guice.createInjector(new NeverLoseModule());
+
+        Bootstrap topspinBootstrap = injector.getInstance(Bootstrap.class);
         topspinBootstrap.start();
+    }
+
+    public static Injector getInjector() {
+        return injector;
     }
 
     public static boolean isTestMode() {

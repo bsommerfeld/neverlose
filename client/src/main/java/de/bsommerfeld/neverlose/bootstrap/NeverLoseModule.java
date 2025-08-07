@@ -1,8 +1,10 @@
 package de.bsommerfeld.neverlose.bootstrap;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.Singleton;
+import de.bsommerfeld.jshepherd.core.ConfigurationLoader;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.export.PdfExportService;
 import de.bsommerfeld.neverlose.fx.animation.BreathingAnimationService;
@@ -26,6 +28,9 @@ import de.bsommerfeld.neverlose.fx.view.ViewLoader;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.fx.viewmodel.UIViewModel;
 import de.bsommerfeld.neverlose.persistence.guice.PersistenceModule;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class NeverLoseModule extends AbstractModule {
 
@@ -58,5 +63,12 @@ public class NeverLoseModule extends AbstractModule {
 
         // ViewModel bindings
         bind(UIViewModel.class).in(Singleton.class);
+    }
+
+    @Provides
+    @Singleton
+    NeverloseConfig provideNeverloseConfig() {
+        Path configPath = Paths.get(LogDirectorySetup.getApplicationDataBaseDirectory().resolve("neverlose").toUri().getPath(), "config.json");
+        return ConfigurationLoader.load(configPath, NeverloseConfig::new, false);
     }
 }

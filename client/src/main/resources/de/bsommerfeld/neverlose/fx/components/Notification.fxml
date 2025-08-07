@@ -45,9 +45,11 @@
 
         <!-- Action buttons -->
         <HBox fx:id="actionButtonsContainer" alignment="CENTER_RIGHT" spacing="8">
-            <Button fx:id="cancelButton" styleClass="notification-button, notification-cancel-button" text="%ui.button.cancel"
+            <Button fx:id="cancelButton" styleClass="notification-button, notification-cancel-button"
+                    text="%ui.button.cancel"
                     onAction="#handleCancel" visible="false" managed="false"/>
-            <Button fx:id="confirmButton" styleClass="notification-button, notification-confirm-button" text="%ui.button.confirm"
+            <Button fx:id="confirmButton" styleClass="notification-button, notification-confirm-button"
+                    text="%ui.button.confirm"
                     onAction="#handleConfirm" visible="false" managed="false"/>
         </HBox>
     </VBox>

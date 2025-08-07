@@ -1,9 +1,6 @@
 package de.bsommerfeld.neverlose.fx;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import de.bsommerfeld.neverlose.Main;
-import de.bsommerfeld.neverlose.bootstrap.NeverLoseModule;
 import de.bsommerfeld.neverlose.fx.controller.NeverLoseMetaController;
 import de.bsommerfeld.neverlose.fx.ui.ModernUIController;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
@@ -21,18 +18,13 @@ import javafx.stage.Stage;
  */
 public class NeverLoseApplication extends Application {
 
-    private final Injector injector;
     private final LogFacade log = LogFacadeFactory.getLogger();
     private ModernUIController modernUIController;
-
-    public NeverLoseApplication() {
-        this.injector = Guice.createInjector(new NeverLoseModule());
-    }
 
     @Override
     public void start(Stage stage) {
         log.info("Starting Neverlose application with modern UI");
-        ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
+        ViewProvider viewProvider = Main.getInjector().getInstance(ViewProvider.class);
         Parent root = viewProvider.requestView(NeverLoseMetaController.class).parent();
         Scene scene = new Scene(root);
 
@@ -41,7 +33,7 @@ public class NeverLoseApplication extends Application {
         scene.getStylesheets().add("/de/bsommerfeld/neverlose/fx/css/modern-ui.css");
 
         // Get the modern UI controller from the injector and initialize it with the scene
-        modernUIController = injector.getInstance(ModernUIController.class);
+        modernUIController = Main.getInjector().getInstance(ModernUIController.class);
         modernUIController.initialize(scene);
 
         stage.setScene(scene);
