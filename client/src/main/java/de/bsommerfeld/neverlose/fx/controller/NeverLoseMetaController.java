@@ -57,7 +57,11 @@ public class NeverLoseMetaController {
     private void initialize() {
         registerViewChangeListener();
 
-        loadTopBar();
+        // TopBar becomes redundant in combined layout; hide it instead of loading
+        topBarPlaceholder.setManaged(false);
+        topBarPlaceholder.setVisible(false);
+        // loadTopBar(); // intentionally disabled
+
         loadBottomBar();
 
         // Make the notification container NOT transparent for mouse events
@@ -67,8 +71,8 @@ public class NeverLoseMetaController {
         // Initialize the notification service
         notificationService.init(notificationContainer);
 
-        // Show the home view as the default view
-        viewProvider.triggerViewChange(HomeViewController.class);
+        // Show the combined view as the default view
+        viewProvider.triggerViewChange(CombinedViewController.class);
     }
 
     private void registerViewChangeListener() {
@@ -76,6 +80,7 @@ public class NeverLoseMetaController {
         viewProvider.registerViewChangeListener(HomeViewController.class, this::displayView);
         viewProvider.registerViewChangeListener(PlanListViewController.class, this::displayView);
         viewProvider.registerViewChangeListener(TrainingPlanEditorController.class, this::displayView);
+        viewProvider.registerViewChangeListener(CombinedViewController.class, this::displayView);
     }
 
     private void loadTopBar() {
@@ -101,6 +106,10 @@ public class NeverLoseMetaController {
     }
 
     private void updateTopBarControlNodes(Object controller) {
+        if (topBarController == null) {
+            // TopBar not in use (combined layout). Skip updating.
+            return;
+        }
         ControlsContainer container = controlsContainerMap.get(controller);
         topBarController.unregisterAllComponents(); // Clear the components from the last view
 

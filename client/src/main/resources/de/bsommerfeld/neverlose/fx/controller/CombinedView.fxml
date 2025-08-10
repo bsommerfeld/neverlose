@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.35" styleClass="combined-split-pane"
+           xmlns="http://javafx.com/javafx/17.0.12"
+           fx:controller="de.bsommerfeld.neverlose.fx.controller.CombinedViewController">
+    <items>
+        <!-- Left side: Plan list with its own mini header for search -->
+        <BorderPane maxWidth="300.0">
+            <top>
+                <HBox fx:id="leftHeaderBox" alignment="CENTER_LEFT" styleClass="top-search-bar combined-header-left">
+                    <padding>
+                        <Insets bottom="5" left="10" right="10" top="5"/>
+                    </padding>
+                </HBox>
+            </top>
+            <center>
+                <StackPane fx:id="leftContent"/>
+            </center>
+        </BorderPane>
+
+        <!-- Right side: Editor with its own mini header for Save/Export -->
+        <BorderPane>
+            <top>
+                <HBox fx:id="rightHeaderBox" alignment="CENTER_RIGHT" styleClass="top-search-bar combined-header-right">
+                    <padding>
+                        <Insets bottom="5" left="10" right="10" top="5"/>
+                    </padding>
+                </HBox>
+            </top>
+            <center>
+                <StackPane fx:id="rightContent"/>
+            </center>
+        </BorderPane>
+    </items>
+</SplitPane>

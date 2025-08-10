@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
@@ -13,8 +12,6 @@
     </padding>
 
     <StackPane VBox.vgrow="ALWAYS" styleClass="preview-container">
-        <ScrollPane fx:id="scrollPane" styleClass="plan-list-scroll-pane" fitToWidth="true" fitToHeight="true">
-            <FlowPane fx:id="flowPane" styleClass="plan-list-flow-pane" alignment="CENTER"/>
-        </ScrollPane>
+        <ListView fx:id="listView" styleClass="plan-list"/>
     </StackPane>
 </VBox>

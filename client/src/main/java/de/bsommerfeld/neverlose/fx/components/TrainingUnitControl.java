@@ -97,6 +97,7 @@ public class TrainingUnitControl extends VBox {
         // Create the header with toggle arrow, name field and weekday selector
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
+        header.getStyleClass().add("unit-header");
 
         // Toggle arrow for collapsible functionality
         toggleArrow =
@@ -125,7 +126,6 @@ public class TrainingUnitControl extends VBox {
         // Remove button (red X)
         Button removeButton = new Button(Messages.getString("ui.button.remove"));
         removeButton.getStyleClass().add("remove-button");
-        removeButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
         removeButton.setOnAction(e -> handleRemove());
 
         header
@@ -180,9 +180,11 @@ public class TrainingUnitControl extends VBox {
 
         HBox addExerciseContainer = new HBox(10, addExerciseButton, addFromTemplateButton);
         addExerciseContainer.setAlignment(Pos.CENTER);
+        addExerciseContainer.getStyleClass().add("unit-footer-actions");
 
         // Create a container for all collapsible content
         contentContainer = new VBox(10);
+        contentContainer.getStyleClass().add("unit-content");
         contentContainer
                 .getChildren()
                 .addAll(descriptionField, exercisesContainer, showMoreButton, addExerciseContainer);
