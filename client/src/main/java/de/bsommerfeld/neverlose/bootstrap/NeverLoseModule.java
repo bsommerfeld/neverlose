@@ -68,7 +68,7 @@ public class NeverLoseModule extends AbstractModule {
     @Provides
     @Singleton
     NeverloseConfig provideNeverloseConfig() {
-        Path configPath = Paths.get(LogDirectorySetup.getApplicationDataBaseDirectory().resolve("neverlose").toUri().getPath(), "config.json");
+        Path configPath = Paths.get(LogDirectorySetup.getApplicationDataBaseDirectory().resolve("neverlose").toUri().getPath(), "config.yaml");
         return ConfigurationLoader.load(configPath, NeverloseConfig::new, false);
     }
 }

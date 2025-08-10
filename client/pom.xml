@@ -13,6 +13,7 @@
     <artifactId>client</artifactId>
 
     <properties>
+        <jshepherd.version>3.3.2</jshepherd.version>
         <javafx.version>24.0.1</javafx.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -99,12 +100,12 @@
         <dependency>
             <groupId>com.github.bsommerfeld.jshepherd</groupId>
             <artifactId>core</artifactId>
-            <version>3.3.1</version>
+            <version>${jshepherd.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.bsommerfeld.jshepherd</groupId>
-            <artifactId>json</artifactId>
-            <version>3.3.1</version>
+            <artifactId>yaml</artifactId>
+            <version>${jshepherd.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.snoopy137</groupId>
