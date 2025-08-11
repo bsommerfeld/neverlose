@@ -1155,7 +1155,6 @@
     -fx-font-weight: bold;
     -fx-background-radius: 6px;
     -fx-border-radius: 6px;
-    -fx-padding: 7 14 7 14; /* a bit bigger */
     -fx-cursor: hand;
     -fx-font-size: 13px; /* a bit bigger */
     -fx-background-color: linear-gradient(
@@ -1501,6 +1500,9 @@
     -fx-font-size: 15px;
     -fx-font-weight: 700;
     -fx-text-fill: -text-primary;
+    /* Prevent long titles from affecting row height; show ellipsis instead */
+    -fx-wrap-text: false;
+    -fx-text-overrun: ellipsis;
 }
 
 .plan-list-subtitle {

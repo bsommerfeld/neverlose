@@ -129,6 +129,11 @@ public class PlanListViewController implements ControlsProvider {
     }
 
     private void configureListView() {
+        // Fix cell height to prevent long text from growing rows
+        listView.setFixedCellSize(60);
+        // Allow the ListView to shrink within its parent (avoid forcing a horizontal scrollbar)
+        listView.setMinWidth(0);
+        listView.setMaxWidth(Double.MAX_VALUE);
         // Custom cell showing name and a meta row: description (left, ellipsized) + units icon+count (right)
         listView.setCellFactory(lv -> new ListCell<>() {
             private final Label title = new Label();
@@ -143,7 +148,16 @@ public class PlanListViewController implements ControlsProvider {
             private UUID boundId;
 
             {
+                // Make this cell resizable to the ListView's viewport to avoid horizontal overflow
+                setPrefWidth(0);
+                setMaxWidth(Double.MAX_VALUE);
+
                 title.getStyleClass().add("plan-list-title");
+                // Prevent long titles from wrapping; show ellipsis instead
+                title.setWrapText(false);
+                title.setTextOverrun(javafx.scene.control.OverrunStyle.ELLIPSIS);
+                // Allow the title to shrink below its computed size (important to avoid H-scroll)
+                title.setMinWidth(0);
                 // Let title take remaining space so metaRow sticks to the right edge
                 title.setMaxWidth(Double.MAX_VALUE);
                 HBox.setHgrow(title, javafx.scene.layout.Priority.ALWAYS);
@@ -189,6 +203,9 @@ public class PlanListViewController implements ControlsProvider {
                 // Layout spacing between title and meta row
                 box.setSpacing(12);
                 box.setAlignment(Pos.CENTER_LEFT);
+                // Ensure the graphic container itself can shrink with the cell
+                box.setMaxWidth(Double.MAX_VALUE);
+                box.setFillHeight(true);
             }
 
             @Override
