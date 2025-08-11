@@ -1796,3 +1796,21 @@
 .exercises-container {
     -fx-spacing: 12;
 }
+
+
+/* --- GitHub CTA (Bottom Bar) --- */
+.github-cta {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Ensure default labels inside CTA look normal when not hovered */
+.github-cta .github-cta-text .label {
+    -fx-underline: false;
+}
+
+/* On hover: blueish text and underline to indicate clickability */
+.github-cta:hover .github-cta-text .label {
+    -fx-text-fill: -never-blue;
+    -fx-underline: true;
+}
