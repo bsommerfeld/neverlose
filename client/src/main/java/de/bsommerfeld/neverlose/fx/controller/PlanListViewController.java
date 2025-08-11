@@ -303,12 +303,17 @@ public class PlanListViewController implements ControlsProvider {
         searchContainer.setSpacing(5);
         searchContainer.setAlignment(javafx.geometry.Pos.CENTER);
         searchContainer.getStyleClass().add("search-container");
+        // Allow the container to grow when parent grants space
+        searchContainer.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(searchContainer, javafx.scene.layout.Priority.ALWAYS);
 
         // Create search text field
         searchTextField = new TextField();
         searchTextField.setPromptText(Messages.getString("fxml.planListView.searchPrompt"));
         searchTextField.getStyleClass().add("search-field");
+        // Let the text field take all available width inside the container
         HBox.setHgrow(searchTextField, javafx.scene.layout.Priority.ALWAYS);
+        searchTextField.setMaxWidth(Double.MAX_VALUE);
 
         // Create search label
         searchLabel = new Label(Messages.getString("fxml.planListView.searchLabel"));

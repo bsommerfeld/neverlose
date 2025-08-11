@@ -5,8 +5,11 @@ import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
@@ -31,6 +34,12 @@ public class CombinedViewController {
 
     @FXML
     private StackPane rightContent;
+
+    @FXML
+    private SplitPane rootSplitPane;
+
+    @FXML
+    private BorderPane leftPane;
 
     private PlanListViewController planListController;
     private TrainingPlanEditorController editorController;
@@ -59,6 +68,38 @@ public class CombinedViewController {
 
         // Place the dynamic controls from both views into the headers
         embedHeaderControls();
+
+        // Keep the left panel width stable across window resizes, while allowing manual resizing via the divider
+        final SplitPane.Divider divider = rootSplitPane.getDividers().isEmpty() ? null : rootSplitPane.getDividers().get(0);
+        if (divider != null) {
+            final double min = leftPane.getMinWidth() > 0 ? leftPane.getMinWidth() : 150.0;
+            final double[] leftWidthPx = new double[]{Math.max(240.0, min)};
+            final boolean[] adjusting = new boolean[]{false};
+
+            Runnable applyPositionFromWidth = () -> {
+                double total = rootSplitPane.getWidth();
+                if (total <= 0) return;
+                double pos = Math.max(0.0, Math.min(1.0, leftWidthPx[0] / total));
+                adjusting[0] = true;
+                divider.setPosition(pos);
+                adjusting[0] = false;
+            };
+
+            // Initialize once layout passes have occurred
+            Platform.runLater(applyPositionFromWidth);
+
+            // Keep constant pixel width on SplitPane width changes
+            rootSplitPane.widthProperty().addListener((obs, oldW, newW) -> {
+                applyPositionFromWidth.run();
+            });
+
+            // When user drags the divider, update the target pixel width
+            divider.positionProperty().addListener((obs, oldP, newP) -> {
+                if (adjusting[0]) return;
+                double total = rootSplitPane.getWidth();
+                leftWidthPx[0] = Math.max(min, newP.doubleValue() * total);
+            });
+        }
     }
 
     private void showPlanInEditor(TrainingPlan plan) {
@@ -70,11 +111,17 @@ public class CombinedViewController {
     private void embedHeaderControls() {
         // Left: search components from plan list
         if (planListController instanceof ControlsProvider providerLeft) {
-            leftHeaderBox.getChildren().add(providerLeft.controlsContainer());
+            Node leftControls = providerLeft.controlsContainer();
+            if (leftControls instanceof javafx.scene.layout.Region r) {
+                r.setMaxWidth(Double.MAX_VALUE);
+            }
+            HBox.setHgrow(leftControls, javafx.scene.layout.Priority.ALWAYS);
+            leftHeaderBox.getChildren().add(leftControls);
         }
         // Right: save/export from editor
         if (editorController instanceof ControlsProvider providerRight) {
-            rightHeaderBox.getChildren().add(providerRight.controlsContainer());
+            Node rightControls = providerRight.controlsContainer();
+            rightHeaderBox.getChildren().add(rightControls);
         }
     }
 }

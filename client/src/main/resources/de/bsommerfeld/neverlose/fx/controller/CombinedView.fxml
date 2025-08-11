@@ -5,12 +5,13 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<SplitPane xmlns:fx="http://javafx.com/fxml/1" dividerPositions="0.35" styleClass="combined-split-pane"
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootSplitPane" dividerPositions="0.22"
+           styleClass="combined-split-pane"
            xmlns="http://javafx.com/javafx/17.0.12"
            fx:controller="de.bsommerfeld.neverlose.fx.controller.CombinedViewController">
     <items>
         <!-- Left side: Plan list with its own mini header for search -->
-        <BorderPane maxWidth="150.0">
+        <BorderPane fx:id="leftPane" minWidth="150.0" prefWidth="240.0">
             <top>
                 <HBox fx:id="leftHeaderBox" alignment="CENTER_LEFT" styleClass="top-search-bar combined-header-left">
                     <BorderPane.margin>
