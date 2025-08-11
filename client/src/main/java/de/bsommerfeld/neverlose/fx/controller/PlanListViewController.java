@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,8 +28,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -130,24 +131,21 @@ public class PlanListViewController implements ControlsProvider {
         // Custom cell showing name and a meta row: description (left, ellipsized) + units icon+count (right)
         listView.setCellFactory(lv -> new ListCell<>() {
             private final Label title = new Label();
-            private final javafx.scene.shape.SVGPath exerciseIcon = new javafx.scene.shape.SVGPath();
+            private final SVGPath exerciseIcon = new SVGPath();
             private final Label exerciseCountLabel = new Label();
             private final HBox exercisesBox = new HBox(exerciseIcon, exerciseCountLabel);
-            private final javafx.scene.shape.SVGPath unitIcon = new javafx.scene.shape.SVGPath();
+            private final SVGPath unitIcon = new SVGPath();
             private final Label unitCountLabel = new Label();
             private final HBox unitsBox = new HBox(unitIcon, unitCountLabel);
-            private final HBox metaRow = new HBox(exercisesBox, unitsBox);
-            private final VBox box = new VBox(title, metaRow);
-            private final Region spacer = new Region();
+            private final VBox metaRow = new VBox(exercisesBox, unitsBox);
+            private final HBox box = new HBox(title, metaRow);
             private UUID boundId;
 
             {
                 title.getStyleClass().add("plan-list-title");
-
-                metaRow.getChildren().addFirst(spacer);
-
-                // Spacer pushes icons to the right
-                HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+                // Let title take remaining space so metaRow sticks to the right edge
+                title.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(title, javafx.scene.layout.Priority.ALWAYS);
 
                 // Exercises icon and label (three horizontal bars)
                 exerciseIcon.getStyleClass().add("plan-exercise-icon");
@@ -156,7 +154,7 @@ public class PlanListViewController implements ControlsProvider {
                 exerciseIcon.setScaleY(2.0);
                 exerciseCountLabel.getStyleClass().add("plan-exercise-count");
                 exercisesBox.getStyleClass().add("plan-exercises");
-                exercisesBox.setSpacing(6);
+                exercisesBox.setSpacing(4);
                 exercisesBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
                 // Reserve fixed width so column stays aligned across rows
                 exercisesBox.setMinWidth(84);
@@ -171,7 +169,7 @@ public class PlanListViewController implements ControlsProvider {
                 unitIcon.setScaleY(2.0);
                 unitCountLabel.getStyleClass().add("plan-unit-count");
                 unitsBox.getStyleClass().add("plan-units");
-                unitsBox.setSpacing(6);
+                unitsBox.setSpacing(4);
                 unitsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
                 // Reserve fixed width so column stays aligned across rows
                 unitsBox.setMinWidth(72);
@@ -179,14 +177,17 @@ public class PlanListViewController implements ControlsProvider {
                 unitsBox.setMaxWidth(72);
                 unitsBox.setManaged(true);
 
-                // Meta row container
+                // Meta row container (VBox): units on top, exercises below; right-aligned
                 metaRow.getStyleClass().add("plan-list-meta");
-                metaRow.setSpacing(10);
-                metaRow.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-                HBox.setHgrow(metaRow, javafx.scene.layout.Priority.ALWAYS);
+                metaRow.setSpacing(6);
+                metaRow.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+                metaRow.getChildren().setAll(unitsBox, exercisesBox);
+                // Do not let metaRow consume extra horizontal space; keep it packed on the right
+                HBox.setHgrow(metaRow, javafx.scene.layout.Priority.NEVER);
 
                 // Layout spacing between title and meta row
-                box.setSpacing(2);
+                box.setSpacing(12);
+                box.setAlignment(Pos.CENTER_LEFT);
             }
 
             @Override
@@ -202,9 +203,9 @@ public class PlanListViewController implements ControlsProvider {
                     title.setText(item.name());
                     // Hide meta row until metadata arrives
                     exercisesBox.setVisible(false);
-                    exercisesBox.setManaged(true); // keep space reserved
+                    exercisesBox.setManaged(false);
                     unitsBox.setVisible(false);
-                    unitsBox.setManaged(true); // keep space reserved
+                    unitsBox.setManaged(false);
                     metaRow.setVisible(false);
                     metaRow.setManaged(false);
                     setTooltip(null);
@@ -530,6 +531,84 @@ public class PlanListViewController implements ControlsProvider {
     /** Refreshes the plan list. */
     public void refreshPlans() {
         loadPlans();
+    }
+
+    /**
+     * Computes an ideal preferred width for the plan list so that no horizontal scrollbar is needed for the current
+     * content (titles + meta column) using the current styling. The calculation is conservative and uses fixed paddings
+     * from CSS.
+     */
+    public double computeIdealListWidth() {
+        try {
+            // Ensure CSS is applied so snapped insets are correct
+            if (listView != null) {
+                listView.applyCss();
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Font per CSS: .plan-list-title { -fx-font-size: 15px; -fx-font-weight: 700; }
+        javafx.scene.text.Font font = javafx.scene.text.Font.font(null, javafx.scene.text.FontWeight.BOLD, 15);
+        double maxTitleWidth = 0.0;
+        List<PlanSummary> source = (allPlans != null && !allPlans.isEmpty()) ? allPlans : listView.getItems();
+        if (source != null) {
+            for (PlanSummary ps : source) {
+                if (ps == null) continue;
+                String name = ps.name() != null ? ps.name() : "";
+                javafx.scene.text.Text t = new javafx.scene.text.Text(name);
+                t.setFont(font);
+                double w = t.getLayoutBounds().getWidth();
+                if (w > maxTitleWidth) maxTitleWidth = w;
+            }
+        }
+        // Fallback minimal title width if empty
+        if (maxTitleWidth <= 0) {
+            javafx.scene.text.Text t = new javafx.scene.text.Text("Plan");
+            t.setFont(font);
+            maxTitleWidth = t.getLayoutBounds().getWidth();
+        }
+
+        // Meta column: VBox contains two fixed-width rows (84 and 72); effective width is the max of them
+        double metaWidth = 84.0;
+        double hboxSpacing = 2.0; // spacing between title and meta
+
+        // List cell padding from CSS (.plan-list .list-cell { -fx-padding: 10 14 10 14; })
+        double cellPadding = 28.0; // left+right
+
+        // ListView padding/borders: prefer actual snapped insets (reflects -fx-padding: 8)
+        double listInsets = 0.0;
+        try {
+            if (listView != null) {
+                listInsets = listView.snappedLeftInset() + listView.snappedRightInset();
+            }
+        } catch (Exception ignored) {
+            listInsets = 16.0; // fallback (8 + 8)
+        }
+
+        // Sum horizontal insets from parents (e.g., VBox padding 10+10 around the list area)
+        double parentInsets = 0.0;
+        try {
+            javafx.scene.Parent p = listView.getParent();
+            while (p != null) {
+                if (p instanceof javafx.scene.layout.Region r) {
+                    parentInsets += r.snappedLeftInset() + r.snappedRightInset();
+                }
+                p = p.getParent();
+            }
+        } catch (Exception ignored) {
+            // Conservative fallback to include the 10px VBox padding on both sides if traversal fails
+            parentInsets += 20.0;
+        }
+
+        // Vertical scrollbar width allowance (when present it reduces viewport width)
+        double vScrollAllowance = 14.0; // conservative typical width
+
+        // Safety margin to avoid triggering H-scroll due to rounding/layout nuances
+        double safety = 10.0;
+
+        double total = maxTitleWidth + metaWidth + hboxSpacing + cellPadding + listInsets + parentInsets + vScrollAllowance + safety;
+        // Ensure a sensible minimum
+        return Math.max(240.0, Math.ceil(total));
     }
 
     private static class PlanMeta {

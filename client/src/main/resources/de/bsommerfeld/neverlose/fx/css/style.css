@@ -1498,7 +1498,7 @@
 
 /* --- Plan List Text Styles --- */
 .plan-list-title {
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;
     -fx-font-weight: 700;
     -fx-text-fill: -text-primary;
 }

@@ -86,7 +86,19 @@ public class CombinedViewController {
             };
 
             // Initialize once layout passes have occurred
-            Platform.runLater(applyPositionFromWidth);
+            Platform.runLater(() -> {
+                // If we can compute an ideal width from the plan list, use it
+                try {
+                    if (planListController != null) {
+                        double ideal = planListController.computeIdealListWidth();
+                        if (ideal > 0) {
+                            leftWidthPx[0] = Math.max(min, ideal);
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+                applyPositionFromWidth.run();
+            });
 
             // Keep constant pixel width on SplitPane width changes
             rootSplitPane.widthProperty().addListener((obs, oldW, newW) -> {
