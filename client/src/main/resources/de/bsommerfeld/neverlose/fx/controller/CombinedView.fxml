@@ -10,9 +10,12 @@
            fx:controller="de.bsommerfeld.neverlose.fx.controller.CombinedViewController">
     <items>
         <!-- Left side: Plan list with its own mini header for search -->
-        <BorderPane maxWidth="300.0">
+        <BorderPane maxWidth="150.0">
             <top>
                 <HBox fx:id="leftHeaderBox" alignment="CENTER_LEFT" styleClass="top-search-bar combined-header-left">
+                    <BorderPane.margin>
+                        <Insets top="60.0"/>
+                    </BorderPane.margin>
                     <padding>
                         <Insets bottom="5" left="10" right="10" top="5"/>
                     </padding>
@@ -24,7 +27,7 @@
         </BorderPane>
 
         <!-- Right side: Editor with its own mini header for Save/Export -->
-        <BorderPane minWidth="300.0">
+        <BorderPane>
             <top>
                 <HBox fx:id="rightHeaderBox" alignment="CENTER_RIGHT" styleClass="top-search-bar combined-header-right">
                     <padding>
