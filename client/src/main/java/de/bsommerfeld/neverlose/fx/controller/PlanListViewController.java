@@ -259,34 +259,22 @@ public class PlanListViewController implements ControlsProvider {
 
             private void applyMeta(PlanMeta meta) {
                 String desc = meta.description != null ? meta.description.trim() : "";
-                boolean hasUnits = meta.unitCount > 0;
-                boolean hasExercises = meta.exerciseCount > 0;
 
                 // Tooltip holds the full description (no inline text)
                 setTooltip(!desc.isBlank() ? new Tooltip(desc) : null);
 
-                // Exercises indicator
-                if (hasExercises) {
-                    exerciseCountLabel.setText(Integer.toString(meta.exerciseCount));
-                    exercisesBox.setVisible(true);
-                } else {
-                    exercisesBox.setVisible(false);
-                }
-                exercisesBox.setManaged(true); // always reserve space for alignment
+                // Always show both indicators and display counts (including 0)
+                exerciseCountLabel.setText(Integer.toString(meta.exerciseCount));
+                exercisesBox.setVisible(true);
+                exercisesBox.setManaged(true); // reserve space for alignment
 
-                // Units indicator
-                if (hasUnits) {
-                    unitCountLabel.setText(Integer.toString(meta.unitCount));
-                    unitsBox.setVisible(true);
-                } else {
-                    unitsBox.setVisible(false);
-                }
-                unitsBox.setManaged(true); // always reserve space for alignment
+                unitCountLabel.setText(Integer.toString(meta.unitCount));
+                unitsBox.setVisible(true);
+                unitsBox.setManaged(true); // reserve space for alignment
 
-                // Show meta row if any indicator is visible
-                boolean showMeta = hasUnits || hasExercises;
-                metaRow.setVisible(showMeta);
-                metaRow.setManaged(showMeta);
+                // Always show meta row so metadata is visible for new/empty plans too
+                metaRow.setVisible(true);
+                metaRow.setManaged(true);
             }
         });
 
@@ -392,6 +380,8 @@ public class PlanListViewController implements ControlsProvider {
     /** Loads all available plans and displays them in the flow pane. */
     private void loadPlans() {
         try {
+            // Invalidate cached metadata so edits (description/units/exercises) are reflected after refresh
+            planMetaCache.clear();
             allPlans = planStorageService.loadPlanSummaries();
             displayPlans(allPlans);
         } catch (IOException e) {

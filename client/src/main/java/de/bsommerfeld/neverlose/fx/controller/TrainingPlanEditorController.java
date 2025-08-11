@@ -7,6 +7,8 @@ import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
+import de.bsommerfeld.neverlose.fx.view.ViewProvider;
+import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
 import de.bsommerfeld.neverlose.logger.LogFacade;
 import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
@@ -62,6 +64,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
     private final PlanStorageService planStorageService;
     private final ExportService exportService;
     private final NotificationService notificationService;
+    private final ViewProvider viewProvider;
     // Map to store the expanded state of each unit, keyed by the unit's ID
     private final Map<UUID, Boolean> unitExpandedStates = new HashMap<>();
     // Timeline for throttling scroll events to improve performance
@@ -95,10 +98,12 @@ public class TrainingPlanEditorController implements ControlsProvider {
     public TrainingPlanEditorController(
             PlanStorageService planStorageService,
             ExportService exportService,
-            NotificationService notificationService) {
+            NotificationService notificationService,
+            ViewProvider viewProvider) {
         this.planStorageService = planStorageService;
         this.exportService = exportService;
         this.notificationService = notificationService;
+        this.viewProvider = viewProvider;
     }
 
     @Override
@@ -736,6 +741,17 @@ public class TrainingPlanEditorController implements ControlsProvider {
                     Messages.getString("notification.plan.saved.title"),
                     null,
                     Messages.getString("notification.plan.saved.text"));
+
+            // Refresh the plan list view (e.g., in combined view) after saving/renaming
+            try {
+                ViewWrapper<PlanListViewController> listWrapper = viewProvider.requestView(PlanListViewController.class);
+                PlanListViewController listController = listWrapper.controller();
+                if (listController != null) {
+                    Platform.runLater(listController::refreshPlans);
+                }
+            } catch (Exception ignored) {
+                // If view cannot be obtained, ignore; list will refresh when shown
+            }
         } catch (Exception e) {
             log.error(Messages.getString("log.error.savePlan"), e);
 
