@@ -1383,9 +1383,10 @@
 /* SplitPane divider with subtle brand accent */
 .combined-split-pane > .split-pane-divider {
     -fx-padding: 0 2 0 2; /* thin divider */
-    -fx-background-insets: 0;
-    -fx-background-color: derive(-never-blue, 10%);
-    -fx-opacity: 0.85;
+    /* two-layer background: transparent full height + gray bar with top/bottom gaps */
+    -fx-background-color: transparent, -accent-silver;
+    -fx-background-insets: 0, 8 0 8 0; /* creates spacing above and below the visible bar */
+    -fx-background-radius: 0, 2; /* slightly soften edges of the gray bar */
 }
 
 /* Header bars on both sides (override base top-search-bar for the combined layout) */
@@ -1518,13 +1519,13 @@
 
 .plan-units,
 .plan-exercises {
-    -fx-spacing: 6; /* ensure consistent gap between icon and count */
+    -fx-spacing: 0; /* ensure consistent gap between icon and count */
 }
 
 .plan-unit-icon,
 .plan-exercise-icon {
     -fx-fill: -text-primary; /* higher contrast icon color */
-    -fx-opacity: 1.0;
+    -fx-opacity: 0.5;
 }
 
 .plan-unit-count,
