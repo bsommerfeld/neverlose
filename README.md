@@ -12,9 +12,7 @@ Neverlose is a desktop application designed to replace handwritten, hard-to-shar
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d9a338ac-8afe-48b3-840e-5216abcb6052" width="48%">
-  <img src="https://github.com/user-attachments/assets/7f241bdb-2fc7-4e68-aa6c-a89535dcf5f8" width="48%">
-  <img src="https://github.com/user-attachments/assets/361ba61f-4911-4714-8f3d-9a9e18b32eb1" width="48%">
+<img width="1084" height="736" alt="Bildschirmfoto 2025-08-11 um 12 33 01" src="https://github.com/user-attachments/assets/fc36a07f-2802-43b8-9941-e10f473dfe38" />
 </p>
 
 ***
