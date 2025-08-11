@@ -18,9 +18,11 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
@@ -211,6 +213,14 @@ public class PlanListViewController implements ControlsProvider {
                     setGraphic(box);
                     boundId = item.identifier();
 
+                    // Context menu per row: only Delete
+                    ContextMenu contextMenu = new ContextMenu();
+                    MenuItem deleteItem = new MenuItem(Messages.getString("fxml.planCard.delete"));
+                    deleteItem.getStyleClass().add("delete-button");
+                    deleteItem.setOnAction(e -> confirmAndDeletePlan(item.identifier(), item.name()));
+                    contextMenu.getItems().addAll(deleteItem);
+                    setContextMenu(contextMenu);
+
                     PlanMeta meta = planMetaCache.get(boundId);
                     if (meta != null) {
                         applyMeta(meta);
@@ -278,17 +288,23 @@ public class PlanListViewController implements ControlsProvider {
             }
         });
 
-        // Double-click to open
+        // Double-click or single-click to open depending on current behavior
         listView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
                 openSelectedPlan();
             }
         });
 
-        // Enter key to open
+        // Keyboard shortcuts
         listView.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 openSelectedPlan();
+            } else if (keyEvent.getCode() == KeyCode.DELETE || keyEvent.getCode() == KeyCode.BACK_SPACE) {
+                // Delete selected plan with confirmation
+                PlanSummary selected = listView.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    confirmAndDeletePlan(selected.identifier(), selected.name());
+                }
             }
         });
 
@@ -520,6 +536,35 @@ public class PlanListViewController implements ControlsProvider {
     /** Refreshes the plan list. */
     public void refreshPlans() {
         loadPlans();
+    }
+
+    private void confirmAndDeletePlan(UUID planId, String planName) {
+        if (notificationService == null) {
+            log.error(Messages.getString("error.notification.notInitialized"));
+            return;
+        }
+        notificationService.showConfirmation(
+                Messages.getString("dialog.delete.plan.title"),
+                Messages.getString("dialog.delete.plan.message", planName),
+                () -> {
+                    try {
+                        boolean deleted = planStorageService.deletePlan(planId);
+                        if (deleted) {
+                            refreshPlans();
+                        } else {
+                            notificationService.showError(
+                                    Messages.getString("error.plan.cannotDelete.title"),
+                                    Messages.getString("error.plan.cannotDelete.text"));
+                        }
+                    } catch (IOException e) {
+                        log.error("Failed to delete plan {}", planName, e);
+                        notificationService.showError(
+                                Messages.getString("error.general.title"),
+                                Messages.getString("error.general.text", e.getMessage()));
+                    }
+                },
+                null
+        );
     }
 
     /**
