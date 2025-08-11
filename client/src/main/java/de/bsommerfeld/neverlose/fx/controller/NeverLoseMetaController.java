@@ -1,7 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
-import de.bsommerfeld.neverlose.fx.controller.TopBarController.Alignment;
+import de.bsommerfeld.neverlose.fx.controller.ControlsProvider.Alignment;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
@@ -28,10 +28,6 @@ public class NeverLoseMetaController {
     private final NotificationService notificationService;
     private final Map<Object, ControlsContainer> controlsContainerMap = new HashMap<>();
 
-    private TopBarController topBarController;
-
-    @FXML
-    private HBox topBarPlaceholder;
     @FXML
     private AnchorPane centerContentPlaceholder;
     @FXML
@@ -57,11 +53,6 @@ public class NeverLoseMetaController {
     private void initialize() {
         registerViewChangeListener();
 
-        // TopBar becomes redundant in combined layout; hide it instead of loading
-        topBarPlaceholder.setManaged(false);
-        topBarPlaceholder.setVisible(false);
-        // loadTopBar(); // intentionally disabled
-
         loadBottomBar();
 
         // Make the notification container NOT transparent for mouse events
@@ -76,18 +67,9 @@ public class NeverLoseMetaController {
     }
 
     private void registerViewChangeListener() {
-        // Ein Listener für alle Views, der die View anzeigt
-        viewProvider.registerViewChangeListener(HomeViewController.class, this::displayView);
         viewProvider.registerViewChangeListener(PlanListViewController.class, this::displayView);
         viewProvider.registerViewChangeListener(TrainingPlanEditorController.class, this::displayView);
         viewProvider.registerViewChangeListener(CombinedViewController.class, this::displayView);
-    }
-
-    private void loadTopBar() {
-        ViewWrapper<TopBarController> viewWrapper = viewProvider.requestView(TopBarController.class);
-        topBarController = viewWrapper.controller();
-        Parent topBar = viewWrapper.parent();
-        topBarPlaceholder.getChildren().add(topBar);
     }
 
     private void registerControls(Object controller) {
@@ -105,22 +87,6 @@ public class NeverLoseMetaController {
         bottomBarPlaceholder.getChildren().add(bottomBar);
     }
 
-    private void updateTopBarControlNodes(Object controller) {
-        if (topBarController == null) {
-            // TopBar not in use (combined layout). Skip updating.
-            return;
-        }
-        ControlsContainer container = controlsContainerMap.get(controller);
-        topBarController.unregisterAllComponents(); // Clear the components from the last view
-
-        if (container == null) {
-            log.debug("Could not show controls container because container is null.");
-            return;
-        }
-
-        topBarController.registerComponents(container.alignment, container.container);
-    }
-
     private <T> void displayView(ViewWrapper<T> viewWrapper) {
         Parent center = viewWrapper.parent();
         T controller = viewWrapper.controller();
@@ -130,10 +96,6 @@ public class NeverLoseMetaController {
 
         registerControls(controller);
 
-        // Aktualisiere die TopBar basierend auf dem (bereits konfigurierten) Controller
-        updateTopBarControlNodes(controller);
-
-        // Spezifische Logik kann hier noch folgen, falls nötig
         if (controller instanceof PlanListViewController planListViewController) {
             planListViewController.refreshPlans();
         }

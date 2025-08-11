@@ -1,7 +1,6 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
-import de.bsommerfeld.neverlose.fx.controller.TopBarController.Alignment;
 import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;
 import de.bsommerfeld.neverlose.fx.state.SearchState;

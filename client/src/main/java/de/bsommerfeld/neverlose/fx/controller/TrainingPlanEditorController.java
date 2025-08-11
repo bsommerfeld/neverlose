@@ -3,7 +3,6 @@ package de.bsommerfeld.neverlose.fx.controller;
 import com.google.inject.Inject;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.fx.components.TrainingUnitControl;
-import de.bsommerfeld.neverlose.fx.controller.TopBarController.Alignment;
 import de.bsommerfeld.neverlose.fx.messages.Messages;
 import de.bsommerfeld.neverlose.fx.messages.MessagesResourceBundle;
 import de.bsommerfeld.neverlose.fx.service.NotificationService;

@@ -13,10 +13,6 @@
 
     <!-- Main application content -->
     <BorderPane styleClass="never-lose-meta">
-        <top>
-            <HBox fx:id="topBarPlaceholder" styleClass="top-bar-placeholder"/>
-        </top>
-
         <center>
             <AnchorPane fx:id="centerContentPlaceholder" styleClass="center-content-placeholder"/>
         </center>

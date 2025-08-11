@@ -1,6 +1,5 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
-import de.bsommerfeld.neverlose.fx.controller.TopBarController.Alignment;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -46,4 +45,9 @@ public interface ControlsProvider {
      * @return an array of {@link Node} objects representing the controls
      */
     Node[] controls();
+
+    enum Alignment {
+        CENTER,
+        RIGHT
+    }
 }
