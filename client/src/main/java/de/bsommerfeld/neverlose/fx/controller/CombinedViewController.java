@@ -70,20 +70,24 @@ public class CombinedViewController {
         // Place the dynamic controls from both views into the headers
         embedHeaderControls();
 
-        // Persist and restore the divider position directly (0.0 - 1.0)
+        // Persist and restore divider using pixel-based left width (primary) and ratio (fallback)
         final SplitPane.Divider divider = rootSplitPane.getDividers().isEmpty() ? null : rootSplitPane.getDividers().get(0);
         if (divider != null) {
-            final boolean[] adjusting = new boolean[]{false};
-            final boolean[] initialApplied = new boolean[]{false};
-
             Runnable applySavedPosition = () -> {
                 try {
-                    double pos = neverloseConfig.getCombinedDividerPosition();
-                    adjusting[0] = true;
+                    double leftPx = neverloseConfig.getCombinedLeftWidthPx();
+                    double total = rootSplitPane.getWidth();
+                    double pos;
+                    if (leftPx > 0.0 && total > 0.0) {
+                        pos = leftPx / total;
+                    } else {
+                        pos = neverloseConfig.getCombinedDividerPosition();
+                    }
+                    if (Double.isNaN(pos) || Double.isInfinite(pos)) {
+                        pos = 0.3;
+                    }
+                    pos = Math.max(0.0, Math.min(1.0, pos));
                     divider.setPosition(pos);
-                    adjusting[0] = false;
-                    initialApplied[0] = true;
-                    System.out.println(divider.getPosition());
                 } catch (Exception ignored) {
                 }
             };
@@ -120,18 +124,34 @@ public class CombinedViewController {
                     });
                 }
 
-                // Persist divider position only when the user releases the mouse after dragging
+                // Keep left panel width consistent when window is resized
+                final boolean[] dragging = new boolean[]{false};
+                rootSplitPane.widthProperty().addListener((o, oldV, newV) -> {
+                    if (neverloseConfig.getCombinedLeftWidthPx() > 0.0 && !dragging[0]) {
+                        applySavedPosition.run();
+                    }
+                });
+
+                // Persist divider when the user releases the mouse after dragging
                 rootSplitPane.lookupAll(".split-pane-divider").forEach(div -> {
+                    div.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> dragging[0] = true);
                     div.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
                         try {
                             double pos = divider.getPosition();
+                            double leftWidth = leftContent.getWidth();
                             if (!Double.isNaN(pos) && !Double.isInfinite(pos)) {
                                 if (neverloseConfig != null) {
+                                    // Save both pixel width and normalized position as fallback
+                                    if (!Double.isNaN(leftWidth) && !Double.isInfinite(leftWidth) && leftWidth > 0.0) {
+                                        neverloseConfig.setCombinedLeftWidthPx(leftWidth);
+                                    }
                                     neverloseConfig.setCombinedDividerPosition(Math.max(0.0, Math.min(1.0, pos)));
                                     neverloseConfig.save();
                                 }
                             }
                         } catch (Exception ignored) {
+                        } finally {
+                            dragging[0] = false;
                         }
                     });
                 });

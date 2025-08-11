@@ -8,9 +8,15 @@ public class NeverloseConfig extends ConfigurablePojo<NeverloseConfig> {
     @Key("first-start")
     private boolean firstStart = true;
 
-    // Stores the SplitPane divider position for the CombinedView (0.0 - 1.0).
+    // Legacy: normalized divider position for the CombinedView (0.0 - 1.0).
+    // Used as a fallback when no pixel width is saved.
     @Key("combined-divider-position")
     private double combinedDividerPosition = 0.3;
+
+    // Preferred: persist left pane width in pixels to make size independent of window width.
+    // If <= 0, it is considered unset and the legacy normalized position is used.
+    @Key("combined-left-width-px")
+    private double combinedLeftWidthPx = -1.0;
 
     public boolean isFirstStart() {
         return firstStart;
@@ -35,5 +41,20 @@ public class NeverloseConfig extends ConfigurablePojo<NeverloseConfig> {
             combinedDividerPosition = 1.0;
         }
         this.combinedDividerPosition = combinedDividerPosition;
+    }
+
+    public double getCombinedLeftWidthPx() {
+        return combinedLeftWidthPx;
+    }
+
+    public void setCombinedLeftWidthPx(double combinedLeftWidthPx) {
+        if (Double.isNaN(combinedLeftWidthPx) || Double.isInfinite(combinedLeftWidthPx)) {
+            return;
+        }
+        if (combinedLeftWidthPx <= 0.0) {
+            this.combinedLeftWidthPx = -1.0;
+            return;
+        }
+        this.combinedLeftWidthPx = combinedLeftWidthPx;
     }
 }
