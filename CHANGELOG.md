@@ -6,7 +6,5 @@
 
 ### Fixed
 
-- Fix Icon for MacOS download
-
 ### Removed
 
