@@ -8,16 +8,6 @@ import de.bsommerfeld.jshepherd.core.ConfigurationLoader;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.export.PdfExportService;
 import de.bsommerfeld.neverlose.fx.state.SearchState;
-import de.bsommerfeld.neverlose.fx.theme.ContextualThemeService;
-import de.bsommerfeld.neverlose.fx.theme.ContextualThemeServiceImpl;
-import de.bsommerfeld.neverlose.fx.theme.EmotionalThemeService;
-import de.bsommerfeld.neverlose.fx.theme.EmotionalThemeServiceImpl;
-import de.bsommerfeld.neverlose.fx.theme.TemporalThemeService;
-import de.bsommerfeld.neverlose.fx.theme.TemporalThemeServiceImpl;
-import de.bsommerfeld.neverlose.fx.theme.TimeBasedThemeService;
-import de.bsommerfeld.neverlose.fx.theme.TimeBasedThemeServiceImpl;
-import de.bsommerfeld.neverlose.fx.tracking.UsageTrackingService;
-import de.bsommerfeld.neverlose.fx.tracking.UsageTrackingServiceImpl;
 import de.bsommerfeld.neverlose.fx.view.ViewLoader;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.persistence.guice.PersistenceModule;
@@ -39,15 +29,6 @@ public class NeverLoseModule extends AbstractModule {
         bind(ViewProvider.class).asEagerSingleton();
         bind(ViewLoader.class).in(Singleton.class);
         bind(SearchState.class).in(Scopes.SINGLETON);
-
-        // Theme service bindings
-        bind(TimeBasedThemeService.class).to(TimeBasedThemeServiceImpl.class).in(Singleton.class);
-        bind(EmotionalThemeService.class).to(EmotionalThemeServiceImpl.class).in(Singleton.class);
-        bind(TemporalThemeService.class).to(TemporalThemeServiceImpl.class).in(Singleton.class);
-        bind(ContextualThemeService.class).to(ContextualThemeServiceImpl.class).in(Singleton.class);
-
-        // Tracking service bindings
-        bind(UsageTrackingService.class).to(UsageTrackingServiceImpl.class).in(Singleton.class);
     }
 
     @Provides
