@@ -12,7 +12,6 @@ public class ViewProvider {
     private final Map<Class<?>, Consumer<?>> listenerMap = new ConcurrentHashMap<>();
     // Classes that should not be cached (need a new instance each time)
     private final Class<?>[] nonCachedClasses = {
-            de.bsommerfeld.neverlose.fx.controller.PlanCardController.class,
             de.bsommerfeld.neverlose.fx.controller.TrainingPlanEditorController.class
     };
 
