@@ -91,8 +91,10 @@ public class CombinedViewController {
                 try {
                     if (planListController != null) {
                         double ideal = planListController.computeIdealListWidth();
+                        // Clamp the initial width so a single long plan name cannot expand the pane excessively
+                        double maxInitial = 300.0; // sensible upper bound for initial left pane width
                         if (ideal > 0) {
-                            leftWidthPx[0] = Math.max(min, ideal);
+                            leftWidthPx[0] = Math.max(min, Math.min(ideal, maxInitial));
                         }
                     }
                 } catch (Exception ignored) {
