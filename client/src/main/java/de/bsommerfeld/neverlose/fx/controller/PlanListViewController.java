@@ -11,6 +11,8 @@ import de.bsommerfeld.neverlose.logger.LogFacadeFactory;
 import de.bsommerfeld.neverlose.persistence.model.PlanSummary;
 import de.bsommerfeld.neverlose.persistence.service.PlanStorageService;
 import de.bsommerfeld.neverlose.plan.TrainingPlan;
+import de.bsommerfeld.neverlose.plan.components.TrainingExercise;
+import de.bsommerfeld.neverlose.plan.components.TrainingUnit;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
@@ -23,21 +25,27 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -51,7 +59,7 @@ public class PlanListViewController implements ControlsProvider {
     private final SearchState searchState;
     private final NotificationService notificationService;
     // Cache for lazily loaded plan metadata (description, units)
-    private final Map<UUID, PlanMeta> planMetaCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<UUID, PlanMeta> planMetaCache = new ConcurrentHashMap<>();
     private Consumer<TrainingPlan> onPlanSelected;
     @FXML
     private ListView<PlanSummary> listView;
@@ -117,7 +125,7 @@ public class PlanListViewController implements ControlsProvider {
                 newPlanButton.getStyleClass().add("new-plan-button");
             }
             newPlanButton.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(newPlanButton, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(newPlanButton, Priority.ALWAYS);
             newPlanButton.setOnAction(e -> handleNewPlan());
         }
 
@@ -155,12 +163,12 @@ public class PlanListViewController implements ControlsProvider {
                 title.getStyleClass().add("plan-list-title");
                 // Prevent long titles from wrapping; show ellipsis instead
                 title.setWrapText(false);
-                title.setTextOverrun(javafx.scene.control.OverrunStyle.ELLIPSIS);
+                title.setTextOverrun(OverrunStyle.ELLIPSIS);
                 // Allow the title to shrink below its computed size (important to avoid H-scroll)
                 title.setMinWidth(0);
                 // Let title take remaining space so metaRow sticks to the right edge
                 title.setMaxWidth(Double.MAX_VALUE);
-                HBox.setHgrow(title, javafx.scene.layout.Priority.ALWAYS);
+                HBox.setHgrow(title, Priority.ALWAYS);
 
                 // Exercises icon and label (three horizontal bars)
                 exerciseIcon.getStyleClass().add("plan-exercise-icon");
@@ -170,7 +178,7 @@ public class PlanListViewController implements ControlsProvider {
                 exerciseCountLabel.getStyleClass().add("plan-exercise-count");
                 exercisesBox.getStyleClass().add("plan-exercises");
                 exercisesBox.setSpacing(4);
-                exercisesBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+                exercisesBox.setAlignment(Pos.CENTER_RIGHT);
                 // Reserve fixed width so column stays aligned across rows
                 exercisesBox.setMinWidth(84);
                 exercisesBox.setPrefWidth(84);
@@ -195,10 +203,10 @@ public class PlanListViewController implements ControlsProvider {
                 // Meta row container (VBox): units on top, exercises below; right-aligned
                 metaRow.getStyleClass().add("plan-list-meta");
                 metaRow.setSpacing(6);
-                metaRow.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+                metaRow.setAlignment(Pos.CENTER_RIGHT);
                 metaRow.getChildren().setAll(unitsBox, exercisesBox);
                 // Do not let metaRow consume extra horizontal space; keep it packed on the right
-                HBox.setHgrow(metaRow, javafx.scene.layout.Priority.NEVER);
+                HBox.setHgrow(metaRow, Priority.NEVER);
 
                 // Layout spacing between title and meta row
                 box.setSpacing(12);
@@ -245,10 +253,10 @@ public class PlanListViewController implements ControlsProvider {
                         // Capture id for async task to avoid cell reuse issues
                         final UUID requestedId = boundId;
                         // Load metadata asynchronously to keep UI responsive
-                        java.util.concurrent.CompletableFuture
+                        CompletableFuture
                                 .supplyAsync(() -> {
                                     try {
-                                        java.util.Optional<TrainingPlan> opt = planStorageService.loadPlan(requestedId);
+                                        Optional<TrainingPlan> opt = planStorageService.loadPlan(requestedId);
                                         return opt.orElse(null);
                                     } catch (IOException e) {
                                         log.error(Messages.getString("log.plan.loadFailed", requestedId), e);
@@ -261,11 +269,11 @@ public class PlanListViewController implements ControlsProvider {
                                     int units = 0;
                                     int exercises = 0;
                                     try {
-                                        var trainingUnits = (plan.getTrainingUnits() != null) ? plan.getTrainingUnits().getAll() : java.util.Collections.<de.bsommerfeld.neverlose.plan.components.TrainingUnit>emptyList();
+                                        var trainingUnits = (plan.getTrainingUnits() != null) ? plan.getTrainingUnits().getAll() : Collections.<TrainingUnit>emptyList();
                                         units = trainingUnits.size();
-                                        for (de.bsommerfeld.neverlose.plan.components.TrainingUnit u : trainingUnits) {
+                                        for (TrainingUnit u : trainingUnits) {
                                             try {
-                                                var exList = (u.getTrainingExercises() != null) ? u.getTrainingExercises().getAll() : java.util.Collections.<de.bsommerfeld.neverlose.plan.components.TrainingExercise>emptyList();
+                                                var exList = (u.getTrainingExercises() != null) ? u.getTrainingExercises().getAll() : Collections.<TrainingExercise>emptyList();
                                                 exercises += exList.size();
                                             } catch (Exception ignoredInner) {
                                             }
@@ -336,11 +344,11 @@ public class PlanListViewController implements ControlsProvider {
         // Create search container
         searchContainer = new HBox();
         searchContainer.setSpacing(8);
-        searchContainer.setAlignment(javafx.geometry.Pos.CENTER);
+        searchContainer.setAlignment(Pos.CENTER);
         searchContainer.getStyleClass().add("search-container");
         // Allow the container to grow when parent grants space
         searchContainer.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(searchContainer, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(searchContainer, Priority.ALWAYS);
 
 
         // Create search text field
@@ -348,7 +356,7 @@ public class PlanListViewController implements ControlsProvider {
         searchTextField.setPromptText(Messages.getString("fxml.planListView.searchPrompt"));
         searchTextField.getStyleClass().add("search-field");
         // Let the text field take all available width inside the container
-        HBox.setHgrow(searchTextField, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(searchTextField, Priority.ALWAYS);
         searchTextField.setMaxWidth(Double.MAX_VALUE);
 
         // Create search label

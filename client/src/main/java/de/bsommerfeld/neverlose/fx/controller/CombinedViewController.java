@@ -12,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
 
@@ -169,10 +171,10 @@ public class CombinedViewController {
         // Left: search components from plan list
         if (planListController instanceof ControlsProvider providerLeft) {
             Node leftControls = providerLeft.controlsContainer();
-            if (leftControls instanceof javafx.scene.layout.Region r) {
+            if (leftControls instanceof Region r) {
                 r.setMaxWidth(Double.MAX_VALUE);
             }
-            HBox.setHgrow(leftControls, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(leftControls, Priority.ALWAYS);
             leftHeaderBox.getChildren().add(leftControls);
         }
         // Right: save/export from editor
