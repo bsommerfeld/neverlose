@@ -17,6 +17,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -53,6 +54,8 @@ public class PlanListViewController implements ControlsProvider {
     @FXML
     private ListView<PlanSummary> listView;
 
+    @FXML
+    private Button newPlanButton;
     private TextField searchTextField;
     private Label searchLabel;
     private HBox searchContainer;
@@ -104,6 +107,17 @@ public class PlanListViewController implements ControlsProvider {
     private void initialize() {
         // Create search components first so header is ready
         createSearchComponents();
+
+        // Configure bottom New Plan button injected from FXML
+        if (newPlanButton != null) {
+            newPlanButton.setText(Messages.getString("fxml.homeView.newPlan"));
+            if (!newPlanButton.getStyleClass().contains("new-plan-button")) {
+                newPlanButton.getStyleClass().add("new-plan-button");
+            }
+            newPlanButton.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(newPlanButton, javafx.scene.layout.Priority.ALWAYS);
+            newPlanButton.setOnAction(e -> handleNewPlan());
+        }
 
         // Configure compact list behavior
         configureListView();
@@ -300,12 +314,13 @@ public class PlanListViewController implements ControlsProvider {
     private void createSearchComponents() {
         // Create search container
         searchContainer = new HBox();
-        searchContainer.setSpacing(5);
+        searchContainer.setSpacing(8);
         searchContainer.setAlignment(javafx.geometry.Pos.CENTER);
         searchContainer.getStyleClass().add("search-container");
         // Allow the container to grow when parent grants space
         searchContainer.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(searchContainer, javafx.scene.layout.Priority.ALWAYS);
+
 
         // Create search text field
         searchTextField = new TextField();
@@ -320,7 +335,7 @@ public class PlanListViewController implements ControlsProvider {
         searchLabel.getStyleClass().add("search-label");
         searchLabel.setOnMouseClicked(this::onSearch);
 
-        // Add components to container
+        // Add components to container (only search controls in header)
         searchContainer.getChildren().addAll(searchTextField, searchLabel);
 
         // Setup search functionality
@@ -332,6 +347,22 @@ public class PlanListViewController implements ControlsProvider {
 
     private void onSearch(MouseEvent mouseEvent) {
         performSearch();
+    }
+
+    private void handleNewPlan() {
+        log.debug(Messages.getString("log.debug.newPlanClicked"));
+        TrainingPlan newPlan = new TrainingPlan(
+                Messages.getString("general.defaultPlanName"),
+                Messages.getString("general.defaultPlanDescription"));
+        if (onPlanSelected != null) {
+            onPlanSelected.accept(newPlan);
+        } else {
+            viewProvider.triggerViewChange(TrainingPlanEditorController.class,
+                    controller -> controller.setTrainingPlan(newPlan));
+        }
+        notificationService.showSuccess(
+                Messages.getString("ui.message.planCreated.title"),
+                Messages.getString("ui.message.planCreated.text"));
     }
 
     private void performSearch() {

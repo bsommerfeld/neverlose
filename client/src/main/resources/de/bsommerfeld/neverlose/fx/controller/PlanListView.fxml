@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
@@ -14,4 +16,9 @@
     <StackPane VBox.vgrow="ALWAYS" styleClass="preview-container">
         <ListView fx:id="listView" styleClass="plan-list"/>
     </StackPane>
+
+    <!-- Bottom: centered, wide New Plan button (list scrolls above this) -->
+    <HBox alignment="CENTER" spacing="0">
+        <Button fx:id="newPlanButton" mnemonicParsing="false" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+    </HBox>
 </VBox>
