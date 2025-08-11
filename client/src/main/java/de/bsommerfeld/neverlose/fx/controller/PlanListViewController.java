@@ -278,7 +278,7 @@ public class PlanListViewController implements ControlsProvider {
 
         // Double-click to open
         listView.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() >= 2) {
+            if (event.getButton() == MouseButton.PRIMARY) {
                 openSelectedPlan();
             }
         });

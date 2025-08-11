@@ -24,7 +24,7 @@
         </BorderPane>
 
         <!-- Right side: Editor with its own mini header for Save/Export -->
-        <BorderPane>
+        <BorderPane minWidth="300.0">
             <top>
                 <HBox fx:id="rightHeaderBox" alignment="CENTER_RIGHT" styleClass="top-search-bar combined-header-right">
                     <padding>

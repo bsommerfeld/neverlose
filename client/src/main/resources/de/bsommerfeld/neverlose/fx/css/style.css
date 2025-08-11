@@ -1475,6 +1475,8 @@
     -fx-border-color: -never-blue;
     -fx-border-radius: 10;
     -fx-border-width: 1;
+    /* Align the border with the inner card area (matches background insets) */
+    -fx-border-insets: 0 0 8 0;
 }
 
 /* Focused + selected: slightly stronger background and shadow */
