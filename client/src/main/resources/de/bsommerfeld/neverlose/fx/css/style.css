@@ -126,9 +126,10 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-family: "Lato, 'Segoe UI', System"; /* Sans-serif for UI elements */
+    -fx-font-size: 14px; /* slightly larger for better prominence */
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
-    -fx-padding: 5 12 5 12;
+    -fx-padding: 7 14 7 14; /* a bit more padding to enlarge the button */
     -fx-cursor: hand;
     -fx-background-color: linear-gradient(
             to right,
