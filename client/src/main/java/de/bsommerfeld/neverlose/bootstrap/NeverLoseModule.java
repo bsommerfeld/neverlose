@@ -12,6 +12,7 @@ import de.bsommerfeld.neverlose.fx.view.ViewLoader;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.persistence.guice.PersistenceModule;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -34,7 +35,13 @@ public class NeverLoseModule extends AbstractModule {
     @Provides
     @Singleton
     NeverloseConfig provideNeverloseConfig() {
-        Path configPath = Paths.get(LogDirectorySetup.getApplicationDataBaseDirectory().resolve("neverlose").toUri().getPath(), "config.yaml");
+        Path baseDir = LogDirectorySetup.getApplicationDataBaseDirectory();
+        Path configDir = (baseDir != null ? baseDir.resolve("neverlose") : Paths.get("neverlose"));
+        try {
+            Files.createDirectories(configDir);
+        } catch (Exception ignored) {
+        }
+        Path configPath = configDir.resolve("config.json");
         return ConfigurationLoader.load(configPath, NeverloseConfig::new, false);
     }
 }

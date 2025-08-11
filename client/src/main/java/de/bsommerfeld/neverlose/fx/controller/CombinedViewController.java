@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.bootstrap.NeverloseConfig;
 import de.bsommerfeld.neverlose.fx.view.View;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
 import de.bsommerfeld.neverlose.fx.view.ViewWrapper;
@@ -9,9 +10,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.WindowEvent;
 
 /**
  * Combined view that places the plan list (left) and the editor (right) side-by-side. It embeds the search controls of
@@ -22,6 +24,7 @@ import javafx.scene.layout.StackPane;
 public class CombinedViewController {
 
     private final ViewProvider viewProvider;
+    private final NeverloseConfig neverloseConfig;
 
     @FXML
     private HBox leftHeaderBox;
@@ -38,15 +41,13 @@ public class CombinedViewController {
     @FXML
     private SplitPane rootSplitPane;
 
-    @FXML
-    private BorderPane leftPane;
-
     private PlanListViewController planListController;
     private TrainingPlanEditorController editorController;
 
     @Inject
-    public CombinedViewController(ViewProvider viewProvider) {
+    public CombinedViewController(ViewProvider viewProvider, NeverloseConfig neverloseConfig) {
         this.viewProvider = viewProvider;
+        this.neverloseConfig = neverloseConfig;
     }
 
     @FXML
@@ -69,49 +70,71 @@ public class CombinedViewController {
         // Place the dynamic controls from both views into the headers
         embedHeaderControls();
 
-        // Keep the left panel width stable across window resizes, while allowing manual resizing via the divider
+        // Persist and restore the divider position directly (0.0 - 1.0)
         final SplitPane.Divider divider = rootSplitPane.getDividers().isEmpty() ? null : rootSplitPane.getDividers().get(0);
         if (divider != null) {
-            final double min = leftPane.getMinWidth() > 0 ? leftPane.getMinWidth() : 150.0;
-            final double[] leftWidthPx = new double[]{Math.max(240.0, min)};
             final boolean[] adjusting = new boolean[]{false};
+            final boolean[] initialApplied = new boolean[]{false};
 
-            Runnable applyPositionFromWidth = () -> {
-                double total = rootSplitPane.getWidth();
-                if (total <= 0) return;
-                double pos = Math.max(0.0, Math.min(1.0, leftWidthPx[0] / total));
-                adjusting[0] = true;
-                divider.setPosition(pos);
-                adjusting[0] = false;
+            Runnable applySavedPosition = () -> {
+                try {
+                    double pos = neverloseConfig.getCombinedDividerPosition();
+                    adjusting[0] = true;
+                    divider.setPosition(pos);
+                    adjusting[0] = false;
+                    initialApplied[0] = true;
+                    System.out.println(divider.getPosition());
+                } catch (Exception ignored) {
+                }
             };
 
             // Initialize once layout passes have occurred
             Platform.runLater(() -> {
-                // If we can compute an ideal width from the plan list, use it
-                try {
-                    if (planListController != null) {
-                        double ideal = planListController.computeIdealListWidth();
-                        // Clamp the initial width so a single long plan name cannot expand the pane excessively
-                        double maxInitial = 300.0; // sensible upper bound for initial left pane width
-                        if (ideal > 0) {
-                            leftWidthPx[0] = Math.max(min, Math.min(ideal, maxInitial));
-                        }
+                applySavedPosition.run();
+
+                // Ensure the divider position is applied once the window is actually shown
+                if (rootSplitPane.getScene() != null) {
+                    var scene = rootSplitPane.getScene();
+                    if (scene.getWindow() != null) {
+                        scene.getWindow().addEventHandler(WindowEvent.WINDOW_SHOWN, e -> applySavedPosition.run());
+                    } else {
+                        scene.windowProperty().addListener((o, oldW, newW) -> {
+                            if (newW != null) {
+                                newW.addEventHandler(WindowEvent.WINDOW_SHOWN, e -> applySavedPosition.run());
+                            }
+                        });
                     }
-                } catch (Exception ignored) {
+                } else {
+                    rootSplitPane.sceneProperty().addListener((o, oldS, newS) -> {
+                        if (newS != null) {
+                            if (newS.getWindow() != null) {
+                                newS.getWindow().addEventHandler(WindowEvent.WINDOW_SHOWN, e -> applySavedPosition.run());
+                            } else {
+                                newS.windowProperty().addListener((oo, ow, nw) -> {
+                                    if (nw != null) {
+                                        nw.addEventHandler(WindowEvent.WINDOW_SHOWN, e -> applySavedPosition.run());
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
-                applyPositionFromWidth.run();
-            });
 
-            // Keep constant pixel width on SplitPane width changes
-            rootSplitPane.widthProperty().addListener((obs, oldW, newW) -> {
-                applyPositionFromWidth.run();
-            });
-
-            // When user drags the divider, update the target pixel width
-            divider.positionProperty().addListener((obs, oldP, newP) -> {
-                if (adjusting[0]) return;
-                double total = rootSplitPane.getWidth();
-                leftWidthPx[0] = Math.max(min, newP.doubleValue() * total);
+                // Persist divider position only when the user releases the mouse after dragging
+                rootSplitPane.lookupAll(".split-pane-divider").forEach(div -> {
+                    div.addEventHandler(MouseEvent.MOUSE_RELEASED, e -> {
+                        try {
+                            double pos = divider.getPosition();
+                            if (!Double.isNaN(pos) && !Double.isInfinite(pos)) {
+                                if (neverloseConfig != null) {
+                                    neverloseConfig.setCombinedDividerPosition(Math.max(0.0, Math.min(1.0, pos)));
+                                    neverloseConfig.save();
+                                }
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    });
+                });
             });
         }
     }

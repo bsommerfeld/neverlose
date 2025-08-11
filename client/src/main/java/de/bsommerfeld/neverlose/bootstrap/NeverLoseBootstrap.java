@@ -18,8 +18,10 @@ public class NeverLoseBootstrap implements Bootstrap {
     public void start() {
         if (neverloseConfig.isFirstStart()) {
             isFirstStart = true;
+            // Mark first start as handled in-memory. Do not persist immediately to avoid overwriting
+            // other config values (e.g., UI sizes) that might be loaded/applied later during startup.
+            // Persisting can happen later when user-triggered saves occur.
             neverloseConfig.setFirstStart(false);
-            neverloseConfig.save();
         }
 
         Application.launch(NeverLoseApplication.class);

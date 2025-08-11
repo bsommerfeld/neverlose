@@ -104,7 +104,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.bsommerfeld.jshepherd</groupId>
-            <artifactId>yaml</artifactId>
+            <artifactId>json</artifactId>
             <version>${jshepherd.version}</version>
         </dependency>
         <dependency>

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
-<SplitPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootSplitPane" dividerPositions="0.22"
+<SplitPane xmlns:fx="http://javafx.com/fxml/1" fx:id="rootSplitPane"
            styleClass="combined-split-pane"
            xmlns="http://javafx.com/javafx/17.0.12"
            fx:controller="de.bsommerfeld.neverlose.fx.controller.CombinedViewController">
