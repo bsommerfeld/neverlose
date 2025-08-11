@@ -7,12 +7,6 @@ import com.google.inject.Singleton;
 import de.bsommerfeld.jshepherd.core.ConfigurationLoader;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.export.PdfExportService;
-import de.bsommerfeld.neverlose.fx.animation.BreathingAnimationService;
-import de.bsommerfeld.neverlose.fx.animation.BreathingAnimationServiceImpl;
-import de.bsommerfeld.neverlose.fx.animation.FeedbackAnimationService;
-import de.bsommerfeld.neverlose.fx.animation.FeedbackAnimationServiceImpl;
-import de.bsommerfeld.neverlose.fx.animation.MicroNarrativeAnimationService;
-import de.bsommerfeld.neverlose.fx.animation.MicroNarrativeAnimationServiceImpl;
 import de.bsommerfeld.neverlose.fx.state.SearchState;
 import de.bsommerfeld.neverlose.fx.theme.ContextualThemeService;
 import de.bsommerfeld.neverlose.fx.theme.ContextualThemeServiceImpl;
@@ -26,7 +20,6 @@ import de.bsommerfeld.neverlose.fx.tracking.UsageTrackingService;
 import de.bsommerfeld.neverlose.fx.tracking.UsageTrackingServiceImpl;
 import de.bsommerfeld.neverlose.fx.view.ViewLoader;
 import de.bsommerfeld.neverlose.fx.view.ViewProvider;
-import de.bsommerfeld.neverlose.fx.viewmodel.UIViewModel;
 import de.bsommerfeld.neverlose.persistence.guice.PersistenceModule;
 
 import java.nio.file.Path;
@@ -47,11 +40,6 @@ public class NeverLoseModule extends AbstractModule {
         bind(ViewLoader.class).in(Singleton.class);
         bind(SearchState.class).in(Scopes.SINGLETON);
 
-        // Animation service bindings
-        bind(MicroNarrativeAnimationService.class).to(MicroNarrativeAnimationServiceImpl.class).in(Singleton.class);
-        bind(BreathingAnimationService.class).to(BreathingAnimationServiceImpl.class).in(Singleton.class);
-        bind(FeedbackAnimationService.class).to(FeedbackAnimationServiceImpl.class).in(Singleton.class);
-
         // Theme service bindings
         bind(TimeBasedThemeService.class).to(TimeBasedThemeServiceImpl.class).in(Singleton.class);
         bind(EmotionalThemeService.class).to(EmotionalThemeServiceImpl.class).in(Singleton.class);
@@ -60,9 +48,6 @@ public class NeverLoseModule extends AbstractModule {
 
         // Tracking service bindings
         bind(UsageTrackingService.class).to(UsageTrackingServiceImpl.class).in(Singleton.class);
-
-        // ViewModel bindings
-        bind(UIViewModel.class).in(Singleton.class);
     }
 
     @Provides
