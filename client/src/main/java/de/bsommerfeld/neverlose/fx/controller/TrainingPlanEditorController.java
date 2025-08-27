@@ -967,9 +967,9 @@ public class TrainingPlanEditorController implements ControlsProvider {
         // Try to add overlay to the existing scene root if it's a Pane
         Scene scene = rootPane.getScene();
         if (scene != null && scene.getRoot() instanceof Pane paneRoot) {
-            // Width/height bindings: content uses 60% of scene width (20% left + 20% right), height up to 90%
-            content.maxWidthProperty().bind(scene.widthProperty().multiply(0.6));
-            content.prefWidthProperty().bind(scene.widthProperty().multiply(0.6));
+            // Width/height bindings: content uses 70% of scene width (15% left + 15% right), height up to 90%
+            content.maxWidthProperty().bind(scene.widthProperty().multiply(0.7));
+            content.prefWidthProperty().bind(scene.widthProperty().multiply(0.7));
             content.maxHeightProperty().bind(scene.heightProperty().multiply(0.9));
             content.prefHeightProperty().bind(scene.heightProperty().multiply(0.9));
 
@@ -996,8 +996,8 @@ public class TrainingPlanEditorController implements ControlsProvider {
             stage.initOwner(owner);
             stage.initModality(Modality.APPLICATION_MODAL);
 
-            // Bind stage size relative to owner to emulate 60% width and reasonable height
-            double initW = owner != null ? owner.getWidth() * 0.6 : 1024 * 0.6;
+            // Bind stage size relative to owner to emulate 70% width and reasonable height
+            double initW = owner != null ? owner.getWidth() * 0.7 : 1024 * 0.7;
             double initH = owner != null ? owner.getHeight() * 0.9 : 820 * 0.9;
 
             Scene s = new Scene(overlay, initW, initH);
@@ -1011,7 +1011,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
 
             // Keep stage sized relative to owner when owner resizes
             if (owner != null) {
-                owner.widthProperty().addListener((o, oldV, newV) -> stage.setWidth(newV.doubleValue() * 0.6));
+                owner.widthProperty().addListener((o, oldV, newV) -> stage.setWidth(newV.doubleValue() * 0.7));
                 owner.heightProperty().addListener((o, oldV, newV) -> stage.setHeight(newV.doubleValue() * 0.9));
             }
 
