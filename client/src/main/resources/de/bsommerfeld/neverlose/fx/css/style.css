@@ -20,6 +20,11 @@
     -fx-text-fill: -text-primary; /* Standard text color */
 }
 
+/* --- Global override: never use ellipsis for text overrun --- */
+.label, .button, .toggle-button, .check-box, .radio-button, .list-cell, .table-cell, .tab .tab-label, .titled-pane > .title {
+    -fx-text-overrun: clip;
+}
+
 /* --- Top Bar --- */
 .top-search-bar {
     -fx-background-color: -bg-light;
@@ -1525,9 +1530,9 @@
     -fx-font-size: 15px;
     -fx-font-weight: 700;
     -fx-text-fill: -text-primary;
-    /* Prevent long titles from affecting row height; show ellipsis instead */
+    /* Prevent long titles from affecting row height; do not use ellipsis */
     -fx-wrap-text: false;
-    -fx-text-overrun: ellipsis;
+    -fx-text-overrun: clip;
 }
 
 .plan-list-subtitle {
