@@ -71,6 +71,8 @@ public class TrainingPlanEditorController implements ControlsProvider {
     private final Timeline scrollThrottleTimeline = new Timeline();
     // Flag to track if a scroll update is pending
     private final AtomicBoolean scrollUpdatePending = new AtomicBoolean(false);
+    // Track overlays to support cleanup
+    private final java.util.Map<javafx.scene.layout.StackPane, File> overlayMap = new java.util.HashMap<>();
     @FXML
     private BorderPane rootPane;
     @FXML
@@ -81,11 +83,11 @@ public class TrainingPlanEditorController implements ControlsProvider {
     private VBox trainingUnitsContainer;
     private TrainingPlan trainingPlan;
     private ScrollPane editorScrollPane;
-
     // Buttons for the TopBar
     private Button saveButton;
     private Button exportButton;
     private HBox buttonsContainer;
+    private Button previewButton;
 
     /**
      * Constructor for Guice injection.
@@ -140,27 +142,6 @@ public class TrainingPlanEditorController implements ControlsProvider {
 
         // Bind the training plan properties to the UI
         updateUIFromModel();
-    }
-
-    /** Creates the action buttons that will be registered with the TopBar. */
-    private void createActionButtons() {
-        // Create buttons container
-        buttonsContainer = new HBox();
-        buttonsContainer.setSpacing(10);
-        buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-
-        // Create save button
-        saveButton = new Button(Messages.getString("ui.button.save"));
-        saveButton.getStyleClass().add("editor-action-button");
-        saveButton.setOnAction(event -> handleSave());
-
-        // Create export button
-        exportButton = new Button(Messages.getString("fxml.trainingPlanEditor.export"));
-        exportButton.getStyleClass().add("editor-action-button");
-        exportButton.setOnAction(event -> handleExport());
-
-        // Add buttons to container
-        buttonsContainer.getChildren().addAll(saveButton, exportButton);
     }
 
     /**
@@ -830,6 +811,182 @@ public class TrainingPlanEditorController implements ControlsProvider {
         } else {
             log.info(Messages.getString("log.plan.exportCanceled"));
         }
+    }
+
+    /** Creates the action buttons that will be registered with the TopBar. */
+    private void createActionButtons() {
+        // Create buttons container
+        buttonsContainer = new HBox();
+        buttonsContainer.setSpacing(10);
+        buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        // Create save button
+        saveButton = new Button(Messages.getString("ui.button.save"));
+        saveButton.getStyleClass().add("editor-action-button");
+        saveButton.setOnAction(event -> handleSave());
+
+        // Create preview button
+        previewButton = new Button(Messages.getString("ui.button.preview"));
+        previewButton.getStyleClass().add("editor-action-button");
+        previewButton.setOnAction(event -> handlePreview());
+
+        // Create export button
+        exportButton = new Button(Messages.getString("fxml.trainingPlanEditor.export"));
+        exportButton.getStyleClass().add("editor-action-button");
+        exportButton.setOnAction(event -> handleExport());
+
+        // Add buttons to container
+        buttonsContainer.getChildren().addAll(saveButton, previewButton, exportButton);
+    }
+
+    /** Handles the preview button action by generating a temp PDF and showing it in an overlay. */
+    @FXML
+    private void handlePreview() {
+        updateModelFromUI();
+
+        // Determine base directory for neverlose temp
+        java.nio.file.Path baseDir = de.bsommerfeld.neverlose.bootstrap.LogDirectorySetup.getApplicationDataBaseDirectory();
+        java.nio.file.Path neverloseDir = (baseDir != null ? baseDir.resolve("neverlose") : java.nio.file.Paths.get("neverlose"));
+        java.nio.file.Path tempDir = neverloseDir.resolve("temp");
+        try {
+            java.nio.file.Files.createDirectories(tempDir);
+        } catch (Exception e) {
+            log.error("Failed to create temp directory for preview: " + tempDir, e);
+            showStyledAlert(Alert.AlertType.ERROR,
+                    Messages.getString("error.preview.failed.title"),
+                    null,
+                    Messages.getString("error.preview.failed.createTempDir", String.valueOf(tempDir)));
+            return;
+        }
+
+        String safeName = trainingPlan.getName() == null ? "plan" : trainingPlan.getName().replaceAll("\\s+", "_");
+        File tempFile;
+        try {
+            tempFile = java.nio.file.Files.createTempFile(tempDir, safeName + "_preview_", ".pdf").toFile();
+            tempFile.deleteOnExit();
+        } catch (Exception e) {
+            log.error("Failed to create temp file for preview in " + tempDir, e);
+            showStyledAlert(Alert.AlertType.ERROR,
+                    Messages.getString("error.preview.failed.title"),
+                    null,
+                    Messages.getString("error.preview.failed.createTempFile", String.valueOf(tempDir)));
+            return;
+        }
+
+        try {
+            // Export current plan to the temp PDF
+            exportService.export(trainingPlan, tempFile);
+        } catch (Exception e) {
+            log.error("Failed to export PDF for preview", e);
+            showStyledAlert(Alert.AlertType.ERROR,
+                    Messages.getString("error.preview.failed.title"),
+                    null,
+                    Messages.getString("error.preview.failed.export", e.getMessage()));
+            // Best effort cleanup
+            try { tempFile.delete(); } catch (Exception ignored) {}
+            return;
+        }
+
+        // Build and show overlay with rendered PDF pages
+        try {
+            showPdfOverlay(tempFile);
+        } catch (Exception e) {
+            log.error("Failed to show PDF preview overlay", e);
+            showStyledAlert(Alert.AlertType.ERROR,
+                    Messages.getString("error.preview.failed.title"),
+                    null,
+                    Messages.getString("error.preview.failed.render", e.getMessage()));
+            try { tempFile.delete(); } catch (Exception ignored) {}
+        }
+    }
+
+    private void showPdfOverlay(File pdfFile) throws Exception {
+        // Render PDF pages to JavaFX ImageViews
+        java.util.List<javafx.scene.image.ImageView> pageViews = new java.util.ArrayList<>();
+        try (org.apache.pdfbox.pdmodel.PDDocument doc = org.apache.pdfbox.Loader.loadPDF(pdfFile)) {
+            org.apache.pdfbox.rendering.PDFRenderer renderer = new org.apache.pdfbox.rendering.PDFRenderer(doc);
+            int pageCount = doc.getNumberOfPages();
+            for (int i = 0; i < pageCount; i++) {
+                java.awt.image.BufferedImage bim = renderer.renderImageWithDPI(i, 144f); // 144 DPI for clarity
+                javafx.scene.image.Image fxImg = javafx.embed.swing.SwingFXUtils.toFXImage(bim, null);
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(fxImg);
+                imageView.setPreserveRatio(true);
+                imageView.setFitWidth(900); // scale to readable width
+                pageViews.add(imageView);
+            }
+        }
+
+        javafx.scene.layout.VBox pagesBox = new javafx.scene.layout.VBox(10);
+        pagesBox.getChildren().addAll(pageViews);
+        pagesBox.setAlignment(javafx.geometry.Pos.CENTER);
+
+        javafx.scene.control.ScrollPane sp = new javafx.scene.control.ScrollPane(pagesBox);
+        sp.setFitToWidth(true);
+        sp.setPannable(true);
+        sp.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+
+        javafx.scene.layout.BorderPane content = new javafx.scene.layout.BorderPane(sp);
+        content.setMaxSize(1000, 800);
+        content.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;");
+
+        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button(Messages.getString("ui.button.close"));
+        closeBtn.getStyleClass().add("editor-action-button");
+        closeBtn.setOnAction(e -> removeOverlayAndDelete(pdfFile));
+        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox();
+        topBar.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        topBar.getChildren().add(closeBtn);
+        topBar.setStyle("-fx-padding: 0 0 10 0;");
+        content.setTop(topBar);
+
+        javafx.scene.layout.StackPane overlay = new javafx.scene.layout.StackPane();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.6);");
+        overlay.getChildren().add(content);
+        javafx.scene.layout.StackPane.setAlignment(content, javafx.geometry.Pos.CENTER);
+
+        // Try to add overlay to the existing scene root if it's a Pane
+        javafx.scene.Scene scene = rootPane.getScene();
+        if (scene != null && scene.getRoot() instanceof javafx.scene.layout.Pane paneRoot) {
+            paneRoot.getChildren().add(overlay);
+            // Clicking outside closes overlay
+            overlay.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, ev -> {
+                if (ev.getTarget() == overlay) {
+                    removeOverlayAndDelete(pdfFile);
+                }
+            });
+            // Store overlay reference for removal
+            overlay.setUserData(paneRoot);
+            overlayMap.put(overlay, pdfFile);
+        } else {
+            // Fallback: modal stage that feels like an overlay
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initOwner((javafx.stage.Window) rootPane.getScene().getWindow());
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            javafx.scene.Scene s = new javafx.scene.Scene(overlay, 1024, 820);
+            s.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+            stage.setScene(s);
+            stage.setOnCloseRequest(e -> { try { pdfFile.delete(); } catch (Exception ignored) {} });
+            stage.show();
+        }
+    }
+
+    private void removeOverlayAndDelete(File pdfFile) {
+        javafx.scene.Scene scene = rootPane.getScene();
+        // find overlay in overlayMap to remove
+        javafx.scene.layout.StackPane toRemove = null;
+        for (var entry : overlayMap.entrySet()) {
+            if (entry.getValue().equals(pdfFile)) {
+                toRemove = entry.getKey();
+                break;
+            }
+        }
+        if (toRemove != null) {
+            Object parent = toRemove.getUserData();
+            if (parent instanceof javafx.scene.layout.Pane pane) {
+                pane.getChildren().remove(toRemove);
+            }
+            overlayMap.remove(toRemove);
+        }
+        try { pdfFile.delete(); } catch (Exception ignored) {}
     }
 
     /** Updates the training plan model with the current state of the UI. */
