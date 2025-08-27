@@ -1,6 +1,7 @@
 package de.bsommerfeld.neverlose.fx.controller;
 
 import com.google.inject.Inject;
+import de.bsommerfeld.neverlose.bootstrap.LogDirectorySetup;
 import de.bsommerfeld.neverlose.export.ExportService;
 import de.bsommerfeld.neverlose.fx.components.TrainingUnitControl;
 import de.bsommerfeld.neverlose.fx.messages.Messages;
@@ -32,18 +33,35 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
+import javax.imageio.ImageIO;
 import java.awt.Desktop;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +90,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
     // Flag to track if a scroll update is pending
     private final AtomicBoolean scrollUpdatePending = new AtomicBoolean(false);
     // Track overlays to support cleanup
-    private final java.util.Map<javafx.scene.layout.StackPane, File> overlayMap = new java.util.HashMap<>();
+    private final Map<StackPane, File> overlayMap = new HashMap<>();
     @FXML
     private BorderPane rootPane;
     @FXML
@@ -818,7 +836,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
         // Create buttons container
         buttonsContainer = new HBox();
         buttonsContainer.setSpacing(10);
-        buttonsContainer.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        buttonsContainer.setAlignment(Pos.CENTER_RIGHT);
 
         // Create save button
         saveButton = new Button(Messages.getString("ui.button.save"));
@@ -845,11 +863,11 @@ public class TrainingPlanEditorController implements ControlsProvider {
         updateModelFromUI();
 
         // Determine base directory for neverlose temp
-        java.nio.file.Path baseDir = de.bsommerfeld.neverlose.bootstrap.LogDirectorySetup.getApplicationDataBaseDirectory();
-        java.nio.file.Path neverloseDir = (baseDir != null ? baseDir.resolve("neverlose") : java.nio.file.Paths.get("neverlose"));
-        java.nio.file.Path tempDir = neverloseDir.resolve("temp");
+        Path baseDir = LogDirectorySetup.getApplicationDataBaseDirectory();
+        Path neverloseDir = (baseDir != null ? baseDir.resolve("neverlose") : Paths.get("neverlose"));
+        Path tempDir = neverloseDir.resolve("temp");
         try {
-            java.nio.file.Files.createDirectories(tempDir);
+            Files.createDirectories(tempDir);
         } catch (Exception e) {
             log.error("Failed to create temp directory for preview: " + tempDir, e);
             showStyledAlert(Alert.AlertType.ERROR,
@@ -862,7 +880,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
         String safeName = trainingPlan.getName() == null ? "plan" : trainingPlan.getName().replaceAll("\\s+", "_");
         File tempFile;
         try {
-            tempFile = java.nio.file.Files.createTempFile(tempDir, safeName + "_preview_", ".pdf").toFile();
+            tempFile = Files.createTempFile(tempDir, safeName + "_preview_", ".pdf").toFile();
             tempFile.deleteOnExit();
         } catch (Exception e) {
             log.error("Failed to create temp file for preview in " + tempDir, e);
@@ -902,53 +920,68 @@ public class TrainingPlanEditorController implements ControlsProvider {
 
     private void showPdfOverlay(File pdfFile) throws Exception {
         // Render PDF pages to JavaFX ImageViews
-        java.util.List<javafx.scene.image.ImageView> pageViews = new java.util.ArrayList<>();
-        try (org.apache.pdfbox.pdmodel.PDDocument doc = org.apache.pdfbox.Loader.loadPDF(pdfFile)) {
-            org.apache.pdfbox.rendering.PDFRenderer renderer = new org.apache.pdfbox.rendering.PDFRenderer(doc);
+        List<ImageView> pageViews = new ArrayList<>();
+        try (PDDocument doc = Loader.loadPDF(pdfFile)) {
+            PDFRenderer renderer = new PDFRenderer(doc);
             int pageCount = doc.getNumberOfPages();
             for (int i = 0; i < pageCount; i++) {
-                java.awt.image.BufferedImage bim = renderer.renderImageWithDPI(i, 144f); // 144 DPI for clarity
-                javafx.scene.image.Image fxImg = javafx.embed.swing.SwingFXUtils.toFXImage(bim, null);
-                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(fxImg);
+                BufferedImage bim = renderer.renderImageWithDPI(i, 144f); // 144 DPI for clarity
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(bim, "png", os);
+                Image fxImg = new Image(new ByteArrayInputStream(os.toByteArray()));
+                ImageView imageView = new ImageView(fxImg);
                 imageView.setPreserveRatio(true);
-                imageView.setFitWidth(900); // scale to readable width
                 pageViews.add(imageView);
             }
         }
 
-        javafx.scene.layout.VBox pagesBox = new javafx.scene.layout.VBox(10);
+        VBox pagesBox = new VBox(10);
         pagesBox.getChildren().addAll(pageViews);
-        pagesBox.setAlignment(javafx.geometry.Pos.CENTER);
+        pagesBox.setAlignment(Pos.CENTER);
 
-        javafx.scene.control.ScrollPane sp = new javafx.scene.control.ScrollPane(pagesBox);
+        ScrollPane sp = new ScrollPane(pagesBox);
         sp.setFitToWidth(true);
         sp.setPannable(true);
         sp.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        javafx.scene.layout.BorderPane content = new javafx.scene.layout.BorderPane(sp);
-        content.setMaxSize(1000, 800);
+        // Container for the white content area (centered)
+        BorderPane content = new BorderPane(sp);
         content.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;");
 
-        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button(Messages.getString("ui.button.close"));
+        // Close button and top bar
+        Button closeBtn = new Button(Messages.getString("ui.button.close"));
         closeBtn.getStyleClass().add("editor-action-button");
         closeBtn.setOnAction(e -> removeOverlayAndDelete(pdfFile));
-        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox();
-        topBar.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        HBox topBar = new HBox();
+        topBar.setAlignment(Pos.CENTER_RIGHT);
         topBar.getChildren().add(closeBtn);
         topBar.setStyle("-fx-padding: 0 0 10 0;");
         content.setTop(topBar);
 
-        javafx.scene.layout.StackPane overlay = new javafx.scene.layout.StackPane();
+        // Dimmed full-screen overlay with centered content
+        StackPane overlay = new StackPane();
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.6);");
         overlay.getChildren().add(content);
-        javafx.scene.layout.StackPane.setAlignment(content, javafx.geometry.Pos.CENTER);
+        StackPane.setAlignment(content, Pos.CENTER);
 
         // Try to add overlay to the existing scene root if it's a Pane
-        javafx.scene.Scene scene = rootPane.getScene();
-        if (scene != null && scene.getRoot() instanceof javafx.scene.layout.Pane paneRoot) {
+        Scene scene = rootPane.getScene();
+        if (scene != null && scene.getRoot() instanceof Pane paneRoot) {
+            // Width/height bindings: content uses 60% of scene width (20% left + 20% right), height up to 90%
+            content.maxWidthProperty().bind(scene.widthProperty().multiply(0.6));
+            content.prefWidthProperty().bind(scene.widthProperty().multiply(0.6));
+            content.maxHeightProperty().bind(scene.heightProperty().multiply(0.9));
+            content.prefHeightProperty().bind(scene.heightProperty().multiply(0.9));
+
+            // Make images scale with the available width inside the scrollpane
+            for (ImageView iv : pageViews) {
+                iv.setPreserveRatio(true);
+                iv.fitWidthProperty().bind(sp.widthProperty().subtract(40)); // subtract padding/scrollbar
+            }
+
             paneRoot.getChildren().add(overlay);
             // Clicking outside closes overlay
-            overlay.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_CLICKED, ev -> {
+            overlay.addEventHandler(MouseEvent.MOUSE_CLICKED, ev -> {
                 if (ev.getTarget() == overlay) {
                     removeOverlayAndDelete(pdfFile);
                 }
@@ -958,11 +991,33 @@ public class TrainingPlanEditorController implements ControlsProvider {
             overlayMap.put(overlay, pdfFile);
         } else {
             // Fallback: modal stage that feels like an overlay
-            javafx.stage.Stage stage = new javafx.stage.Stage();
-            stage.initOwner((javafx.stage.Window) rootPane.getScene().getWindow());
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            javafx.scene.Scene s = new javafx.scene.Scene(overlay, 1024, 820);
+            Stage stage = new Stage();
+            Window owner = (Window) rootPane.getScene().getWindow();
+            stage.initOwner(owner);
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Bind stage size relative to owner to emulate 60% width and reasonable height
+            double initW = owner != null ? owner.getWidth() * 0.6 : 1024 * 0.6;
+            double initH = owner != null ? owner.getHeight() * 0.9 : 820 * 0.9;
+
+            Scene s = new Scene(overlay, initW, initH);
             s.getStylesheets().addAll(rootPane.getScene().getStylesheets());
+
+            // Also scale images with the scene width
+            for (ImageView iv : pageViews) {
+                iv.setPreserveRatio(true);
+                iv.fitWidthProperty().bind(s.widthProperty().subtract(40));
+            }
+
+            // Keep stage sized relative to owner when owner resizes
+            if (owner != null) {
+                owner.widthProperty().addListener((o, oldV, newV) -> stage.setWidth(newV.doubleValue() * 0.6));
+                owner.heightProperty().addListener((o, oldV, newV) -> stage.setHeight(newV.doubleValue() * 0.9));
+            }
+
+            // Close button should close the stage in this fallback
+            closeBtn.setOnAction(ev -> stage.close());
+
             stage.setScene(s);
             stage.setOnCloseRequest(e -> { try { pdfFile.delete(); } catch (Exception ignored) {} });
             stage.show();
@@ -970,9 +1025,9 @@ public class TrainingPlanEditorController implements ControlsProvider {
     }
 
     private void removeOverlayAndDelete(File pdfFile) {
-        javafx.scene.Scene scene = rootPane.getScene();
+        Scene scene = rootPane.getScene();
         // find overlay in overlayMap to remove
-        javafx.scene.layout.StackPane toRemove = null;
+        StackPane toRemove = null;
         for (var entry : overlayMap.entrySet()) {
             if (entry.getValue().equals(pdfFile)) {
                 toRemove = entry.getKey();
@@ -981,7 +1036,7 @@ public class TrainingPlanEditorController implements ControlsProvider {
         }
         if (toRemove != null) {
             Object parent = toRemove.getUserData();
-            if (parent instanceof javafx.scene.layout.Pane pane) {
+            if (parent instanceof Pane pane) {
                 pane.getChildren().remove(toRemove);
             }
             overlayMap.remove(toRemove);
