@@ -942,11 +942,11 @@ public class TrainingPlanEditorController implements ControlsProvider {
         ScrollPane sp = new ScrollPane(pagesBox);
         sp.setFitToWidth(true);
         sp.setPannable(true);
-        sp.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        sp.getStyleClass().add("preview-scrollpane");
 
         // Container for the white content area (centered)
         BorderPane content = new BorderPane(sp);
-        content.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-padding: 15;");
+        content.getStyleClass().add("preview-content");
 
         // Close button and top bar
         Button closeBtn = new Button(Messages.getString("ui.button.close"));
@@ -955,12 +955,12 @@ public class TrainingPlanEditorController implements ControlsProvider {
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
         topBar.getChildren().add(closeBtn);
-        topBar.setStyle("-fx-padding: 0 0 10 0;");
+        topBar.getStyleClass().add("preview-topbar");
         content.setTop(topBar);
 
         // Dimmed full-screen overlay with centered content
         StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.6);");
+        overlay.getStyleClass().add("preview-overlay");
         overlay.getChildren().add(content);
         StackPane.setAlignment(content, Pos.CENTER);
 

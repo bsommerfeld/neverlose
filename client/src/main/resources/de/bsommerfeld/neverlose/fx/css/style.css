@@ -550,6 +550,30 @@
     -fx-background-color: #f0f0f0; /* Light gray background */
 }
 
+/* --- Preview Overlay --- */
+.preview-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.6);
+}
+
+.preview-content {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+}
+
+.preview-topbar {
+    -fx-padding: 0 0 10 0;
+}
+
+.preview-scrollpane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.preview-scrollpane > .viewport {
+    -fx-background-color: transparent;
+}
+
 .editor-scroll-pane {
     -fx-background-color: transparent;
     -fx-background: transparent;
