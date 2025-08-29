@@ -23,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -132,12 +133,35 @@ public class TrainingUnitControl extends VBox {
                 .getChildren()
                 .addAll(toggleArrow, nameField, weekdayComboBox, saveAsTemplateButton, removeButton);
 
-        // Description field
-        TextField descriptionField = new TextField(trainingUnit.getDescription());
+        // Description field (use a wrapping, auto-growing TextArea instead of TextField)
+        javafx.scene.control.TextArea descriptionField = new javafx.scene.control.TextArea(trainingUnit.getDescription());
         descriptionField.getStyleClass().add("unit-description-field");
-        descriptionField
-                .textProperty()
-                .addListener((obs, oldVal, newVal) -> trainingUnit.setDescription(newVal));
+        descriptionField.setWrapText(true);
+        descriptionField.setPrefRowCount(2);
+        descriptionField.setMinHeight(Region.USE_PREF_SIZE);
+        descriptionField.setMaxHeight(Double.MAX_VALUE);
+        // Bind width to container to avoid horizontal overflow
+        descriptionField.setMaxWidth(Double.MAX_VALUE);
+        VBox.setVgrow(descriptionField, Priority.NEVER);
+        // Auto-resize height based on content (including wrapped lines)
+        javafx.scene.text.Text measure = new javafx.scene.text.Text();
+        measure.setFont(descriptionField.getFont());
+        measure.wrappingWidthProperty().bind(descriptionField.widthProperty().subtract(20)); // account for padding/scrollbar
+        Runnable adjustHeight = () -> {
+            measure.setText(descriptionField.getText().isEmpty() ? " " : descriptionField.getText());
+            double h = Math.ceil(measure.getLayoutBounds().getHeight()) + 20; // padding
+            // minimum 2 rows worth of height
+            double minRowHeight = descriptionField.getFont().getSize() * 2 + 20;
+            descriptionField.setPrefHeight(Math.max(h, minRowHeight));
+        };
+        // Listen to text and width changes
+        descriptionField.textProperty().addListener((obs, oldVal, newVal) -> {
+            trainingUnit.setDescription(newVal);
+            adjustHeight.run();
+        });
+        descriptionField.widthProperty().addListener((obs, o, n) -> adjustHeight.run());
+        // Initial adjust
+        adjustHeight.run();
 
         // Container for exercises
         exercisesContainer = new VBox(10);
